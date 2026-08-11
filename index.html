@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Falak 1259 — charting the cosmos with data. An astronomy & data science initiative turning the night sky into insight." />
+  <meta name="theme-color" content="#05060f" />
+  <title>Falak 1259 — Charting the Cosmos with Data</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%E2%9C%A6%3C/text%3E%3C/svg%3E" />
+</head>
+<body>
+  <canvas id="starfield" aria-hidden="true"></canvas>
+
+  <!-- Navigation -->
+  <header class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="#top" class="brand">
+        <span class="brand__mark">✦</span>
+        <span class="brand__text">Falak<span class="brand__num">1259</span></span>
+      </a>
+      <nav class="nav__links" aria-label="Primary">
+        <a href="#about">About</a>
+        <a href="#missions">Missions</a>
+        <a href="#data">Data</a>
+        <a href="#team">Team</a>
+        <a href="#contact" class="btn btn--ghost">Contact</a>
+      </nav>
+      <button class="nav__toggle" id="navToggle" aria-label="Toggle menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <main id="top">
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero__content">
+        <p class="eyebrow reveal">Astronomy · Data Science · Discovery</p>
+        <h1 class="hero__title reveal">Charting the cosmos,<br /><span class="grad">one data point at a time.</span></h1>
+        <p class="hero__lead reveal">Falak 1259 is a research collective where the ancient art of watching the sky
+          meets modern machine learning. We transform starlight into structured insight — mapping orbits,
+          classifying galaxies, and forecasting the next flicker in the dark.</p>
+        <div class="hero__cta reveal">
+          <a href="#missions" class="btn btn--primary">Explore our missions</a>
+          <a href="#data" class="btn btn--ghost">See the data ↗</a>
+        </div>
+      </div>
+      <div class="hero__scroll" aria-hidden="true">
+        <span>Scroll</span>
+        <div class="hero__line"></div>
+      </div>
+    </section>
+
+    <!-- Stats -->
+    <section class="stats" aria-label="Key metrics">
+      <div class="stat">
+        <span class="stat__num" data-count="1259" data-suffix="">0</span>
+        <span class="stat__label">Objects catalogued</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num" data-count="47" data-suffix="TB">0</span>
+        <span class="stat__label">Sky-survey data</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num" data-count="96" data-suffix="%">0</span>
+        <span class="stat__label">Classifier accuracy</span>
+      </div>
+      <div class="stat">
+        <span class="stat__num" data-count="24" data-suffix="/7">0</span>
+        <span class="stat__label">Observation uptime</span>
+      </div>
+    </section>
+
+    <!-- About -->
+    <section id="about" class="section">
+      <div class="section__head reveal">
+        <span class="kicker">01 — About</span>
+        <h2>The name is a promise.</h2>
+      </div>
+      <div class="about">
+        <p class="about__lead reveal">
+          <em>Falak</em> (فلك) is the old word for the celestial sphere — the turning vault of the sky
+          that astronomers have studied for a thousand years. <strong>1259</strong> marks the year the
+          great Maragheh observatory opened its doors, pairing careful observation with rigorous
+          computation for the first time.
+        </p>
+        <p class="reveal">
+          We carry that spirit forward. Falak 1259 blends astrophysics with data science to make the
+          universe legible — building open pipelines, reproducible models, and tools that let anyone
+          ask a question of the sky and get an honest answer back.
+        </p>
+      </div>
+    </section>
+
+    <!-- Missions / Features -->
+    <section id="missions" class="section">
+      <div class="section__head reveal">
+        <span class="kicker">02 — Missions</span>
+        <h2>What we work on.</h2>
+      </div>
+      <div class="cards">
+        <article class="card reveal">
+          <div class="card__icon">🔭</div>
+          <h3>Sky Surveys</h3>
+          <p>Ingesting terabytes of imaging from ground and space telescopes, cleaning, and cross-matching
+            against open catalogues.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">🌌</div>
+          <h3>Galaxy Classification</h3>
+          <p>Deep-learning models that sort spirals, ellipticals, and mergers — with calibrated
+            uncertainty on every label.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">☄️</div>
+          <h3>Orbit Prediction</h3>
+          <p>Physics-informed forecasting of asteroid and comet trajectories to flag close approaches
+            weeks in advance.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">📡</div>
+          <h3>Transient Alerts</h3>
+          <p>Real-time detection of supernovae and variable stars from streaming photometry, ranked by
+            scientific interest.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">🧪</div>
+          <h3>Open Pipelines</h3>
+          <p>Reproducible, well-documented workflows so any result we publish can be re-run from raw
+            data to figure.</p>
+        </article>
+        <article class="card reveal">
+          <div class="card__icon">📖</div>
+          <h3>Public Outreach</h3>
+          <p>Notebooks, talks, and visualisations that bring the night sky — and the science behind it —
+            to a wider audience.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Data -->
+    <section id="data" class="section">
+      <div class="section__head reveal">
+        <span class="kicker">03 — Data</span>
+        <h2>Built in the open.</h2>
+      </div>
+      <div class="data">
+        <div class="data__panel reveal">
+          <h3>The Falak stack</h3>
+          <ul class="data__list">
+            <li><span>Python</span> · pandas, NumPy, Astropy</li>
+            <li><span>ML</span> · PyTorch, scikit-learn</li>
+            <li><span>Pipelines</span> · Airflow, DVC</li>
+            <li><span>Viz</span> · Plotly, matplotlib, D3</li>
+            <li><span>Serving</span> · FastAPI, DuckDB</li>
+          </ul>
+        </div>
+        <div class="data__panel reveal">
+          <h3>Principles</h3>
+          <ul class="data__list data__list--check">
+            <li>Reproducible by default</li>
+            <li>Open data, open code</li>
+            <li>Uncertainty always reported</li>
+            <li>Peer-reviewable methods</li>
+            <li>Credit where it's due</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Team -->
+    <section id="team" class="section">
+      <div class="section__head reveal">
+        <span class="kicker">04 — Team</span>
+        <h2>Observers &amp; engineers.</h2>
+      </div>
+      <div class="cards cards--team">
+        <article class="member reveal">
+          <div class="member__avatar" style="--h:265">A</div>
+          <h3>Astronomers</h3>
+          <p>Domain scientists framing the questions worth asking of the sky.</p>
+        </article>
+        <article class="member reveal">
+          <div class="member__avatar" style="--h:200">D</div>
+          <h3>Data Scientists</h3>
+          <p>Model builders turning raw signal into calibrated, testable predictions.</p>
+        </article>
+        <article class="member reveal">
+          <div class="member__avatar" style="--h:320">E</div>
+          <h3>Engineers</h3>
+          <p>Pipeline and platform folks keeping the telescope-to-insight path fast and reliable.</p>
+        </article>
+      </div>
+    </section>
+
+    <!-- Contact / CTA -->
+    <section id="contact" class="section cta">
+      <div class="cta__box reveal">
+        <h2>Look up with us.</h2>
+        <p>Collaborations, questions, or just curious about the sky? We'd love to hear from you.</p>
+        <form class="cta__form" id="contactForm" novalidate>
+          <label class="sr-only" for="email">Email address</label>
+          <input type="email" id="email" name="email" placeholder="you@example.com" required />
+          <button type="submit" class="btn btn--primary">Get in touch</button>
+        </form>
+        <p class="cta__note" id="formNote" role="status"></p>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="footer__inner">
+      <span class="brand">
+        <span class="brand__mark">✦</span>
+        <span class="brand__text">Falak<span class="brand__num">1259</span></span>
+      </span>
+      <p class="footer__tag">Charting the cosmos with data.</p>
+      <p class="footer__copy">© <span id="year"></span> Falak 1259. Built in the open.</p>
+    </div>
+  </footer>
+
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>
