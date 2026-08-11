@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Falak 1259 — a hand-cranked brass instrument that draws a perfectly straight line in sand using the Tusi couple, a 13th-century geometric proof." />
+  <meta name="theme-color" content="#14100b" />
+  <title>The Object · Falak 1259</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23c8a24c' stroke-width='5'%3E%3Ccircle cx='50' cy='50' r='38'/%3E%3Ccircle cx='69' cy='50' r='19'/%3E%3Cline x1='12' y1='50' x2='88' y2='50'/%3E%3C/g%3E%3C/svg%3E" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-site-header></header>
+
+  <main id="main">
+
+    <!-- Hero -->
+    <section class="section hero">
+      <div class="wrap object-hero">
+        <div class="object-hero__text">
+          <p class="eyebrow" data-content="object.eyebrow">The Object</p>
+          <h1 data-content="object.title">Falak 1259</h1>
+          <p class="lede" data-content="object.lede"></p>
+          <div class="hero__cta">
+            <a class="btn btn--solid" href="order.html" data-content="object.ctaOrder">Order — £295</a>
+            <a class="btn" href="mission.html" data-content="object.ctaMission">Read the story</a>
+          </div>
+        </div>
+        <div class="object-hero__media">
+          <img id="heroImg" src="assets/img/object-hero.svg"
+               alt="Falak 1259 — a brass drawing instrument beneath a glass dome on a walnut base." />
+        </div>
+      </div>
+    </section>
+
+    <hr class="rule wrap" />
+
+    <!-- How it works -->
+    <section class="section">
+      <div class="wrap">
+        <p class="eyebrow" data-content="object.howHeading">How it works</p>
+        <ol class="steps" data-build="how-it-works"></ol>
+      </div>
+    </section>
+
+    <hr class="rule wrap" />
+
+    <!-- The animation -->
+    <section class="section" id="tusi">
+      <div class="wrap">
+        <p class="eyebrow" data-content="object.animation.heading">The geometry, exactly</p>
+        <div class="tusi">
+          <div class="tusi__stage" data-tusi-stage aria-hidden="false"></div>
+          <div class="tusi__panel">
+            <p data-content="object.animation.caption"></p>
+            <div class="tusi__controls">
+              <div>
+                <label class="tusi__slider-label" for="tusiSlider" data-content="object.animation.sliderLabel">Drawing point — rim to centre</label>
+                <input class="tusi-range" id="tusiSlider" type="range" min="0" max="1000" value="1000"
+                       data-tusi-slider aria-describedby="tusiReadout" />
+              </div>
+              <div class="tusi__row">
+                <button class="tusi__play" type="button" data-tusi-play aria-pressed="true">Pause</button>
+                <p class="tusi__readout" id="tusiReadout">
+                  <b data-tusi-figure>Straight line</b> · <span data-tusi-value>0% inboard</span>
+                </p>
+              </div>
+              <p class="tusi__equation" data-content="object.animation.equation"></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="rule wrap" />
+
+    <!-- Specification -->
+    <section class="section">
+      <div class="wrap">
+        <p class="eyebrow" data-content="object.specHeading">Specification</p>
+        <dl class="spec" data-build="spec"></dl>
+        <p style="margin-top:2.5rem;">
+          <a class="btn btn--solid" href="order.html">Order the first series</a>
+        </p>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer" data-site-footer></footer>
+
+  <script src="assets/js/content.js"></script>
+  <script src="assets/js/render.js" defer></script>
+  <script src="assets/js/tusi.js" defer></script>
+</body>
+</html>

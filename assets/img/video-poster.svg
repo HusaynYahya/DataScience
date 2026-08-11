@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 720" width="1280" height="720" role="img" aria-label="Demonstration video placeholder">
+  <rect width="1280" height="720" fill="#14100b"/>
+  <rect x="8" y="8" width="1264" height="704" fill="none" stroke="#8c7038" stroke-opacity="0.5" stroke-width="1.5"/>
+  <g opacity="0.14"><g fill="none" stroke="#c8a24c" stroke-width="2.4"><circle cx="640.0" cy="320.0" r="108.0"/><circle cx="694.0" cy="320.0" r="54.0"/><line x1="532.0" y1="320.0" x2="748.0" y2="320.0"/></g><circle cx="748.0" cy="320.0" r="3.84" fill="#f2ead6"/></g>
+  <circle cx="640.0" cy="320.0" r="46" fill="none" stroke="#c8a24c" stroke-width="2"/>
+  <path d="M 626.0 296.0 L 664.0 320.0 L 626.0 344.0 Z" fill="#c8a24c"/>
+  <text x="640.0" y="450.0" text-anchor="middle" fill="#93876f" font-family="ui-sans-serif, system-ui, 'Segoe UI', Arial, sans-serif" font-size="26" letter-spacing="3">DEMONSTRATION VIDEO</text>
+  <text x="640.0" y="486.0" text-anchor="middle" fill="#8c7038" font-family="ui-sans-serif, system-ui, 'Segoe UI', Arial, sans-serif" font-size="20" letter-spacing="2">set gallery.video.src in content.js</text>
+</svg>

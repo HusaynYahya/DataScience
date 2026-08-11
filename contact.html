@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Contact Falak 1259 — for orders, exhibitions, press or enquiries." />
+  <meta name="theme-color" content="#14100b" />
+  <title>Contact · Falak 1259</title>
+  <link rel="stylesheet" href="assets/css/styles.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23c8a24c' stroke-width='5'%3E%3Ccircle cx='50' cy='50' r='38'/%3E%3Ccircle cx='69' cy='50' r='19'/%3E%3Cline x1='12' y1='50' x2='88' y2='50'/%3E%3C/g%3E%3C/svg%3E" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" data-site-header></header>
+
+  <main id="main">
+    <section class="section section--tight">
+      <div class="wrap">
+        <p class="eyebrow" data-content="contact.eyebrow">Contact</p>
+        <h1 data-content="contact.title" style="font-size:clamp(2.2rem,5vw,3.6rem);margin:0 0 1.6rem;"></h1>
+        <p class="lede" style="max-width:52ch;" data-content="contact.lede"></p>
+      </div>
+    </section>
+
+    <hr class="rule wrap" />
+
+    <section class="section">
+      <div class="wrap contact-grid">
+
+        <!-- Details -->
+        <div>
+          <p class="subhead" data-content="contact.detailsHeading">Details</p>
+          <dl class="detail-list">
+            <div>
+              <dt>Email</dt>
+              <dd><a id="c-email" href="#" data-content="contact.email"></a></dd>
+            </div>
+            <div>
+              <dt>Studio</dt>
+              <dd data-content="contact.studio"></dd>
+            </div>
+            <div>
+              <dt>Hours</dt>
+              <dd data-content="contact.hours"></dd>
+            </div>
+          </dl>
+        </div>
+
+        <!-- Form -->
+        <div>
+          <h2 style="margin:0 0 1.2rem;" data-content="contact.form.heading">Send a message</h2>
+          <form class="form" data-form="contact.form" novalidate>
+            <div class="field">
+              <label for="c-name" data-content="contact.form.fields.name.label">Name</label>
+              <input id="c-name" name="name" type="text" autocomplete="name" required
+                     data-content-ph="contact.form.fields.name.placeholder" placeholder="Your name" />
+            </div>
+            <div class="field">
+              <label for="c-email-in" data-content="contact.form.fields.email.label">Email</label>
+              <input id="c-email-in" name="email" type="email" autocomplete="email" required
+                     data-content-ph="contact.form.fields.email.placeholder" placeholder="you@example.com" />
+            </div>
+            <div class="field">
+              <label for="c-message" data-content="contact.form.fields.message.label">Message</label>
+              <textarea id="c-message" name="message" required
+                        data-content-ph="contact.form.fields.message.placeholder" placeholder="How can we help?"></textarea>
+            </div>
+            <div class="form__actions">
+              <button class="btn btn--solid" type="submit" data-content="contact.form.submit">Send message</button>
+              <p class="form-status" data-form-status role="status" aria-live="polite"></p>
+            </div>
+          </form>
+        </div>
+
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" data-site-footer></footer>
+
+  <script src="assets/js/content.js"></script>
+  <script src="assets/js/render.js" defer></script>
+  <script>
+    // turn the email into a mailto: link once content is populated
+    document.addEventListener("DOMContentLoaded", function () {
+      var a = document.getElementById("c-email");
+      if (a && window.FALAK) { a.setAttribute("href", "mailto:" + window.FALAK.contact.email); }
+    });
+  </script>
+</body>
+</html>
