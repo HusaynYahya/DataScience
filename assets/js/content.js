@@ -118,7 +118,7 @@ window.FALAK = {
       { label: "Price",       value: "£295" },
     ],
 
-    heroImage: { src: "assets/img/object-hero.svg", alt: "Falak 1259 — a brass drawing instrument beneath a glass dome on a walnut base." },
+    heroImage: { src: "assets/img/object-hero.jpg", alt: "Falak 1259 — a brass drawing instrument beneath a glass dome on a walnut base, drawing a straight line in the sand." },
   },
 
   /* =====================================================================
