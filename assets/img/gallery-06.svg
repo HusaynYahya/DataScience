@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 600" width="800" height="600" role="img" aria-label="Crank and walnut base — placeholder image">
+  <rect width="800" height="600" fill="#1b160f"/>
+  <rect x="8" y="8" width="784" height="584" fill="none" stroke="#8c7038" stroke-opacity="0.5" stroke-width="1.5"/>
+  <g opacity="0.16"><g fill="none" stroke="#c8a24c" stroke-width="2"><circle cx="400.0" cy="264.0" r="96.0"/><circle cx="448.0" cy="264.0" r="48.0"/><line x1="304.0" y1="264.0" x2="496.0" y2="264.0"/></g><circle cx="496.0" cy="264.0" r="3.2" fill="#f2ead6"/></g>
+  <text x="400.0" y="396.0" text-anchor="middle" fill="#c3b8a1" font-family="Georgia, serif" font-size="30" font-style="italic">Crank and walnut base</text>
+  <text x="400.0" y="441" text-anchor="middle" fill="#93876f" font-family="ui-sans-serif, system-ui, 'Segoe UI', Arial, sans-serif" font-size="19" letter-spacing="2">gallery-06.svg</text>
+  <text x="400.0" y="474" text-anchor="middle" fill="#8c7038" font-family="ui-sans-serif, system-ui, 'Segoe UI', Arial, sans-serif" font-size="16" letter-spacing="3">REPLACE WITH YOUR PHOTOGRAPH</text>
+</svg>

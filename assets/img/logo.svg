@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 400" width="320" height="400" role="img" aria-label="Falak 1259">
+  <rect width="320" height="400" fill="none"/>
+  <!-- Tusi couple: outer circle, inner circle (half radius, tangent at right), diameter, drawing point -->
+  <g fill="none" stroke="#c8a24c" stroke-width="1.6">
+    <circle cx="160" cy="150" r="95"/>
+    <circle cx="207.5" cy="150" r="47.5"/>
+    <line x1="65" y1="150" x2="255" y2="150"/>
+  </g>
+  <circle cx="255" cy="150" r="4" fill="#f2ead6"/>
+  <!-- Arabic: falak -->
+  <text x="160" y="305" text-anchor="middle" fill="#c8a24c"
+        font-family="'Noto Naskh Arabic', 'Geeza Pro', 'Segoe UI', serif" font-size="34">فلك</text>
+  <!-- Wordmark -->
+  <text x="160" y="352" text-anchor="middle" fill="#ece4d3"
+        font-family="'Iowan Old Style', Palatino, Georgia, serif" font-size="34" letter-spacing="14">FALAK</text>
+  <!-- Year -->
+  <text x="160" y="384" text-anchor="middle" fill="#8c7038"
+        font-family="ui-sans-serif, system-ui, Arial, sans-serif" font-size="15" letter-spacing="8">1259</text>
+</svg>
