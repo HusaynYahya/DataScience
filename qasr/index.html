@@ -60,6 +60,25 @@
 
       <div class="field field--split">
         <div>
+          <span class="label-ish" id="tripLabel">The journey</span>
+          <div class="seg" role="radiogroup" aria-labelledby="tripLabel">
+            <label><input type="radio" name="trip" value="return" checked /><span>There and back</span></label>
+            <label><input type="radio" name="trip" value="oneway" /><span>One way</span></label>
+          </div>
+          <p class="hint">Going and returning are added together, so 22&nbsp;km each way reaches the limit — provided you return without staying ten days.</p>
+        </div>
+        <div>
+          <span class="label-ish" id="measureLabel">How to measure</span>
+          <div class="seg" role="radiogroup" aria-labelledby="measureLabel">
+            <label><input type="radio" name="measure" value="road" checked /><span>By road</span></label>
+            <label><input type="radio" name="measure" value="crow" /><span>As the crow flies</span></label>
+          </div>
+          <p class="hint">The law counts the road actually travelled. The straight line is offered for comparison and is always shorter.</p>
+        </div>
+      </div>
+
+      <div class="field field--split">
+        <div>
           <label for="edgeKm">From your door to your city border <span class="opt">(filled in for you)</span></label>
           <input id="edgeKm" type="number" min="0" max="200" step="0.1" inputmode="decimal" placeholder="0" />
           <p class="hint" id="edgeHint">The count starts at your city border, not your front door. Once the addresses are in, this is measured along the route for you — overwrite it if you know better.</p>
@@ -89,14 +108,6 @@
 
       <fieldset class="qs">
         <legend class="sr-only">Questions about the journey</legend>
-
-        <label class="q">
-          <input type="checkbox" id="qReturn" checked />
-          <span>
-            <b>I intend to return without staying ten days there.</b>
-            <em>If so, the outward and return legs are added together to reach the legal distance.</em>
-          </span>
-        </label>
 
         <label class="q">
           <input type="checkbox" id="qIntent" checked />
