@@ -316,3 +316,27 @@ input::placeholder { color: var(--ink-faint); }
 .key--route { height: 3px; border-radius: 2px; background: var(--accent); }
 .key--edge  { border: 1px dashed var(--ink-mute); }
 .key--limit { border: 2px solid var(--accent); width: 11px; height: 11px; }
+
+/* ---- choosing the road ------------------------------------------------- */
+#routePick { margin-top: 1.5rem; padding-top: 1.25rem; border-top: 1px solid var(--hair); }
+.routes__title {
+  font-family: var(--font-label); font-size: .78rem; text-transform: uppercase;
+  letter-spacing: .12em; color: var(--ink-mute); margin: 0 0 .4rem; font-weight: 600;
+}
+.routes { list-style: none; margin: 1rem 0 0; padding: 0; display: grid; gap: .5rem; }
+@media (min-width: 620px) { .routes { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); } }
+.route {
+  width: 100%; text-align: left; cursor: pointer;
+  background: var(--bg-sink); border: 1px solid var(--hair);
+  border-radius: var(--radius); padding: .8rem .95rem;
+  display: grid; gap: .15rem; font-family: var(--font-label);
+  transition: border-color .15s ease, background .15s ease;
+}
+.route:hover { border-color: var(--accent-line); }
+.route.is-on { border-color: var(--accent); background: rgba(77, 182, 164, .08); }
+.route b { font-size: .88rem; font-weight: 600; color: var(--ink); }
+.route span { font-size: .82rem; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+.route em { font-style: normal; font-size: .76rem; color: var(--ink-mute); }
+.route.is-on em { color: var(--accent-bright); }
+
+.key--border { border: 1px dashed var(--accent); background: rgba(77, 182, 164, .12); }

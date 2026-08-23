@@ -40,6 +40,7 @@ function journey(over) {
     destIsWatan: false,
     tenDays: false,
     hesitant: false,
+    newLongStay: false,
     passesWatan: false,
     frequentTraveller: false,
     sinful: false
@@ -129,6 +130,50 @@ test("a short journey to a hometown is still full both ways", function () {
   assert.strictEqual(v.atDest, "full");
 });
 
+/* --- a place newly moved to (workshop, scenario 9) ------------------------ */
+console.log("\nA place newly adopted for a long stay");
+
+test("newly arrived for a long stay: shorten on the road, both on arrival", function () {
+  var v = decide(journey({ oneWayKm: 160, roundTrip: false, newLongStay: true }));
+  assert.strictEqual(v.enRoute, "qasr");
+  assert.strictEqual(v.atDest, "both");
+});
+
+test("a hometown outranks the newly-arrived case", function () {
+  var v = decide(journey({ oneWayKm: 160, roundTrip: false, newLongStay: true, destIsWatan: true }));
+  assert.strictEqual(v.atDest, "full");
+});
+
+test("a ten-day intention outranks it too", function () {
+  var v = decide(journey({ oneWayKm: 160, roundTrip: false, newLongStay: true, tenDays: true }));
+  assert.strictEqual(v.atDest, "full");
+});
+
+test("a short journey to a new home is full throughout", function () {
+  var v = decide(journey({ oneWayKm: 8, newLongStay: true }));
+  assert.strictEqual(v.enRoute, "full");
+  assert.strictEqual(v.atDest, "full");
+});
+
+test("leaving a ten-day place carries its own departure note", function () {
+  var v = decide(journey({ oneWayKm: 160, roundTrip: false, tenDays: true }));
+  assert.ok(v.warnings.some(function (w) { return /leave the town itself/.test(w.text); }));
+});
+
+/* --- the split between the legs (workshop, scenario 3) -------------------- */
+console.log("\nHow the total divides between the legs");
+
+/* 28 miles = 45.06 km, over the limit however it is split. */
+[[22.53, 22.53], [19.31, 25.75], [25.75, 19.31]].forEach(function (pair) {
+  test(pair[0].toFixed(1) + " out and " + pair[1].toFixed(1) + " back — qasr either way", function () {
+    /* The engine measures one outward leg and doubles it, so an uneven split
+       is checked by its total: what matters is that the total decides.       */
+    var total = pair[0] + pair[1];
+    var v = decide(journey({ oneWayKm: total, roundTrip: false }));
+    assert.strictEqual(v.enRoute, "qasr");
+  });
+});
+
 /* --- the exemptions ------------------------------------------------------- */
 console.log("\nWhere the rulings of travel do not apply");
 
@@ -201,8 +246,62 @@ test("every verdict carries a headline, reasons and metrics", function () {
       assert.ok(v.reasons.length > 0);
       assert.ok(typeof v.metrics.countedKm === "number");
       assert.ok(["qasr", "full"].indexOf(v.enRoute) >= 0);
-      assert.ok(["qasr", "qasr-30", "full"].indexOf(v.atDest) >= 0);
+      assert.ok(["qasr", "qasr-30", "both", "full"].indexOf(v.atDest) >= 0);
     });
+});
+
+/* --- geometry: the city border and the walk along a route ---------------- */
+console.log("\nGeometry");
+
+var G = sandbox.window.QasrEngine;
+
+test("a point inside a simple square is inside", function () {
+  var square = { type: "Polygon", coordinates: [[[0,0],[0,2],[2,2],[2,0],[0,0]]] };
+  assert.strictEqual(G.inShape(1, 1, square), true);
+  assert.strictEqual(G.inShape(3, 1, square), false);
+});
+
+test("a point in a hole is outside", function () {
+  var ring = { type: "Polygon", coordinates: [
+    [[0,0],[0,4],[4,4],[4,0],[0,0]],
+    [[1,1],[1,3],[3,3],[3,1],[1,1]]
+  ]};
+  assert.strictEqual(G.inShape(2, 2, ring), false);   /* the hole */
+  assert.strictEqual(G.inShape(0.5, 0.5, ring), true);
+});
+
+test("a multipolygon matches any of its parts", function () {
+  var multi = { type: "MultiPolygon", coordinates: [
+    [[[0,0],[0,1],[1,1],[1,0],[0,0]]],
+    [[[5,5],[5,6],[6,6],[6,5],[5,5]]]
+  ]};
+  assert.strictEqual(G.inShape(5.5, 5.5, multi), true);
+  assert.strictEqual(G.inShape(3, 3, multi), false);
+});
+
+test("the border crossing is found along a route leaving the city", function () {
+  /* A city one degree of latitude tall, and a route running due north out of
+     it. One degree of latitude is about 111 km.                             */
+  var city = { type: "Polygon", coordinates: [[[-1,0],[-1,1],[1,1],[1,0],[-1,0]]] };
+  var line = [[0.1, 0], [0.5, 0], [0.9, 0], [1.5, 0], [3, 0]];
+  var exit = G.borderExitKm(line, city, 1);
+  /* The border sits at latitude 1, which is 0.9 degrees along: ~100 km. */
+  assert.ok(exit > 95 && exit < 105, "expected about 100 km, got " + exit);
+});
+
+test("a route that never leaves the city yields no crossing", function () {
+  var city = { type: "Polygon", coordinates: [[[-9,-9],[-9,9],[9,9],[9,-9],[-9,-9]]] };
+  assert.strictEqual(G.borderExitKm([[0,0],[1,1],[2,2]], city, 1), null);
+});
+
+test("a route starting outside the city yields no crossing", function () {
+  var city = { type: "Polygon", coordinates: [[[0,0],[0,1],[1,1],[1,0],[0,0]]] };
+  assert.strictEqual(G.borderExitKm([[5,5],[6,6]], city, 1), null);
+});
+
+test("no shape at all is handled", function () {
+  assert.strictEqual(G.borderExitKm([[0,0],[1,1]], null, 1), null);
+  assert.strictEqual(G.inShape(0, 0, null), false);
 });
 
 console.log("\n" + passed + " passed, " + failed + " failed\n");
