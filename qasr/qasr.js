@@ -539,11 +539,24 @@
     var card = $("mapCard");
     var line = lastRoute && lastRoute.line;
 
-    /* No library, or no geometry to draw — a hand-entered distance, say. */
-    if (typeof L === "undefined" || !line || line.length < 2 || !places.from || !places.to) {
+    /* No geometry to draw — a hand-entered distance, say. Nothing to show. */
+    if (!line || line.length < 2 || !places.from || !places.to) {
       card.hidden = true;
       return;
     }
+
+    /* The library itself is missing. Say so plainly: a card that silently
+       vanishes reads as a broken page, and leaves nothing to diagnose.      */
+    if (typeof L === "undefined") {
+      card.hidden = false;
+      $("map").innerHTML = "<p class='map__fail'>The map library did not load, so the route cannot be drawn. " +
+        "Every ruling above still stands — the distance does not depend on the map.</p>";
+      $("mapLegend").hidden = true;
+      $("routePick").hidden = true;
+      $("mapNote").textContent = "Expected at lib/leaflet/leaflet.js. If this persists, the file is not being served.";
+      return;
+    }
+    $("mapLegend").hidden = false;
 
     /* The card must be visible before Leaflet measures the container, or the
        map sizes itself to nothing and the route lands outside the view.      */
