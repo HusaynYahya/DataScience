@@ -51,9 +51,19 @@ field falls back to a figure you type yourself.
 
 ## The map
 
-The result shows the measured road on a Leaflet map: the start, the destination,
-the road itself, a dashed circle for the edge of town when a deduction is given,
-and a mark where the eight *farsakh* falls along the route. That last mark shows
+The map is on the page from the start, not only after a calculation. At rest it
+invites an address; picking one drops a pin, names the city and outlines its
+border; picking both frames them together; pressing Calculate draws the road.
+
+You can also work the other way round — tap the map to set the start or the
+destination (a From/To toggle says which the next tap sets, and it moves to To
+once a start is placed), or press **Use my location** to take the start from the
+device. Both go through the same path as a typed address, so the city, the border
+and the deduction follow either way.
+
+Once a route is drawn it shows the start, the destination, the road itself, a
+dashed circle for the edge of town when a deduction is given, and a mark where
+the eight *farsakh* falls along the route. That last mark shows
 where the distance lands, not where shortening begins — once a journey qualifies,
 the shortening runs from the town limit onwards.
 
