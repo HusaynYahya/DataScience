@@ -11,7 +11,7 @@ qasr/
 ├── index.html          the page, the form and the reference notes
 ├── qasr.css            styles; the design tokens sit at the top
 ├── qasr.js             geocoding, routing, the map, the ruling engine, the interface
-├── vendor/leaflet/     Leaflet 1.9.4, vendored — no CDN to depend on (BSD-2-Clause)
+├── lib/leaflet/        Leaflet 1.9.4, vendored — no CDN to depend on (BSD-2-Clause)
 └── test/engine.test.js tests for the ruling engine — node test/engine.test.js
 ```
 
@@ -58,7 +58,10 @@ where the distance lands, not where shortening begins — once a journey qualifi
 the shortening runs from the town limit onwards.
 
 Leaflet is vendored rather than pulled from a CDN, so the page has no third-party
-script dependency; only the tiles come over the network. If the library is missing
+script dependency; only the tiles come over the network. It lives in `lib/`, not
+`vendor/`, because GitHub Pages runs Jekyll, and Jekyll leaves `vendor/` out of
+the published site — the root `.nojekyll` file stops that processing altogether,
+and the directory name is a second line of defence. If the library is missing
 or the geometry is unavailable — a hand-entered distance, say — the map card stays
 hidden and everything else works unchanged.
 
