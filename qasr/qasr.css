@@ -228,9 +228,8 @@ input::placeholder { color: var(--ink-faint); }
   cursor: pointer; list-style-position: outside;
 }
 .manual summary:hover { color: var(--accent-bright); }
-.manual > .field--split { margin-top: 1rem; }
-.manual__act { display: flex; align-items: flex-end; }
-.manual__act .btn { width: 100%; }
+.manual[open] { padding-bottom: .5rem; }
+.manual .field { margin-top: 1rem; }
 
 /* ---- prayers table ---------------------------------------------------- */
 .prayers { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }

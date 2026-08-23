@@ -20,7 +20,8 @@ qasr/
 | --- | --- |
 | Address → coordinates | [Nominatim](https://nominatim.openstreetmap.org) (OpenStreetMap), debounced to stay inside its one-request-per-second policy |
 | Coordinates → road distance | [OSRM](https://project-osrm.org/) driving route |
-| If routing is unreachable | great-circle distance, clearly labelled as the straight line, plus a manual entry field |
+| If routing is unreachable | great-circle distance, clearly labelled as the straight line |
+| If neither can be reached | the "I already know the distance" panel in the form takes a figure by hand and needs no network at all |
 
 The law counts the path actually travelled, not the straight line on the map,
 which is why the driving route is used and the straight line is only ever a

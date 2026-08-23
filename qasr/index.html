@@ -72,6 +72,15 @@
           <p class="hint">The threshold is 8 <i>farsakh</i> ≈ 44&nbsp;km ≈ 27.3&nbsp;miles.</p>
         </div>
       </div>
+
+      <details class="manual">
+        <summary>I already know the distance — let me type it in</summary>
+        <div class="field">
+          <label for="manualKm">One-way distance actually travelled</label>
+          <input id="manualKm" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 61.4" />
+          <p class="hint">Fill this in and the addresses above are ignored — useful if you take a different road, travel by rail or air, or the address lookup cannot be reached. Give the distance actually travelled, not the straight line on the map.</p>
+        </div>
+      </details>
     </section>
 
     <section class="block">
@@ -170,19 +179,6 @@
         </div>
       </div>
       <p class="hint" id="measureNote"></p>
-      <details class="manual">
-        <summary>The route looks wrong — enter the distance myself</summary>
-        <div class="field field--split">
-          <div>
-            <label for="manualKm">One-way distance actually travelled</label>
-            <input id="manualKm" type="number" min="0" step="0.1" inputmode="decimal" placeholder="e.g. 61.4" />
-          </div>
-          <div class="manual__act">
-            <button type="button" class="btn" id="manualBtn">Recalculate</button>
-          </div>
-        </div>
-        <p class="hint">Use this if you take a different road, travel by rail or air, or the route service is unavailable. The distance is the path actually travelled, not the straight line on the map.</p>
-      </details>
     </div>
 
     <div class="card">

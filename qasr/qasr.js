@@ -384,10 +384,12 @@
     $("gaugeFill").style.width = pct + "%";
     $("gaugeFill").className = "gauge__fill" + (m.meets ? " is-over" : "");
 
-    $("measureNote").textContent = lastRoute && lastRoute.source === "straight"
-      ? "The routing service could not be reached, so this is the straight-line distance — always shorter than the road. Enter the real distance below before relying on the verdict."
-      : "Measured along the driving route, as the law requires: the path travelled, not the straight line on the map.";
-    $("measureNote").className = "hint" + (lastRoute && lastRoute.source === "straight" ? " hint--warn" : "");
+    var src = lastRoute ? lastRoute.source : "road";
+    $("measureNote").textContent =
+      src === "straight" ? "The routing service could not be reached, so this is the straight-line distance — always shorter than the road. Enter the real distance by hand before relying on this verdict." :
+      src === "manual"   ? "Measured from the distance you entered by hand." :
+      "Measured along the driving route, as the law requires: the path travelled, not the straight line on the map.";
+    $("measureNote").className = "hint" + (src === "straight" ? " hint--warn" : "");
 
     /* the prayers */
     var body = $("prayers").querySelector("tbody");
@@ -493,6 +495,17 @@
   function calculate(e) {
     if (e) e.preventDefault();
     var btn = $("calcBtn");
+
+    /* A distance typed by hand wins, and needs neither service. */
+    var typed = parseFloat($("manualKm").value);
+    if (!isNaN(typed) && typed >= 0) {
+      lastRoute = { km: toKm(typed), minutes: null, source: "manual" };
+      render(decide(readCircumstances(lastRoute.km)));
+      say("Calculated from the distance you entered.");
+      $("result").scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
     btn.disabled = true;
     say("Finding the addresses…");
 
@@ -506,13 +519,19 @@
       })
       .then(function (route) {
         lastRoute = route;
-        $("manualKm").value = fromKm(route.km).toFixed(1);
         render(decide(readCircumstances(route.km)));
         say(route.source === "straight" ? "Routing unavailable — showing the straight-line distance." : "");
         $("result").scrollIntoView({ behavior: "smooth", block: "start" });
       })
       .catch(function (err) {
-        say(err.message || "Something went wrong. Check the addresses and try again.", true);
+        /* A browser reports an unreachable service as "Failed to fetch", which
+           tells nobody anything. Say what to do about it instead.            */
+        var base = err.message || "Something went wrong. Check the addresses and try again.";
+        var offline = /failed to fetch|networkerror|load failed|returned \d+/i.test(base);
+        say(offline
+          ? "Could not reach the address lookup. Enter the distance by hand — the panel is open above — and press Calculate."
+          : base, true);
+        if (offline) $("manualKm").closest("details").open = true;
       })
       .then(function () { btn.disabled = false; });
   }
@@ -547,6 +566,11 @@
     ["qReturn", "qIntent", "qWatan", "qTenDays", "qHesitant", "qPassWatan", "qFrequent", "qSin"]
       .forEach(function (id) { $(id).addEventListener("change", recalc); });
     $("edgeKm").addEventListener("input", recalc);
+    $("manualKm").addEventListener("input", function () {
+      var v = parseFloat(this.value);
+      if (!isNaN(v) && v >= 0) { lastRoute = { km: toKm(v), minutes: null, source: "manual" }; }
+      recalc();
+    });
 
     /* Ten days and hesitation are contraries — one excludes the other. */
     $("qTenDays").addEventListener("change", function () { if (this.checked) $("qHesitant").checked = false; });
@@ -565,13 +589,6 @@
       recalc();
     });
 
-    $("manualBtn").addEventListener("click", function () {
-      var v = parseFloat($("manualKm").value);
-      if (isNaN(v) || v < 0) { say("Enter a distance in " + unitLabel() + ".", true); return; }
-      lastRoute = { km: toKm(v), minutes: null, source: "manual" };
-      render(decide(readCircumstances(lastRoute.km)));
-      say("Recalculated from the distance you entered.");
-    });
   }
 
   /* The ruling engine is exported so it can be exercised on its own — see
