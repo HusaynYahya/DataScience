@@ -32,6 +32,36 @@
      1. GEOGRAPHY
      ========================================================================== */
 
+  /* Nominatim asks for no more than one request a second, and enforces it.
+     Every call to it goes through this queue, which spaces them out; firing
+     two at once — both addresses, or both city lookups — earns a refusal that
+     looks from the outside like the page being broken.                       */
+  var nomTurn = Promise.resolve();
+  var nomLast = 0;
+
+  function nominatim(url, opts) {
+    function run() {
+      if (opts && opts.signal && opts.signal.aborted) {
+        return Promise.reject(new DOMException("Aborted", "AbortError"));
+      }
+      var wait = Math.max(0, 1100 - (Date.now() - nomLast));
+      return new Promise(function (go) { setTimeout(go, wait); })
+        .then(function () {
+          nomLast = Date.now();
+          return fetch(url, opts);
+        });
+    }
+    var turn = nomTurn.then(run, run);
+    nomTurn = turn.catch(function () {});   /* one failure must not stall the queue */
+    return turn;
+  }
+
+  function nominatimError(status) {
+    return status === 429 || status === 403
+      ? new Error("The address service is refusing requests just now — it allows only one a second. Wait a few seconds and press Calculate again.")
+      : new Error("The address service returned " + status + ".");
+  }
+
   var geocodeCache = Object.create(null);
 
   function geocode(query, limit, signal) {
@@ -41,9 +71,9 @@
     var url = NOMINATIM + "?format=jsonv2&addressdetails=1&limit=" + limit +
               "&q=" + encodeURIComponent(query);
 
-    return fetch(url, { signal: signal, headers: { Accept: "application/json" } })
+    return nominatim(url, { signal: signal, headers: { Accept: "application/json" } })
       .then(function (r) {
-        if (!r.ok) throw new Error("Geocoding service returned " + r.status);
+        if (!r.ok) throw nominatimError(r.status);
         return r.json();
       })
       .then(function (rows) {
@@ -72,9 +102,9 @@
               "?format=jsonv2&zoom=10&addressdetails=1&polygon_geojson=1" +
               "&lat=" + place.lat + "&lon=" + place.lon;
 
-    return fetch(url, { headers: { Accept: "application/json" } })
+    return nominatim(url, { headers: { Accept: "application/json" } })
       .then(function (r) {
-        if (!r.ok) throw new Error("Reverse lookup returned " + r.status);
+        if (!r.ok) throw nominatimError(r.status);
         return r.json();
       })
       .then(function (row) {
@@ -89,7 +119,9 @@
         cityCache[key] = city;
         return city;
       })
-      .catch(function () { return { name: null, area: null, shape: null }; });
+      .catch(function (err) {
+        return { name: null, area: null, shape: null, reason: err && err.message };
+      });
   }
 
   /* Ray casting, honouring holes: a point inside an inner ring is outside the
@@ -748,8 +780,10 @@
         (city.shape ? " — its border is outlined on the map." : " — no published border to outline.");
       hint.className = "hint hint--ok";
     } else {
-      hint.textContent = "The city here could not be identified, so no border is drawn.";
-      hint.className = "hint";
+      hint.textContent = city && city.reason
+        ? city.reason + " No border is drawn, and the deduction stays as you left it."
+        : "The city here could not be identified, so no border is drawn.";
+      hint.className = "hint" + (city && city.reason ? " hint--warn" : "");
     }
   }
 
@@ -838,13 +872,11 @@
     btn.disabled = true;
     say("Finding the addresses…");
 
-    Promise.all([
-      resolve("from", "fromInput", "starting"),
-      resolve("to", "toInput", "destination")
-    ])
-      .then(function (pair) {
+    resolve("from", "fromInput", "starting")
+      .then(function () { return resolve("to", "toInput", "destination"); })
+      .then(function () {
         say("Measuring the road…");
-        return routeKm(pair[0], pair[1]);
+        return routeKm(places.from, places.to);
       })
       .then(function (found) {
         routes = found;
@@ -852,7 +884,9 @@
         say("Finding the city borders…");
         /* A missing border costs the deduction, not the ruling, so a failure
            here must not sink the calculation. */
-        return Promise.all([cityOf(places.from), cityOf(places.to)]);
+        return cityOf(places.from).then(function (home) {
+          return cityOf(places.to).then(function (away) { return [home, away]; });
+        });
       })
       .then(function (pair) {
         cities.from = pair[0];
