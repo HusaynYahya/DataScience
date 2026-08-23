@@ -75,7 +75,7 @@
      service cannot be reached, flagging the result so the interface can say so. */
   function routeKm(a, b) {
     var coords = a.lon + "," + a.lat + ";" + b.lon + "," + b.lat;
-    return fetch(OSRM + coords + "?overview=false&alternatives=false")
+    return fetch(OSRM + coords + "?overview=full&geometries=geojson&alternatives=false")
       .then(function (r) {
         if (!r.ok) throw new Error("Routing service returned " + r.status);
         return r.json();
@@ -84,14 +84,22 @@
         if (data.code !== "Ok" || !data.routes || !data.routes.length) {
           throw new Error("No road route found");
         }
+        var geo = data.routes[0].geometry;
         return {
           km: data.routes[0].distance / 1000,
           minutes: data.routes[0].duration / 60,
-          source: "road"
+          source: "road",
+          /* GeoJSON gives [lon, lat]; the map wants [lat, lon]. */
+          line: (geo && geo.coordinates || []).map(function (c) { return [c[1], c[0]]; })
         };
       })
       .catch(function () {
-        return { km: haversineKm(a, b), minutes: null, source: "straight" };
+        return {
+          km: haversineKm(a, b),
+          minutes: null,
+          source: "straight",
+          line: [[a.lat, a.lon], [b.lat, b.lon]]
+        };
       });
   }
 
@@ -340,6 +348,119 @@
     };
   }
 
+  /* ---- the map ----------------------------------------------------------
+     Leaflet is loaded from a CDN. If it does not arrive — an offline machine,
+     a blocked network — every other part of the page carries on without it and
+     the map card simply stays hidden.
+     ---------------------------------------------------------------------- */
+
+  var mapState = { map: null, drawn: null, fitted: null };
+
+  function walkTo(line, targetKm, scale) {
+    /* The point on the route at a given distance along it. OSRM's polyline is
+       a shade shorter than the distance it reports, so the walk is scaled to
+       agree with the figure shown to the reader.                              */
+    var run = 0;
+    for (var i = 1; i < line.length; i++) {
+      var a = { lat: line[i - 1][0], lon: line[i - 1][1] };
+      var b = { lat: line[i][0], lon: line[i][1] };
+      var seg = haversineKm(a, b) * scale;
+      if (run + seg >= targetKm) {
+        var t = seg > 0 ? (targetKm - run) / seg : 0;
+        return [a.lat + (b.lat - a.lat) * t, a.lon + (b.lon - a.lon) * t];
+      }
+      run += seg;
+    }
+    return null;
+  }
+
+  function polylineKm(line) {
+    var total = 0;
+    for (var i = 1; i < line.length; i++) {
+      total += haversineKm({ lat: line[i - 1][0], lon: line[i - 1][1] },
+                           { lat: line[i][0], lon: line[i][1] });
+    }
+    return total;
+  }
+
+  function drawMap(m) {
+    var card = $("mapCard");
+    var line = lastRoute && lastRoute.line;
+
+    /* No library, or no geometry to draw — a hand-entered distance, say. */
+    if (typeof L === "undefined" || !line || line.length < 2 || !places.from || !places.to) {
+      card.hidden = true;
+      return;
+    }
+
+    /* The card must be visible before Leaflet measures the container, or the
+       map sizes itself to nothing and the route lands outside the view.      */
+    card.hidden = false;
+
+    if (!mapState.map) {
+      mapState.map = L.map("map", { scrollWheelZoom: false, attributionControl: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+      }).addTo(mapState.map);
+      mapState.drawn = L.layerGroup().addTo(mapState.map);
+    }
+    mapState.drawn.clearLayers();
+    mapState.map.invalidateSize();
+
+    var straight = lastRoute.source === "straight";
+
+    L.polyline(line, {
+      color: "#4db6a4", weight: 4, opacity: .85,
+      dashArray: straight ? "6 8" : null
+    }).addTo(mapState.drawn);
+
+    marker(line[0], "#86e2d0", places.from.label.split(",")[0] + " — start");
+    marker(line[line.length - 1], "#f0c977", places.to.label.split(",")[0] + " — destination");
+
+    /* The town limit, beyond which the counting starts. */
+    var hasEdge = m.edgeKm > 0;
+    if (hasEdge) {
+      L.circle(line[0], {
+        radius: m.edgeKm * 1000, color: "#8792a1", weight: 1,
+        dashArray: "4 6", fill: false
+      }).addTo(mapState.drawn).bindTooltip("Edge of town — " + fmtKm(m.edgeKm) + " out");
+    }
+
+    /* Where the eight farsakh falls along this road. It marks the distance
+       only: once a journey qualifies, the shortening runs from the town limit
+       onwards, not from this point.                                          */
+    var oneWayNeeded = m.roundTrip ? m.limitKm / 2 : m.limitKm;
+    var polyKm = polylineKm(line);
+    var scale = polyKm > 0 ? lastRoute.km / polyKm : 1;
+    var at = m.meets ? walkTo(line, m.edgeKm + oneWayNeeded, scale) : null;
+    if (at) {
+      L.circleMarker(at, {
+        radius: 6, color: "#4db6a4", weight: 2, fillColor: "#0d1117", fillOpacity: 1
+      }).addTo(mapState.drawn).bindTooltip("Eight farsakh — " + fmtKm(m.limitKm) +
+        (m.roundTrip ? " counted, outward and back" : ""));
+    }
+
+    $("mapLegend").querySelector(".is-edge").hidden = !hasEdge;
+    $("mapLegend").querySelector(".is-limit").hidden = !at;
+    $("mapNote").textContent = straight
+      ? "The road could not be fetched, so this is the straight line between the two places — not a route."
+      : "The driving route, which is what the law measures. The eight-farsakh mark shows where that distance falls; once a journey qualifies, the shortening runs from the limit of your town onwards.";
+
+    /* Only re-frame when the route itself changes — not on every toggle. */
+    var key = line.length + ":" + line[0] + ":" + line[line.length - 1];
+    if (mapState.fitted !== key) {
+      mapState.map.fitBounds(L.latLngBounds(line).pad(0.12));
+      mapState.fitted = key;
+    }
+
+    function marker(at, colour, label) {
+      L.circleMarker(at, {
+        radius: 7, color: colour, weight: 3, fillColor: "#0d1117", fillOpacity: 1
+      }).addTo(mapState.drawn).bindTooltip(label);
+    }
+  }
+
   /* ---- rendering the verdict -------------------------------------------- */
 
   var RAKAHS = [
@@ -444,7 +565,10 @@
       warn.appendChild(choice);
     }
 
+    /* The panel must be on screen before the map measures itself — Leaflet
+       reads the container's size, and a hidden ancestor makes that zero.     */
     $("result").hidden = false;
+    drawMap(m);
   }
 
   function measureRow(term, value, total) {
@@ -566,6 +690,10 @@
     ["qReturn", "qIntent", "qWatan", "qTenDays", "qHesitant", "qPassWatan", "qFrequent", "qSin"]
       .forEach(function (id) { $(id).addEventListener("change", recalc); });
     $("edgeKm").addEventListener("input", recalc);
+    window.addEventListener("resize", function () {
+      if (mapState.map && !$("mapCard").hidden) mapState.map.invalidateSize();
+    });
+
     $("manualKm").addEventListener("input", function () {
       var v = parseFloat(this.value);
       if (!isNaN(v) && v >= 0) { lastRoute = { km: toKm(v), minutes: null, source: "manual" }; }

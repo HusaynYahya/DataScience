@@ -10,7 +10,8 @@ Open `index.html` — there is no build step, no framework and no API key.
 qasr/
 ├── index.html          the page, the form and the reference notes
 ├── qasr.css            styles; the design tokens sit at the top
-├── qasr.js             geocoding, routing, the ruling engine, the interface
+├── qasr.js             geocoding, routing, the map, the ruling engine, the interface
+├── vendor/leaflet/     Leaflet 1.9.4, vendored — no CDN to depend on (BSD-2-Clause)
 └── test/engine.test.js tests for the ruling engine — node test/engine.test.js
 ```
 
@@ -26,6 +27,19 @@ qasr/
 The law counts the path actually travelled, not the straight line on the map,
 which is why the driving route is used and the straight line is only ever a
 labelled fallback.
+
+## The map
+
+The result shows the measured road on a Leaflet map: the start, the destination,
+the road itself, a dashed circle for the edge of town when a deduction is given,
+and a mark where the eight *farsakh* falls along the route. That last mark shows
+where the distance lands, not where shortening begins — once a journey qualifies,
+the shortening runs from the town limit onwards.
+
+Leaflet is vendored rather than pulled from a CDN, so the page has no third-party
+script dependency; only the tiles come over the network. If the library is missing
+or the geometry is unavailable — a hand-entered distance, say — the map card stays
+hidden and everything else works unchanged.
 
 ## The rules encoded
 

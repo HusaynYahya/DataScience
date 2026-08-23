@@ -6,6 +6,7 @@
 <meta name="description" content="Qasr calculator — enter where you are travelling from and to, and find out whether you pray shortened (qasr) or full, according to the rulings of Sayyid Ali al-Sistani." />
 <meta name="theme-color" content="#0d1117" />
 <title>Qasr Calculator · Rulings of Sayyid al-Sistani</title>
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
 <link rel="stylesheet" href="qasr.css" />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%234db6a4' stroke-width='7'%3E%3Cpath d='M20 72V38a30 30 0 0 1 60 0v34'/%3E%3Cline x1='12' y1='80' x2='88' y2='80'/%3E%3C/g%3E%3C/svg%3E" />
 </head>
@@ -169,6 +170,19 @@
       <p class="verdict__sub" id="verdictSub"></p>
     </div>
 
+    <div class="card" id="mapCard" hidden>
+      <h2 class="block__title">The route</h2>
+      <div id="map" class="map" aria-label="Map of the route between the two places"></div>
+      <ul class="legend" id="mapLegend">
+        <li><span class="key key--from"></span>Start</li>
+        <li><span class="key key--to"></span>Destination</li>
+        <li><span class="key key--route"></span>The road measured</li>
+        <li class="is-edge"><span class="key key--edge"></span>Edge of town — the count begins here</li>
+        <li class="is-limit"><span class="key key--limit"></span>Eight <i>farsakh</i> falls here</li>
+      </ul>
+      <p class="hint" id="mapNote"></p>
+    </div>
+
     <div class="card">
       <h2 class="block__title">The distance</h2>
       <dl class="measure" id="measure"></dl>
@@ -247,10 +261,11 @@
 
 <footer class="foot">
   <div class="wrap">
-    <p>Geocoding by <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap / Nominatim</a>. Routing by <a href="https://project-osrm.org/" rel="noopener">OSRM</a>. Rulings per <a href="https://www.sistani.org/english/book/48/" rel="noopener">Islamic Laws</a> of Sayyid al-Sistani.</p>
+    <p>Geocoding by <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap / Nominatim</a>. Routing by <a href="https://project-osrm.org/" rel="noopener">OSRM</a>. Map by <a href="https://leafletjs.com/" rel="noopener">Leaflet</a>, tiles by <a href="https://carto.com/attributions" rel="noopener">CARTO</a>. Rulings per <a href="https://www.sistani.org/english/book/48/" rel="noopener">Islamic Laws</a> of Sayyid al-Sistani.</p>
   </div>
 </footer>
 
+<script src="vendor/leaflet/leaflet.js" defer></script>
 <script src="qasr.js" defer></script>
 </body>
 </html>
