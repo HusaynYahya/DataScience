@@ -124,6 +124,28 @@
       });
   }
 
+  /* A readable address for a point on the map. Zoom 18 answers at street
+     level, where cityOf's zoom 10 answers with the city.                     */
+  function addressAt(lat, lon) {
+    var url = NOMINATIM.replace("/search", "/reverse") +
+              "?format=jsonv2&addressdetails=1&zoom=18&lat=" + lat + "&lon=" + lon;
+    return nominatim(url, { headers: { Accept: "application/json" } })
+      .then(function (r) {
+        if (!r.ok) throw nominatimError(r.status);
+        return r.json();
+      })
+      .then(function (row) {
+        return {
+          label: row.display_name || (lat.toFixed(4) + ", " + lon.toFixed(4)),
+          lat: lat, lon: lon
+        };
+      })
+      .catch(function () {
+        /* No name for it is no reason to refuse the point. */
+        return { label: lat.toFixed(4) + ", " + lon.toFixed(4), lat: lat, lon: lon };
+      });
+  }
+
   /* Ray casting, honouring holes: a point inside an inner ring is outside the
      polygon. GeoJSON rings are [lon, lat].                                    */
   function inRing(lat, lon, ring) {
@@ -389,11 +411,8 @@
     }
 
     function choose(place) {
-      places[slot] = place;
-      input.value = place.label;
-      hint.textContent = "Located at " + place.lat.toFixed(4) + ", " + place.lon.toFixed(4) + ".";
-      hint.className = "hint hint--ok";
       close();
+      adoptPlace(slot, place);
     }
 
     function render(rows) {
@@ -535,53 +554,47 @@
     return total;
   }
 
-  function drawMap(m) {
-    var card = $("mapCard");
-    var line = lastRoute && lastRoute.line;
-
-    /* No geometry to draw — a hand-entered distance, say. Nothing to show. */
-    if (!line || line.length < 2 || !places.from || !places.to) {
-      card.hidden = true;
-      return;
-    }
-
-    /* The library itself is missing. Say so plainly: a card that silently
-       vanishes reads as a broken page, and leaves nothing to diagnose.      */
+  /* Create the map once, on a wide view. Returns false when the library is
+     missing, having said so in place of the map.                            */
+  function ensureMap() {
+    if (mapState.map) return true;
     if (typeof L === "undefined") {
-      card.hidden = false;
-      $("map").innerHTML = "<p class='map__fail'>The map library did not load, so the route cannot be drawn. " +
-        "Every ruling above still stands — the distance does not depend on the map.</p>";
+      $("map").innerHTML = "<p class='map__fail'>The map library did not load, so nothing can be drawn here. " +
+        "Every ruling below still stands — the distance does not depend on the map.</p>";
       $("mapLegend").hidden = true;
       $("routePick").hidden = true;
       $("mapNote").textContent = "Expected at lib/leaflet/leaflet.js. If this persists, the file is not being served.";
-      return;
+      return false;
     }
-    $("mapLegend").hidden = false;
+    mapState.map = L.map("map", { scrollWheelZoom: false, attributionControl: true })
+                    .setView([30, 10], 2);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+    }).addTo(mapState.map);
+    mapState.drawn = L.layerGroup().addTo(mapState.map);
+    return true;
+  }
 
-    /* The card must be visible before Leaflet measures the container, or the
-       map sizes itself to nothing and the route lands outside the view.      */
-    card.hidden = false;
+  function pin(at, colour, label) {
+    L.circleMarker(at, {
+      radius: 7, color: colour, weight: 3, fillColor: "#0d1117", fillOpacity: 1
+    }).addTo(mapState.drawn).bindTooltip(label);
+  }
 
-    if (!mapState.map) {
-      mapState.map = L.map("map", { scrollWheelZoom: false, attributionControl: true });
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-        maxZoom: 19,
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
-      }).addTo(mapState.map);
-      mapState.drawn = L.layerGroup().addTo(mapState.map);
-    }
+  /* Draw whatever is known: nothing at all, one address, both, or a full
+     route with the reckoning marked on it. Called on load, whenever an
+     address is picked, and after every calculation.                          */
+  function renderMap(m) {
+    if (!ensureMap()) return;
+
     mapState.drawn.clearLayers();
     mapState.map.invalidateSize();
+    $("mapLegend").hidden = false;
 
-    var straight = lastRoute.source === "straight" || lastRoute.source === "crow";
-
-    L.polyline(line, {
-      color: "#4db6a4", weight: 4, opacity: .85,
-      dashArray: straight ? "6 8" : null
-    }).addTo(mapState.drawn);
-
-    marker(line[0], "#86e2d0", places.from.label.split(",")[0] + " — start");
-    marker(line[line.length - 1], "#f0c977", places.to.label.split(",")[0] + " — destination");
+    var line = m && lastRoute && lastRoute.line && lastRoute.line.length > 1
+             ? lastRoute.line : null;
+    var seen = [];
 
     /* The two city borders. The home border is where counting starts; the
        destination's is drawn for orientation only, since the count runs to
@@ -591,15 +604,51 @@
       .forEach(function (spec) {
         var city = cities[spec[0]];
         if (!city || !city.shape) return;
-        L.geoJSON(city.shape, {
+        var layer = L.geoJSON(city.shape, {
           style: { color: spec[1], weight: 1.5, opacity: .75, dashArray: "5 5",
                    fill: true, fillOpacity: .06, fillColor: spec[1] }
         }).addTo(mapState.drawn).bindTooltip(spec[2] + ": " + (city.name || "border"));
+        seen.push(layer.getBounds());
         drewBorder = true;
       });
 
+    if (places.from) {
+      pin([places.from.lat, places.from.lon], "#86e2d0", places.from.label.split(",")[0] + " — start");
+      seen.push(L.latLngBounds([[places.from.lat, places.from.lon]]));
+    }
+    if (places.to) {
+      pin([places.to.lat, places.to.lon], "#f0c977", places.to.label.split(",")[0] + " — destination");
+      seen.push(L.latLngBounds([[places.to.lat, places.to.lon]]));
+    }
+
+    var straight = false;
+    var at = null;
+
+    if (line) {
+      straight = lastRoute.source === "straight" || lastRoute.source === "crow";
+      L.polyline(line, {
+        color: "#4db6a4", weight: 4, opacity: .85,
+        dashArray: straight ? "6 8" : null
+      }).addTo(mapState.drawn);
+      seen.push(L.latLngBounds(line));
+
+      /* Where the eight farsakh falls along this road. It marks the distance
+         only: once a journey qualifies, the shortening runs from the town
+         limit onwards, not from this point.                                  */
+      var oneWayNeeded = m.roundTrip ? m.limitKm / 2 : m.limitKm;
+      var polyKm = polylineKm(line);
+      var scale = polyKm > 0 ? lastRoute.km / polyKm : 1;
+      at = m.meets ? walkTo(line, m.edgeKm + oneWayNeeded, scale) : null;
+      if (at) {
+        L.circleMarker(at, {
+          radius: 6, color: "#4db6a4", weight: 2, fillColor: "#0d1117", fillOpacity: 1
+        }).addTo(mapState.drawn).bindTooltip("Eight farsakh — " + fmtKm(m.limitKm) +
+          (m.roundTrip ? " counted, outward and back" : ""));
+      }
+    }
+
     /* When no border was published, the deduction the reader gave stands in. */
-    var hasEdge = !drewBorder && m.edgeKm > 0;
+    var hasEdge = !drewBorder && m && m.edgeKm > 0 && line;
     if (hasEdge) {
       L.circle(line[0], {
         radius: m.edgeKm * 1000, color: "#8792a1", weight: 1,
@@ -607,40 +656,34 @@
       }).addTo(mapState.drawn).bindTooltip("Edge of town — " + fmtKm(m.edgeKm) + " out");
     }
 
-    /* Where the eight farsakh falls along this road. It marks the distance
-       only: once a journey qualifies, the shortening runs from the town limit
-       onwards, not from this point.                                          */
-    var oneWayNeeded = m.roundTrip ? m.limitKm / 2 : m.limitKm;
-    var polyKm = polylineKm(line);
-    var scale = polyKm > 0 ? lastRoute.km / polyKm : 1;
-    var at = m.meets ? walkTo(line, m.edgeKm + oneWayNeeded, scale) : null;
-    if (at) {
-      L.circleMarker(at, {
-        radius: 6, color: "#4db6a4", weight: 2, fillColor: "#0d1117", fillOpacity: 1
-      }).addTo(mapState.drawn).bindTooltip("Eight farsakh — " + fmtKm(m.limitKm) +
-        (m.roundTrip ? " counted, outward and back" : ""));
-    }
-
+    $("mapTitle").textContent = line ? "The route" : "The map";
+    $("mapLegend").querySelector(".is-route").hidden = !line;
+    $("mapLegend").querySelector(".is-from").hidden = !places.from;
+    $("mapLegend").querySelector(".is-to").hidden = !places.to;
     $("mapLegend").querySelector(".is-border").hidden = !drewBorder;
     $("mapLegend").querySelector(".is-edge").hidden = !hasEdge;
     $("mapLegend").querySelector(".is-limit").hidden = !at;
-    $("mapNote").innerHTML = lastRoute.source === "crow"
-      ? "The straight line between the two places, as you asked. It is not a road, and the law measures the road."
+
+    $("mapNote").innerHTML =
+      !line && !places.from && !places.to
+        ? "Choose an address above and it will appear here, with the border of its city outlined."
+      : !line
+        ? "Press Calculate to measure the road between them."
+      : lastRoute.source === "crow"
+        ? "The straight line between the two places, as you asked. It is not a road, and the law measures the road."
       : straight
-      ? "The road could not be fetched, so this is the straight line between the two places — not a route."
-      : "The driving route, which is what the law measures. Counting starts where the route leaves your city border and runs to the destination itself — not to the destination's border, which is drawn only to place it. The eight-<i>farsakh</i> mark shows where that distance falls; the shortening itself begins a little later, at the <i>hadd al-tarakhkhus</i>.";
+        ? "The road could not be fetched, so this is the straight line between the two places — not a route."
+        : "The driving route, which is what the law measures. Counting starts where the route leaves your city border and runs to the destination itself — not to the destination's border, which is drawn only to place it. The eight-<i>farsakh</i> mark shows where that distance falls; the shortening itself begins a little later, at the <i>hadd al-tarakhkhus</i>.";
 
-    /* Only re-frame when the route itself changes — not on every toggle. */
-    var key = line.length + ":" + line[0] + ":" + line[line.length - 1];
+    /* Frame whatever is on the map, and only when that changes, so toggling a
+       circumstance does not yank the view about.                             */
+    if (!seen.length) return;
+    var bounds = seen.reduce(function (all, b) { return all.extend(b); }, L.latLngBounds(seen[0]));
+    var key = (line ? line.length + ":" + line[0] + ":" + line[line.length - 1] : "no-line") +
+              "|" + bounds.toBBoxString();
     if (mapState.fitted !== key) {
-      mapState.map.fitBounds(L.latLngBounds(line).pad(0.12));
+      mapState.map.fitBounds(bounds.pad(0.15), { maxZoom: 13 });
       mapState.fitted = key;
-    }
-
-    function marker(at, colour, label) {
-      L.circleMarker(at, {
-        radius: 7, color: colour, weight: 3, fillColor: "#0d1117", fillOpacity: 1
-      }).addTo(mapState.drawn).bindTooltip(label);
     }
   }
 
@@ -764,7 +807,7 @@
     /* The panel must be on screen before the map measures itself — Leaflet
        reads the container's size, and a hidden ancestor makes that zero.     */
     $("result").hidden = false;
-    drawMap(m);
+    renderMap(m);
   }
 
   /* Maghrib and Fajr are the same either way, so "both" collapses for them. */
@@ -800,6 +843,30 @@
   }
 
   /* ---- cities, borders and the choice of road ---------------------------- */
+
+  var SLOTS = {
+    from: { input: "fromInput", hint: "fromHint", lead: "Your city is" },
+    to:   { input: "toInput",   hint: "toHint",   lead: "The destination is in" }
+  };
+
+  /* Take a place as the start or the destination — typed, tapped on the map,
+     or read from the device — and show it everywhere at once.                */
+  function adoptPlace(slot, place) {
+    var spec = SLOTS[slot];
+    places[slot] = place;
+    cities[slot] = null;
+    $(spec.input).value = place.label;
+    $(spec.hint).textContent = "Finding which city this is in…";
+    $(spec.hint).className = "hint";
+    renderMap(null);                        /* the pin, straight away */
+
+    return cityOf(place).then(function (city) {
+      if (places[slot] !== place) return;   /* the reader moved on */
+      cities[slot] = city;
+      showCity(slot, spec.hint, spec.lead);
+      renderMap(null);
+    });
+  }
 
   function showCity(slot, hintId, lead) {
     var city = cities[slot], hint = $(hintId);
@@ -963,6 +1030,52 @@
     attachAutocomplete("fromInput", "fromList", "from", "fromHint");
     attachAutocomplete("toInput", "toList", "to", "toHint");
 
+    renderMap(null);                  /* a map at rest, before anything is asked */
+
+    /* Tapping the map sets whichever end the toggle names. */
+    if (mapState.map) {
+      mapState.map.on("click", function (e) {
+        var slot = document.querySelector("input[name='target']:checked").value;
+        $("mapToolHint").textContent = "Looking up that point…";
+        addressAt(e.latlng.lat, e.latlng.lng).then(function (place) {
+          $("mapToolHint").textContent = "Tap the map to set a location";
+          adoptPlace(slot, place);
+          /* Setting the start leaves the destination as the obvious next tap. */
+          if (slot === "from" && !places.to) {
+            document.querySelector("input[name='target'][value='to']").checked = true;
+          }
+        });
+      });
+    }
+
+    $("locateBtn").addEventListener("click", function () {
+      var btn = this;
+      if (!navigator.geolocation) {
+        say("This browser will not report your location.", true);
+        return;
+      }
+      btn.disabled = true;
+      btn.textContent = "Finding you…";
+      navigator.geolocation.getCurrentPosition(
+        function (pos) {
+          addressAt(pos.coords.latitude, pos.coords.longitude).then(function (place) {
+            adoptPlace("from", place);
+            btn.disabled = false;
+            btn.textContent = "Use my location";
+            say("");
+          });
+        },
+        function (err) {
+          btn.disabled = false;
+          btn.textContent = "Use my location";
+          say(err && err.code === 1
+            ? "Location permission was refused, so type the address instead."
+            : "Your location could not be read, so type the address instead.", true);
+        },
+        { timeout: 12000, maximumAge: 300000 }
+      );
+    });
+
     $("qasrForm").addEventListener("submit", calculate);
 
     $("resetBtn").addEventListener("click", function () {
@@ -973,6 +1086,9 @@
       roadRoute = crowRoute = lastRoute = null;
       edgeTouched = false;
       $("routePick").hidden = true;
+      mapState.fitted = null;
+      if (mapState.map) mapState.map.setView([30, 10], 2);
+      renderMap(null);              /* back to a map at rest */
       $("edgeHint").className = "hint";
       $("edgeHint").textContent = "The count starts at your city border, not your front door. Once the addresses are in, this is measured along the route for you — overwrite it if you know better.";
       $("result").hidden = true;
