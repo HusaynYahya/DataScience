@@ -59,6 +59,68 @@
       });
   }
 
+  /* The city a point falls in, with its boundary where one is published.
+     Nominatim's reverse lookup at zoom 10 answers at city level; the polygon
+     is what the map draws and what the border deduction is measured against. */
+  var cityCache = Object.create(null);
+
+  function cityOf(place) {
+    var key = place.lat.toFixed(3) + "," + place.lon.toFixed(3);
+    if (cityCache[key]) return Promise.resolve(cityCache[key]);
+
+    var url = NOMINATIM.replace("/search", "/reverse") +
+              "?format=jsonv2&zoom=10&addressdetails=1&polygon_geojson=1" +
+              "&lat=" + place.lat + "&lon=" + place.lon;
+
+    return fetch(url, { headers: { Accept: "application/json" } })
+      .then(function (r) {
+        if (!r.ok) throw new Error("Reverse lookup returned " + r.status);
+        return r.json();
+      })
+      .then(function (row) {
+        var a = row.address || {};
+        var city = {
+          name: a.city || a.town || a.village || a.municipality || a.county ||
+                (row.name || "").split(",")[0] || null,
+          area: a.state || a.county || a.country || null,
+          /* Only an area has a border to draw; a point result has none. */
+          shape: row.geojson && /Polygon/.test(row.geojson.type) ? row.geojson : null
+        };
+        cityCache[key] = city;
+        return city;
+      })
+      .catch(function () { return { name: null, area: null, shape: null }; });
+  }
+
+  /* Ray casting, honouring holes: a point inside an inner ring is outside the
+     polygon. GeoJSON rings are [lon, lat].                                    */
+  function inRing(lat, lon, ring) {
+    var inside = false;
+    for (var i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      var xi = ring[i][0], yi = ring[i][1], xj = ring[j][0], yj = ring[j][1];
+      if (((yi > lat) !== (yj > lat)) &&
+          (lon < (xj - xi) * (lat - yi) / (yj - yi) + xi)) inside = !inside;
+    }
+    return inside;
+  }
+
+  function inPolygon(lat, lon, rings) {
+    if (!inRing(lat, lon, rings[0])) return false;
+    for (var h = 1; h < rings.length; h++) {
+      if (inRing(lat, lon, rings[h])) return false;   /* in a hole */
+    }
+    return true;
+  }
+
+  function inShape(lat, lon, shape) {
+    if (!shape) return false;
+    if (shape.type === "Polygon") return inPolygon(lat, lon, shape.coordinates);
+    if (shape.type === "MultiPolygon") {
+      return shape.coordinates.some(function (rings) { return inPolygon(lat, lon, rings); });
+    }
+    return false;
+  }
+
   /* Great-circle distance — the straight line, used only as a fallback and
      always labelled as such. The legal distance follows the road.            */
   function haversineKm(a, b) {
@@ -71,11 +133,13 @@
     return 2 * R * Math.asin(Math.min(1, Math.sqrt(s)));
   }
 
-  /* Road distance by car. Falls back to the straight line if the routing
-     service cannot be reached, flagging the result so the interface can say so. */
+  /* Road distances by car — every route the service offers, not just the
+     quickest, because the law counts the road actually taken: a longer way
+     round can carry a journey past the limit that the direct road misses.
+     Falls back to the straight line, flagged so the interface can say so.    */
   function routeKm(a, b) {
     var coords = a.lon + "," + a.lat + ";" + b.lon + "," + b.lat;
-    return fetch(OSRM + coords + "?overview=false&alternatives=false")
+    return fetch(OSRM + coords + "?overview=full&geometries=geojson&alternatives=true")
       .then(function (r) {
         if (!r.ok) throw new Error("Routing service returned " + r.status);
         return r.json();
@@ -84,14 +148,26 @@
         if (data.code !== "Ok" || !data.routes || !data.routes.length) {
           throw new Error("No road route found");
         }
-        return {
-          km: data.routes[0].distance / 1000,
-          minutes: data.routes[0].duration / 60,
-          source: "road"
-        };
+        return data.routes.map(function (r, i) {
+          var geo = r.geometry;
+          return {
+            km: r.distance / 1000,
+            minutes: r.duration / 60,
+            source: "road",
+            label: i === 0 ? "Quickest route" : "Alternative " + i,
+            /* GeoJSON gives [lon, lat]; the map wants [lat, lon]. */
+            line: (geo && geo.coordinates || []).map(function (c) { return [c[1], c[0]]; })
+          };
+        });
       })
       .catch(function () {
-        return { km: haversineKm(a, b), minutes: null, source: "straight" };
+        return [{
+          km: haversineKm(a, b),
+          minutes: null,
+          source: "straight",
+          label: "Straight line",
+          line: [[a.lat, a.lon], [b.lat, b.lon]]
+        }];
       });
   }
 
@@ -106,6 +182,8 @@
        destIsWatan       the destination is one of the traveller's hometowns
        tenDays           a certain intention to stay ten continuous days
        hesitant          no idea how long the stay will be
+       newLongStay       newly arrived somewhere adopted for a long stay — study or
+                         work — which is not yet a hometown, with no ten-day intention
        passesWatan       the route passes through, and stops in, a hometown
        frequentTraveller travel is part of the occupation, or the person is a nomad
        sinful            the journey is for an unlawful purpose
@@ -195,8 +273,17 @@
     if (o.tenDays) {
       reasons.push("You intend to stay ten continuous days or more. <b>That intention ends the journey</b>: at the destination you pray in full and fast as a resident. On the road you remain a traveller.");
       warnings.push({ kind: "info", text: "The ten days must be certain from the outset and spent in one place. Once a single four-rak'ah prayer has been offered in full there, the resident's ruling holds for as long as you remain, even if you then leave earlier than planned." });
+      warnings.push({ kind: "info", text: "Setting off again from a place where you stayed ten days, you shorten as soon as you leave the town itself. The <i>hadd al-tarakhkhus</i> governs departure from your hometown, not from a place of ten days' residence." });
       return out("qasr", "full", "Shorten on the road, pray in full on arrival",
         "An intention to stay ten continuous days makes you a resident at the destination.");
+    }
+
+    if (o.newLongStay) {
+      reasons.push("You have come to stay for a long period — for study or work — but the place is not yet your hometown, and you hold no intention of ten continuous days. By obligatory precaution (<i>ihtiyat wajib</i>) you <b>pray both</b> there: the four-rak'ah prayers shortened, and again in full.");
+      warnings.push({ kind: "warn", text: "This holds while the place is still new to you. Once you have lived there long enough that people no longer count you a traveller — a matter of settling in, not of owning a house — it becomes your hometown and you pray in full, even if you are only there to study and do not mean to remain for life." });
+      warnings.push({ kind: "info", text: "The workshop gives this ruling for the prayer. For the fast in the same circumstance, ask a scholar rather than reasoning from the prayer." });
+      return out("qasr", "both", "Shorten on the road, pray both on arrival",
+        "A place newly adopted for a long stay is neither travel nor residence outright, so the precaution is to pray both.");
     }
 
     if (o.hesitant) {
@@ -208,7 +295,7 @@
 
     reasons.push("Nothing interrupts the journey: no hometown at its end, no intention of a ten-day stay. <b>Shorten the four-rak'ah prayers and do not fast.</b>");
     return out("qasr", "qasr", "Shorten your prayers",
-      "The journey meets every condition, so the rulings of travel apply from the limit of your town onwards.");
+      "The journey meets every condition. The distance is counted from your city border; the shortening itself begins once you pass the hadd al-tarakhkhus.");
 
     /* -- a caution when the distance sits on the line ---------------------- */
     function nearLimit() {
@@ -229,7 +316,10 @@
 
   var unit = "km";                    /* display unit */
   var places = { from: null, to: null };
-  var lastRoute = null;               /* { km, minutes, source } */
+  var cities = { from: null, to: null };
+  var routes = [];                    /* every road the service offered */
+  var lastRoute = null;               /* the one being ruled on */
+  var edgeTouched = false;            /* the reader overrode the measured border */
 
   function toKm(v)      { return unit === "mi" ? v * KM_PER_MI : v; }
   function fromKm(v)    { return unit === "mi" ? v / KM_PER_MI : v; }
@@ -296,6 +386,7 @@
 
     input.addEventListener("input", function () {
       places[slot] = null;
+      cities[slot] = null;
       hint.className = "hint";
       var q = input.value.trim();
       if (timer) clearTimeout(timer);
@@ -334,10 +425,164 @@
       destIsWatan:       $("qWatan").checked,
       tenDays:           $("qTenDays").checked,
       hesitant:          $("qHesitant").checked,
+      newLongStay:       $("qNewLongStay").checked,
       passesWatan:       $("qPassWatan").checked,
       frequentTraveller: $("qFrequent").checked,
       sinful:            $("qSin").checked
     };
+  }
+
+  /* ---- the map ----------------------------------------------------------
+     Leaflet is loaded from a CDN. If it does not arrive — an offline machine,
+     a blocked network — every other part of the page carries on without it and
+     the map card simply stays hidden.
+     ---------------------------------------------------------------------- */
+
+  var mapState = { map: null, drawn: null, fitted: null };
+
+  function walkTo(line, targetKm, scale) {
+    /* The point on the route at a given distance along it. OSRM's polyline is
+       a shade shorter than the distance it reports, so the walk is scaled to
+       agree with the figure shown to the reader.                              */
+    var run = 0;
+    for (var i = 1; i < line.length; i++) {
+      var a = { lat: line[i - 1][0], lon: line[i - 1][1] };
+      var b = { lat: line[i][0], lon: line[i][1] };
+      var seg = haversineKm(a, b) * scale;
+      if (run + seg >= targetKm) {
+        var t = seg > 0 ? (targetKm - run) / seg : 0;
+        return [a.lat + (b.lat - a.lat) * t, a.lon + (b.lon - a.lon) * t];
+      }
+      run += seg;
+    }
+    return null;
+  }
+
+  /* How far along the route the home city's border falls. This is where the
+     legal distance starts being counted: the point at which people would call
+     you a traveller, which the workshop puts at the city border.             */
+  function borderExitKm(line, shape, scale) {
+    if (!shape || !inShape(line[0][0], line[0][1], shape)) return null;
+    var run = 0;
+    for (var i = 1; i < line.length; i++) {
+      var a = line[i - 1], b = line[i];
+      var seg = haversineKm({ lat: a[0], lon: a[1] }, { lat: b[0], lon: b[1] }) * scale;
+      if (!inShape(b[0], b[1], shape)) {
+        /* Bisect the straddling segment to place the crossing. */
+        var lo = 0, hi = 1;
+        for (var k = 0; k < 14; k++) {
+          var mid = (lo + hi) / 2;
+          var pt = [a[0] + (b[0] - a[0]) * mid, a[1] + (b[1] - a[1]) * mid];
+          if (inShape(pt[0], pt[1], shape)) lo = mid; else hi = mid;
+        }
+        return run + seg * lo;
+      }
+      run += seg;
+    }
+    return null;   /* the whole route stays inside the city */
+  }
+
+  function polylineKm(line) {
+    var total = 0;
+    for (var i = 1; i < line.length; i++) {
+      total += haversineKm({ lat: line[i - 1][0], lon: line[i - 1][1] },
+                           { lat: line[i][0], lon: line[i][1] });
+    }
+    return total;
+  }
+
+  function drawMap(m) {
+    var card = $("mapCard");
+    var line = lastRoute && lastRoute.line;
+
+    /* No library, or no geometry to draw — a hand-entered distance, say. */
+    if (typeof L === "undefined" || !line || line.length < 2 || !places.from || !places.to) {
+      card.hidden = true;
+      return;
+    }
+
+    /* The card must be visible before Leaflet measures the container, or the
+       map sizes itself to nothing and the route lands outside the view.      */
+    card.hidden = false;
+
+    if (!mapState.map) {
+      mapState.map = L.map("map", { scrollWheelZoom: false, attributionControl: true });
+      L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+      }).addTo(mapState.map);
+      mapState.drawn = L.layerGroup().addTo(mapState.map);
+    }
+    mapState.drawn.clearLayers();
+    mapState.map.invalidateSize();
+
+    var straight = lastRoute.source === "straight";
+
+    L.polyline(line, {
+      color: "#4db6a4", weight: 4, opacity: .85,
+      dashArray: straight ? "6 8" : null
+    }).addTo(mapState.drawn);
+
+    marker(line[0], "#86e2d0", places.from.label.split(",")[0] + " — start");
+    marker(line[line.length - 1], "#f0c977", places.to.label.split(",")[0] + " — destination");
+
+    /* The two city borders. The home border is where counting starts; the
+       destination's is drawn for orientation only, since the count runs to
+       the destination itself, not to its border.                             */
+    var drewBorder = false;
+    [["from", "#4db6a4", "Your city"], ["to", "#d9a441", "Destination city"]]
+      .forEach(function (spec) {
+        var city = cities[spec[0]];
+        if (!city || !city.shape) return;
+        L.geoJSON(city.shape, {
+          style: { color: spec[1], weight: 1.5, opacity: .75, dashArray: "5 5",
+                   fill: true, fillOpacity: .06, fillColor: spec[1] }
+        }).addTo(mapState.drawn).bindTooltip(spec[2] + ": " + (city.name || "border"));
+        drewBorder = true;
+      });
+
+    /* When no border was published, the deduction the reader gave stands in. */
+    var hasEdge = !drewBorder && m.edgeKm > 0;
+    if (hasEdge) {
+      L.circle(line[0], {
+        radius: m.edgeKm * 1000, color: "#8792a1", weight: 1,
+        dashArray: "4 6", fill: false
+      }).addTo(mapState.drawn).bindTooltip("Edge of town — " + fmtKm(m.edgeKm) + " out");
+    }
+
+    /* Where the eight farsakh falls along this road. It marks the distance
+       only: once a journey qualifies, the shortening runs from the town limit
+       onwards, not from this point.                                          */
+    var oneWayNeeded = m.roundTrip ? m.limitKm / 2 : m.limitKm;
+    var polyKm = polylineKm(line);
+    var scale = polyKm > 0 ? lastRoute.km / polyKm : 1;
+    var at = m.meets ? walkTo(line, m.edgeKm + oneWayNeeded, scale) : null;
+    if (at) {
+      L.circleMarker(at, {
+        radius: 6, color: "#4db6a4", weight: 2, fillColor: "#0d1117", fillOpacity: 1
+      }).addTo(mapState.drawn).bindTooltip("Eight farsakh — " + fmtKm(m.limitKm) +
+        (m.roundTrip ? " counted, outward and back" : ""));
+    }
+
+    $("mapLegend").querySelector(".is-border").hidden = !drewBorder;
+    $("mapLegend").querySelector(".is-edge").hidden = !hasEdge;
+    $("mapLegend").querySelector(".is-limit").hidden = !at;
+    $("mapNote").innerHTML = straight
+      ? "The road could not be fetched, so this is the straight line between the two places — not a route."
+      : "The driving route, which is what the law measures. Counting starts where the route leaves your city border and runs to the destination itself — not to the destination's border, which is drawn only to place it. The eight-<i>farsakh</i> mark shows where that distance falls; the shortening itself begins a little later, at the <i>hadd al-tarakhkhus</i>.";
+
+    /* Only re-frame when the route itself changes — not on every toggle. */
+    var key = line.length + ":" + line[0] + ":" + line[line.length - 1];
+    if (mapState.fitted !== key) {
+      mapState.map.fitBounds(L.latLngBounds(line).pad(0.12));
+      mapState.fitted = key;
+    }
+
+    function marker(at, colour, label) {
+      L.circleMarker(at, {
+        radius: 7, color: colour, weight: 3, fillColor: "#0d1117", fillOpacity: 1
+      }).addTo(mapState.drawn).bindTooltip(label);
+    }
   }
 
   /* ---- rendering the verdict -------------------------------------------- */
@@ -352,7 +597,7 @@
 
   function render(verdict) {
     var m = verdict.metrics;
-    var shortensSomewhere = verdict.enRoute === "qasr" || verdict.atDest.indexOf("qasr") === 0;
+    var shortensSomewhere = verdict.enRoute === "qasr" || verdict.atDest !== "full";
 
     /* the headline */
     $("verdict").className = "verdict" + (shortensSomewhere ? "" : " verdict--full");
@@ -395,12 +640,11 @@
     var body = $("prayers").querySelector("tbody");
     body.innerHTML = "";
     RAKAHS.forEach(function (p) {
-      var onRoad = verdict.enRoute === "qasr" ? p.short : p.full;
-      var atDest = verdict.atDest.indexOf("qasr") === 0 ? p.short : p.full;
       var tr = document.createElement("tr");
       tr.appendChild(cell("th", p.name));
-      tr.appendChild(cell("td", onRoad + " rak'ah", onRoad < p.full));
-      tr.appendChild(cell("td", atDest + " rak'ah" + (verdict.atDest === "qasr-30" ? " *" : ""), atDest < p.full));
+      tr.appendChild(cell("td", rakahText(verdict.enRoute, p), verdict.enRoute !== "full" && p.short < p.full));
+      tr.appendChild(cell("td", rakahText(verdict.atDest, p) + (verdict.atDest === "qasr-30" ? " *" : ""),
+                          verdict.atDest !== "full" && p.short < p.full));
       body.appendChild(tr);
     });
 
@@ -408,9 +652,10 @@
     var fastRoad = verdict.enRoute === "qasr"
       ? "You do not fast while travelling. If you are fasting and set out <b>after</b> the adhan of Dhuhr, that day's fast must be completed; if you set out before it, the fast is not valid and is made up later."
       : "Fast as usual — this journey does not lift the obligation.";
-    var fastDest = verdict.atDest.indexOf("qasr") === 0
-      ? "You do not fast at the destination either, and the days are made up afterwards."
-      : "At the destination you fast as a resident.";
+    var fastDest =
+      verdict.atDest === "both" ? "The precaution to pray both settles the prayer, not the fast. Ask a scholar what to do about fasting in this state rather than reasoning from the prayer." :
+      verdict.atDest.indexOf("qasr") === 0 ? "You do not fast at the destination either, and the days are made up afterwards." :
+      "At the destination you fast as a resident.";
 
     $("fasting").innerHTML =
       "<div><h3>Fasting on the road</h3><p>" + fastRoad + "</p></div>" +
@@ -438,13 +683,36 @@
       warn.appendChild(div);
     });
     if (shortensSomewhere) {
-      var choice = document.createElement("div");
-      choice.className = "note note--info";
-      choice.innerHTML = "<b>Note.</b> The shortening begins at the <i>hadd al-tarakhkhus</i> — the point at which you no longer see the people of your town, nor they you — and ends on returning within it. In Makkah, Madinah, the Masjid of Kufa and the sanctuary of Imam al-Husayn (peace be upon him), a traveller may choose between shortening and praying in full.";
-      warn.appendChild(choice);
+      note(warn, "Where it begins and where it ends",
+        "Two different lines govern the journey, and they are not the same one. The <b>distance</b> is counted from your <b>city border</b> — the point at which people would call you a traveller — and runs to the <b>actual destination</b>, not to the destination's border. The <b>shortening</b> itself begins later, at the <i>hadd al-tarakhkhus</i>: the point at which the people of your town can no longer see you, nor you them. Pray full until then, even at the border itself.");
+      note(warn, "Coming home",
+        "On the return the two lines swap. Keep shortening until you are inside your <b>city border</b> — reaching the <i>hadd al-tarakhkhus</i> is not enough on the way back. And if you mean to keep a fast, you must be within that city border before the adhan of Dhuhr; the <i>hadd al-tarakhkhus</i> will not do.");
+      note(warn, "Breaking a fast on the way out",
+        "The mirror of it: you may not break a fast at the city border merely because the journey has begun. Wait until you have crossed the <i>hadd al-tarakhkhus</i>.");
+      note(warn, "The four places of choice",
+        "In Makkah, Madinah, the Masjid of Kufa and the sanctuary of Imam al-Husayn (peace be upon him), a traveller may choose between shortening and praying in full.");
     }
 
+    function note(parent, title, body) {
+      var div = document.createElement("div");
+      div.className = "note note--info";
+      div.innerHTML = "<b>" + title + ".</b> " + body;
+      parent.appendChild(div);
+    }
+
+    /* The panel must be on screen before the map measures itself — Leaflet
+       reads the container's size, and a hidden ancestor makes that zero.     */
     $("result").hidden = false;
+    drawMap(m);
+  }
+
+  /* Maghrib and Fajr are the same either way, so "both" collapses for them. */
+  function rakahText(state, p) {
+    if (state === "full") return p.full + " rak'ah";
+    if (state === "both") {
+      return p.short === p.full ? p.short + " rak'ah" : p.short + " and " + p.full + " rak'ah";
+    }
+    return p.short + " rak'ah";
   }
 
   function measureRow(term, value, total) {
@@ -468,6 +736,67 @@
     var h = Math.floor(minutes / 60), m = Math.round(minutes % 60);
     if (!h) return m + " min";
     return m ? h + " h " + m + " min" : h + " h";
+  }
+
+  /* ---- cities, borders and the choice of road ---------------------------- */
+
+  function showCity(slot, hintId, lead) {
+    var city = cities[slot], hint = $(hintId);
+    if (city && city.name) {
+      hint.innerHTML = lead + " <b>" + city.name + "</b>" +
+        (city.area && city.area !== city.name ? ", " + city.area : "") +
+        (city.shape ? " — its border is outlined on the map." : " — no published border to outline.");
+      hint.className = "hint hint--ok";
+    } else {
+      hint.textContent = "The city here could not be identified, so no border is drawn.";
+      hint.className = "hint";
+    }
+  }
+
+  /* The distance from the start to the point where the route leaves the home
+     city. Written into the deduction field unless the reader has set it. */
+  function applyBorderDeduction() {
+    var city = cities.from;
+    if (!lastRoute || !lastRoute.line || !city || !city.shape) return;
+
+    var polyKm = polylineKm(lastRoute.line);
+    var exit = borderExitKm(lastRoute.line, city.shape,
+                            polyKm > 0 ? lastRoute.km / polyKm : 1);
+    if (exit === null) return;
+
+    if (!edgeTouched) $("edgeKm").value = fromKm(exit).toFixed(1);
+    $("edgeHint").innerHTML = "Measured along the route: <b>" + fmtKm(exit) +
+      "</b> from the start to the border of " + (city.name || "your city") +
+      ". Counting begins there. Overwrite it if you know better.";
+    $("edgeHint").className = "hint hint--ok";
+  }
+
+  function renderRoutes() {
+    var pick = $("routePick"), list = $("routes");
+    if (routes.length < 2) { pick.hidden = true; return; }
+
+    list.innerHTML = "";
+    routes.forEach(function (r, i) {
+      var edge = toKm(parseFloat($("edgeKm").value) || 0);
+      var counted = Math.max(0, r.km - edge) * ($("qReturn").checked ? 2 : 1);
+      var li = document.createElement("li");
+      var btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "route" + (r === lastRoute ? " is-on" : "");
+      btn.setAttribute("aria-pressed", r === lastRoute ? "true" : "false");
+      btn.innerHTML =
+        "<b>" + r.label + "</b>" +
+        "<span>" + fmtKm(r.km) + (r.minutes ? " · " + fmtDuration(r.minutes) : "") + "</span>" +
+        "<em>" + (counted >= LIMIT_KM ? "qualifies — " : "falls short — ") + fmtKm(counted) + " counted</em>";
+      btn.addEventListener("click", function () {
+        lastRoute = r;
+        applyBorderDeduction();
+        recalc();                     /* redraws the picker, so the choice shows */
+      });
+      li.appendChild(btn);
+      list.appendChild(li);
+    });
+    pick.hidden = false;
   }
 
   /* ---- orchestration ----------------------------------------------------- */
@@ -517,10 +846,23 @@
         say("Measuring the road…");
         return routeKm(pair[0], pair[1]);
       })
-      .then(function (route) {
-        lastRoute = route;
-        render(decide(readCircumstances(route.km)));
-        say(route.source === "straight" ? "Routing unavailable — showing the straight-line distance." : "");
+      .then(function (found) {
+        routes = found;
+        lastRoute = found[0];
+        say("Finding the city borders…");
+        /* A missing border costs the deduction, not the ruling, so a failure
+           here must not sink the calculation. */
+        return Promise.all([cityOf(places.from), cityOf(places.to)]);
+      })
+      .then(function (pair) {
+        cities.from = pair[0];
+        cities.to = pair[1];
+        showCity("from", "fromHint", "Your city is");
+        showCity("to", "toHint", "The destination is in");
+        applyBorderDeduction();
+        render(decide(readCircumstances(lastRoute.km)));
+        renderRoutes();
+        say(lastRoute.source === "straight" ? "Routing unavailable — showing the straight-line distance." : "");
         $("result").scrollIntoView({ behavior: "smooth", block: "start" });
       })
       .catch(function (err) {
@@ -540,6 +882,7 @@
   function recalc() {
     if (!lastRoute) return;
     render(decide(readCircumstances(lastRoute.km)));
+    renderRoutes();
   }
 
   function init() {
@@ -553,7 +896,13 @@
     $("resetBtn").addEventListener("click", function () {
       $("qasrForm").reset();
       places = { from: null, to: null };
+      cities = { from: null, to: null };
+      routes = [];
       lastRoute = null;
+      edgeTouched = false;
+      $("routePick").hidden = true;
+      $("edgeHint").className = "hint";
+      $("edgeHint").textContent = "The count starts at your city border, not your front door. Once the addresses are in, this is measured along the route for you — overwrite it if you know better.";
       $("result").hidden = true;
       $("fromHint").className = $("toHint").className = "hint";
       $("fromHint").textContent = "Your hometown, or wherever the journey begins.";
@@ -563,9 +912,13 @@
     });
 
     /* Any change to the circumstances re-runs the ruling on the same distance. */
-    ["qReturn", "qIntent", "qWatan", "qTenDays", "qHesitant", "qPassWatan", "qFrequent", "qSin"]
+    ["qReturn", "qIntent", "qWatan", "qTenDays", "qHesitant", "qNewLongStay", "qPassWatan", "qFrequent", "qSin"]
       .forEach(function (id) { $(id).addEventListener("change", recalc); });
-    $("edgeKm").addEventListener("input", recalc);
+    $("edgeKm").addEventListener("input", function () { edgeTouched = true; recalc(); });
+    window.addEventListener("resize", function () {
+      if (mapState.map && !$("mapCard").hidden) mapState.map.invalidateSize();
+    });
+
     $("manualKm").addEventListener("input", function () {
       var v = parseFloat(this.value);
       if (!isNaN(v) && v >= 0) { lastRoute = { km: toKm(v), minutes: null, source: "manual" }; }
@@ -573,8 +926,13 @@
     });
 
     /* Ten days and hesitation are contraries — one excludes the other. */
-    $("qTenDays").addEventListener("change", function () { if (this.checked) $("qHesitant").checked = false; });
-    $("qHesitant").addEventListener("change", function () { if (this.checked) $("qTenDays").checked = false; });
+    var exclusive = ["qTenDays", "qHesitant", "qNewLongStay"];
+    exclusive.forEach(function (id) {
+      $(id).addEventListener("change", function () {
+        if (!this.checked) return;
+        exclusive.forEach(function (other) { if (other !== id) $(other).checked = false; });
+      });
+    });
 
     /* Switching units converts what is already typed, then redraws. */
     $("units").addEventListener("change", function () {
@@ -593,7 +951,10 @@
 
   /* The ruling engine is exported so it can be exercised on its own — see
      test/engine.test.js. Nothing in the interface reads it back.             */
-  window.QasrEngine = { decide: decide, LIMIT_KM: LIMIT_KM, FARSAKH_KM: FARSAKH_KM };
+  window.QasrEngine = {
+    decide: decide, LIMIT_KM: LIMIT_KM, FARSAKH_KM: FARSAKH_KM,
+    inShape: inShape, borderExitKm: borderExitKm, haversineKm: haversineKm
+  };
 
   if (document.readyState === "loading") {
     document.addEventListener("DOMContentLoaded", init);

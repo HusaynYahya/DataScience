@@ -10,7 +10,8 @@ Open `index.html` — there is no build step, no framework and no API key.
 qasr/
 ├── index.html          the page, the form and the reference notes
 ├── qasr.css            styles; the design tokens sit at the top
-├── qasr.js             geocoding, routing, the ruling engine, the interface
+├── qasr.js             geocoding, routing, the map, the ruling engine, the interface
+├── vendor/leaflet/     Leaflet 1.9.4, vendored — no CDN to depend on (BSD-2-Clause)
 └── test/engine.test.js tests for the ruling engine — node test/engine.test.js
 ```
 
@@ -27,7 +28,32 @@ The law counts the path actually travelled, not the straight line on the map,
 which is why the driving route is used and the straight line is only ever a
 labelled fallback.
 
+## Cities and borders
+
+Each address is resolved to the city it sits in — named under the input, and
+outlined on the map from the boundary Nominatim publishes for it. The route is
+then walked against the home city's polygon to find where it crosses the border,
+and that distance is filled into the deduction field, because the count starts at
+the city border rather than the front door. Where no boundary is published the
+field falls back to a figure you type yourself.
+
+## The map
+
+The result shows the measured road on a Leaflet map: the start, the destination,
+the road itself, a dashed circle for the edge of town when a deduction is given,
+and a mark where the eight *farsakh* falls along the route. That last mark shows
+where the distance lands, not where shortening begins — once a journey qualifies,
+the shortening runs from the town limit onwards.
+
+Leaflet is vendored rather than pulled from a CDN, so the page has no third-party
+script dependency; only the tiles come over the network. If the library is missing
+or the geometry is unavailable — a hand-entered distance, say — the map card stays
+hidden and everything else works unchanged.
+
 ## The rules encoded
+
+Conditions follow the Brisc 12 Ahkam Workshop, *Prayers of a Traveller*
+(17 January 2025), on the rulings of Sayyid al-Sistani.
 
 The engine lives in `decide()` in `qasr.js` — a pure function, circumstances in,
 verdict out. In the order it applies them:
@@ -48,7 +74,16 @@ verdict out. In the order it applies them:
    certain intention of ten continuous days, and thirty days of hesitation.
 5. **The destination.** A hometown or a ten-day stay means full prayers on
    arrival while the road there is still travel; an undecided stay means
-   shortening for up to thirty days.
+   shortening for up to thirty days; a place newly adopted for a long stay,
+   not yet a hometown and with no ten-day intention, means praying **both** by
+   obligatory precaution.
+
+Two boundaries the law keeps apart, and the output keeps apart with it: the
+**city border** is where the distance starts being counted and where shortening
+stops on the way home; the **hadd al-tarakhkhus** is where shortening begins and
+where a fast may be broken. The count ends at the destination itself, not at its
+border. Which road you take decides the matter too, so every route the service
+offers is listed with the ruling it would produce.
 
 Output covers both the road and the destination: rak'ahs per prayer, the ruling
 on fasting, the reasoning, and the *hadd al-tarakhkhus* and four-places-of-choice
@@ -60,8 +95,9 @@ notes.
 node test/engine.test.js
 ```
 
-22 cases over the distance thresholds, the destination rules, the exemptions,
-the intention and the cautions. They stub the browser and never touch the
+37 cases over the distance thresholds, the destination rules, the exemptions,
+the intention, the cautions, and the geometry behind the city-border deduction
+(point-in-polygon with holes, multipolygons, and the border crossing along a route). They stub the browser and never touch the
 network.
 
 ## Caveat
