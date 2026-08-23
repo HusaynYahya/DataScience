@@ -28,6 +28,18 @@ The law counts the path actually travelled, not the straight line on the map,
 which is why the driving route is used and the straight line is only ever a
 labelled fallback.
 
+## Choices the reader makes
+
+- **There and back / one way** — a return journey adds the legs together, so
+  22 km each way reaches the limit.
+- **By road / as the crow flies** — the road is the default and what the law
+  counts; the straight line is offered for comparison and labelled every time
+  it is used, since it is always shorter and can understate a journey.
+- **Which road** — where the routing service offers alternatives, each is listed
+  with its distance and the ruling it would produce.
+- **A distance typed by hand**, which overrides all of the above and needs no
+  network.
+
 ## Cities and borders
 
 Each address is resolved to the city it sits in — named under the input, and

@@ -350,8 +350,20 @@
   var places = { from: null, to: null };
   var cities = { from: null, to: null };
   var routes = [];                    /* every road the service offered */
-  var lastRoute = null;               /* the one being ruled on */
+  var roadRoute = null;               /* the road chosen from those */
+  var crowRoute = null;               /* the straight line, for comparison */
+  var lastRoute = null;               /* whichever is being ruled on */
   var edgeTouched = false;            /* the reader overrode the measured border */
+
+  function isReturn()  { return document.querySelector("input[name='trip']:checked").value === "return"; }
+  function byCrow()    { return document.querySelector("input[name='measure']:checked").value === "crow"; }
+
+  /* The distance the ruling is made on: the chosen road, or the straight line
+     if that is what the reader asked for. */
+  function chooseRoute() {
+    lastRoute = (byCrow() && crowRoute) ? crowRoute : roadRoute;
+    return lastRoute;
+  }
 
   function toKm(v)      { return unit === "mi" ? v * KM_PER_MI : v; }
   function fromKm(v)    { return unit === "mi" ? v / KM_PER_MI : v; }
@@ -452,7 +464,7 @@
     return {
       oneWayKm: oneWayKm,
       edgeKm: toKm(Math.max(0, parseFloat($("edgeKm").value) || 0)),
-      roundTrip:         $("qReturn").checked,
+      roundTrip:         isReturn(),
       intendedFromStart: $("qIntent").checked,
       destIsWatan:       $("qWatan").checked,
       tenDays:           $("qTenDays").checked,
@@ -548,7 +560,7 @@
     mapState.drawn.clearLayers();
     mapState.map.invalidateSize();
 
-    var straight = lastRoute.source === "straight";
+    var straight = lastRoute.source === "straight" || lastRoute.source === "crow";
 
     L.polyline(line, {
       color: "#4db6a4", weight: 4, opacity: .85,
@@ -599,7 +611,9 @@
     $("mapLegend").querySelector(".is-border").hidden = !drewBorder;
     $("mapLegend").querySelector(".is-edge").hidden = !hasEdge;
     $("mapLegend").querySelector(".is-limit").hidden = !at;
-    $("mapNote").innerHTML = straight
+    $("mapNote").innerHTML = lastRoute.source === "crow"
+      ? "The straight line between the two places, as you asked. It is not a road, and the law measures the road."
+      : straight
       ? "The road could not be fetched, so this is the straight line between the two places — not a route."
       : "The driving route, which is what the law measures. Counting starts where the route leaves your city border and runs to the destination itself — not to the destination's border, which is drawn only to place it. The eight-<i>farsakh</i> mark shows where that distance falls; the shortening itself begins a little later, at the <i>hadd al-tarakhkhus</i>.";
 
@@ -629,6 +643,7 @@
 
   function render(verdict) {
     var m = verdict.metrics;
+    var src = lastRoute ? lastRoute.source : "road";
     var shortensSomewhere = verdict.enRoute === "qasr" || verdict.atDest !== "full";
 
     /* the headline */
@@ -638,7 +653,7 @@
 
     /* the numbers */
     var rows = [
-      ["Road distance, one way", fmtKm(m.oneWayKm) +
+      [(src === "crow" ? "Straight-line distance, one way" : "Road distance, one way"), fmtKm(m.oneWayKm) +
         (lastRoute && lastRoute.minutes ? " · about " + fmtDuration(lastRoute.minutes) + " by car" : "")]
     ];
     if (m.edgeKm > 0) {
@@ -661,9 +676,10 @@
     $("gaugeFill").style.width = pct + "%";
     $("gaugeFill").className = "gauge__fill" + (m.meets ? " is-over" : "");
 
-    var src = lastRoute ? lastRoute.source : "road";
-    $("measureNote").textContent =
+    $("measureNote").innerHTML =
       src === "straight" ? "The routing service could not be reached, so this is the straight-line distance — always shorter than the road. Enter the real distance by hand before relying on this verdict." :
+      src === "crow"     ? "Measured as the crow flies, at your request. <b>The law counts the road actually travelled</b>, which is longer — so a journey that falls short by this measure may well qualify by road." +
+                           (roadRoute ? " By road it is " + fmtKm(roadRoute.km) + "." : "") :
       src === "manual"   ? "Measured from the distance you entered by hand." :
       "Measured along the driving route, as the law requires: the path travelled, not the straight line on the map.";
     $("measureNote").className = "hint" + (src === "straight" ? " hint--warn" : "");
@@ -807,23 +823,24 @@
 
   function renderRoutes() {
     var pick = $("routePick"), list = $("routes");
-    if (routes.length < 2) { pick.hidden = true; return; }
+    if (routes.length < 2 || byCrow()) { pick.hidden = true; return; }
 
     list.innerHTML = "";
     routes.forEach(function (r, i) {
       var edge = toKm(parseFloat($("edgeKm").value) || 0);
-      var counted = Math.max(0, r.km - edge) * ($("qReturn").checked ? 2 : 1);
+      var counted = Math.max(0, r.km - edge) * (isReturn() ? 2 : 1);
       var li = document.createElement("li");
       var btn = document.createElement("button");
       btn.type = "button";
-      btn.className = "route" + (r === lastRoute ? " is-on" : "");
-      btn.setAttribute("aria-pressed", r === lastRoute ? "true" : "false");
+      btn.className = "route" + (r === roadRoute ? " is-on" : "");
+      btn.setAttribute("aria-pressed", r === roadRoute ? "true" : "false");
       btn.innerHTML =
         "<b>" + r.label + "</b>" +
         "<span>" + fmtKm(r.km) + (r.minutes ? " · " + fmtDuration(r.minutes) : "") + "</span>" +
         "<em>" + (counted >= LIMIT_KM ? "qualifies — " : "falls short — ") + fmtKm(counted) + " counted</em>";
       btn.addEventListener("click", function () {
-        lastRoute = r;
+        roadRoute = r;
+        chooseRoute();
         applyBorderDeduction();
         recalc();                     /* redraws the picker, so the choice shows */
       });
@@ -880,7 +897,15 @@
       })
       .then(function (found) {
         routes = found;
-        lastRoute = found[0];
+        roadRoute = found[0];
+        crowRoute = {
+          km: haversineKm(places.from, places.to),
+          minutes: null,
+          source: "crow",
+          label: "As the crow flies",
+          line: [[places.from.lat, places.from.lon], [places.to.lat, places.to.lon]]
+        };
+        chooseRoute();
         say("Finding the city borders…");
         /* A missing border costs the deduction, not the ruling, so a failure
            here must not sink the calculation. */
@@ -932,7 +957,7 @@
       places = { from: null, to: null };
       cities = { from: null, to: null };
       routes = [];
-      lastRoute = null;
+      roadRoute = crowRoute = lastRoute = null;
       edgeTouched = false;
       $("routePick").hidden = true;
       $("edgeHint").className = "hint";
@@ -946,8 +971,20 @@
     });
 
     /* Any change to the circumstances re-runs the ruling on the same distance. */
-    ["qReturn", "qIntent", "qWatan", "qTenDays", "qHesitant", "qNewLongStay", "qPassWatan", "qFrequent", "qSin"]
+    ["qIntent", "qWatan", "qTenDays", "qHesitant", "qNewLongStay", "qPassWatan", "qFrequent", "qSin"]
       .forEach(function (id) { $(id).addEventListener("change", recalc); });
+
+    document.querySelectorAll("input[name='trip']").forEach(function (el) {
+      el.addEventListener("change", recalc);
+    });
+    document.querySelectorAll("input[name='measure']").forEach(function (el) {
+      el.addEventListener("change", function () {
+        if (!roadRoute) return;       /* nothing measured yet */
+        chooseRoute();
+        applyBorderDeduction();
+        recalc();
+      });
+    });
     $("edgeKm").addEventListener("input", function () { edgeTouched = true; recalc(); });
     window.addEventListener("resize", function () {
       if (mapState.map && !$("mapCard").hidden) mapState.map.invalidateSize();
@@ -955,7 +992,9 @@
 
     $("manualKm").addEventListener("input", function () {
       var v = parseFloat(this.value);
-      if (!isNaN(v) && v >= 0) { lastRoute = { km: toKm(v), minutes: null, source: "manual" }; }
+      if (!isNaN(v) && v >= 0) {
+        lastRoute = roadRoute = { km: toKm(v), minutes: null, source: "manual" };
+      }
       recalc();
     });
 
