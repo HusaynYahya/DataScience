@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Take one reaction you had, answer a short series of questions about it, and get a reading in Jungian terms with a protocol for the next time it fires. Runs entirely in your browser." />
+  <meta name="theme-color" content="#0e1017" />
+  <meta name="robots" content="noindex" />
+  <title>Psyche — a reading of one reaction</title>
+  <link rel="stylesheet" href="psyche.css" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%238fa7c9' stroke-width='6'%3E%3Ccircle cx='50' cy='50' r='34'/%3E%3Cpath d='M16,50A34,34,0,0,0,84,50Z' fill='%238fa7c9' stroke='none'/%3E%3C/g%3E%3C/svg%3E" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="masthead">
+    <div class="wrap masthead__in">
+      <a class="mark" href="./" aria-label="Psyche — start again">
+        <svg viewBox="0 0 100 100" width="26" height="26" aria-hidden="true" focusable="false">
+          <circle cx="50" cy="50" r="34" fill="none" stroke="currentColor" stroke-width="4"/>
+          <path d="M16 50A34 34 0 0 0 84 50Z" fill="currentColor"/>
+        </svg>
+        <span>Psyche</span>
+      </a>
+      <nav class="masthead__nav">
+        <button type="button" class="linkbtn" data-go="journal">Journal <span class="count" data-journal-count hidden></span></button>
+        <button type="button" class="linkbtn" data-go="about">About</button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+
+    <!-- ── 1. The account ─────────────────────────────────────────────── -->
+    <section class="step" data-step="account">
+      <h1 tabindex="-1">Something got you, and it was bigger than it should have been.</h1>
+      <p class="lede">
+        Describe one reaction — what happened, and what it did to you. Then answer
+        seven questions about it. At the end you get a reading in Jungian terms,
+        the evidence it rests on, and something to actually do.
+      </p>
+
+      <form data-account-form novalidate>
+        <label class="field">
+          <span class="field__label">The situation, and how you reacted</span>
+          <span class="field__hint">
+            Write it as it comes. What was said or done, what you did, and what it
+            felt like afterwards. Nobody reads this but you — it never leaves this browser.
+          </span>
+          <textarea data-account rows="9" required
+            placeholder="In the meeting she said the delay was down to me. I laughed and said it was fine. Then I couldn't think about anything else for the rest of the day…"></textarea>
+        </label>
+        <p class="err" data-account-err role="alert" hidden></p>
+        <div class="actions">
+          <button class="btn btn--solid" type="submit">Begin</button>
+          <button class="btn" type="button" data-example>Use an example</button>
+        </div>
+      </form>
+
+      <div class="riskslot" data-risk-account hidden></div>
+
+      <p class="fineprint">
+        This is a reflective instrument, not therapy and not a diagnosis. It has
+        no idea who you are and only your own account to go on.
+      </p>
+    </section>
+
+    <!-- ── 2. The questions ───────────────────────────────────────────── -->
+    <section class="step" data-step="question" hidden>
+      <p class="progress"><span data-progress-text></span></p>
+      <div class="progress__bar" role="presentation"><i data-progress-fill></i></div>
+
+      <h1 class="q" tabindex="-1" data-question-text></h1>
+
+      <details class="why" data-why-wrap>
+        <summary>Why this question</summary>
+        <p data-question-why></p>
+      </details>
+
+      <div data-options class="options"></div>
+
+      <div data-textanswer hidden>
+        <label class="field">
+          <span class="field__label" data-text-label>Your answer</span>
+          <input type="text" data-text-input maxlength="80" autocomplete="off" />
+        </label>
+        <div class="actions">
+          <button class="btn btn--solid" type="button" data-text-next>Next</button>
+          <button class="btn btn--quiet" type="button" data-text-skip>I'd rather not say</button>
+        </div>
+      </div>
+
+      <div class="actions actions--foot">
+        <button class="btn btn--quiet" type="button" data-back>Back</button>
+        <button class="btn btn--quiet" type="button" data-restart>Start over</button>
+      </div>
+    </section>
+
+    <!-- ── 3. The reading ─────────────────────────────────────────────── -->
+    <section class="step" data-step="reading" hidden>
+      <div class="riskslot" data-risk-reading hidden></div>
+
+      <p class="eyebrow">The formulation</p>
+      <h1 class="core" tabindex="-1" data-core></h1>
+
+      <p class="thin" data-thin hidden>
+        The evidence here is thin, which is itself worth knowing. What follows is
+        the closest reading available from what you gave, held lightly.
+      </p>
+
+      <section class="block">
+        <h2>What may be running</h2>
+        <p class="note">
+          Ranked by how much of your material each one accounts for. These are
+          hypotheses with their working shown, and the one that fits is the one
+          you recognise, not the one at the top.
+        </p>
+        <div data-readings class="readings"></div>
+      </section>
+
+      <section class="block">
+        <h2>The protocol</h2>
+        <p class="note">
+          Four timescales. The first one matters most — a complex is only
+          negotiable in the moment it fires.
+        </p>
+        <div data-protocol class="protocol"></div>
+      </section>
+
+      <div class="actions actions--foot">
+        <button class="btn btn--solid" type="button" data-save>Save to this device</button>
+        <button class="btn" type="button" data-copy>Copy as text</button>
+        <button class="btn btn--quiet" type="button" data-restart>Another reaction</button>
+      </div>
+      <p class="saved" data-saved role="status" aria-live="polite"></p>
+    </section>
+
+    <!-- ── 4. The journal ─────────────────────────────────────────────── -->
+    <section class="step" data-step="journal" hidden>
+      <h1 tabindex="-1">Journal</h1>
+      <p class="lede">
+        Saved readings, stored in this browser only. The point of keeping them is
+        the pattern across entries — the trigger column is where the complex
+        shows itself, not any single reading.
+      </p>
+      <div data-journal class="journal"></div>
+      <div class="actions actions--foot">
+        <button class="btn btn--quiet" type="button" data-go="account">New reading</button>
+        <button class="btn btn--quiet btn--danger" type="button" data-clear-journal hidden>Delete everything</button>
+      </div>
+    </section>
+
+    <!-- ── 5. About ───────────────────────────────────────────────────── -->
+    <section class="step" data-step="about" hidden>
+      <h1 tabindex="-1">About this</h1>
+
+      <h2>What it is doing</h2>
+      <p>
+        Jung's complexes are feeling-toned clusters in the unconscious that behave
+        autonomously. When one is <em>constellated</em> it takes the wheel, and the
+        giveaway is not the content of the reaction but its size: the affect does
+        not match the stimulus. So this page never asks whether you were right. It
+        asks how big the reaction was against the event, how old you felt, how
+        familiar the feeling is — and then whichever further questions best
+        separate the readings still in contention.
+      </p>
+      <p>
+        Twelve dynamics are considered: shadow projection, persona threat, the
+        inferior function, the mother and father complexes, the abandoned child,
+        puer and senex, anima and animus possession, the rescuer, the group's
+        shadow, the unlived life, and the power complex. Each is scored against
+        the signals your answers produce, and each reading is shown with the
+        evidence that carried it, so you can disagree with it specifically.
+      </p>
+
+      <h2>What it is not doing</h2>
+      <p>
+        There is no model here, no server and no cleverness — it is a rule engine
+        you could read in an afternoon (<code>engine.js</code>, with its tests in
+        <code>test/engine.test.js</code>). It cannot see you, it has only the
+        account you typed, and a reading that does not land is simply wrong. Treat
+        the output as a set of questions worth asking yourself, which is what it
+        is, and not as a finding.
+      </p>
+      <p>
+        It is not therapy, not analysis, and not a diagnosis of anything. If a
+        pattern is costing you relationships, work or sleep, that is the point at
+        which it wants a person rather than a page.
+      </p>
+
+      <h2>Where your writing goes</h2>
+      <p>
+        Nowhere. Everything runs in this browser: no network requests, no
+        analytics, no accounts. Saving a reading puts it in this browser's local
+        storage on this device, and deleting it removes it. Clearing your browser
+        data removes it too.
+      </p>
+
+      <h2>If things are worse than a reaction</h2>
+      <div class="risk risk--static">
+        <p>
+          If you are thinking about ending your life, or someone is hurting you,
+          this page is the wrong tool and you deserve a person.
+        </p>
+        <ul>
+          <li><b>UK &amp; Ireland</b> — Samaritans, free, 24 hours: <b>116 123</b></li>
+          <li><b>US &amp; Canada</b> — Suicide &amp; Crisis Lifeline: call or text <b>988</b></li>
+          <li><b>Anywhere</b> — <a href="https://findahelpline.com" rel="noopener noreferrer" target="_blank">findahelpline.com</a></li>
+          <li>If you are in immediate danger, emergency services.</li>
+        </ul>
+      </div>
+
+      <div class="actions actions--foot">
+        <button class="btn btn--quiet" type="button" data-go="account">Back</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="foot">
+    <div class="wrap">
+      <p>Runs entirely in your browser. Nothing is sent anywhere.</p>
+    </div>
+  </footer>
+
+  <script src="engine.js"></script>
+  <script src="psyche.js" defer></script>
+</body>
+</html>
