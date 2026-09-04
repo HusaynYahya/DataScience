@@ -24,12 +24,33 @@ Two documents hold the plan in readable form:
   and reps, or seconds for holds), the skill ladders, and the twelve-week map.
 - **Eat** — the halal meal library, plus a suggestion built around whatever macros
   you have left today.
+- **Sleep** — bedtime and waking time per night, hours computed, and a span chart
+  showing *when* you slept across the last fortnight. Tracks average duration,
+  usual lights-out, and bedtime drift — the number most people never look at.
+- **Ihsan** — the daily spiritual account, built on the classical triad:
+  *mushāraṭa* (the morning pledge), *murāqaba* (watchfulness through the day) and
+  *muḥāsaba* (the reckoning at night), plus your own editable non-negotiables. A
+  thirty-day board shows every practice as a filled square or a gap.
 - **Stack** — the supplement list with doses and reasons, ticked off daily.
-- **Trends** — bodyweight, energy against target, and whether the weekly rate of
-  change is inside the lean-gain band.
+- **Progress** — personal bests read back from every set you logged (estimated
+  1RM by the Epley formula), one lift charted over time, the skill ladders with
+  the rung you currently own, tape measurements, a four-row consistency board,
+  and bodyweight against energy.
 
 Targets recalculate from your age, height, weight, training frequency and goal —
 Mifflin–St Jeor for resting rate, an activity multiplier, then a goal adjustment.
+
+Nothing in Progress is entered twice: personal bests, streaks and the consistency
+board are all derived from the sets, meals, nights and ticks already logged.
+
+## On the Ihsan tab
+
+The three practices are treated as one in the akhlāq literature — al-Ghazālī
+devotes a book of the *Iḥyāʾ* to *murāqaba* and *muḥāsaba* together — and the
+structure is deliberately kept: a pledge with no reckoning is a wish, and a
+reckoning with no pledge has nothing to measure against. The standing pledge and
+the non-negotiables are yours to write; the six defaults are a starting point and
+every one of them can be edited or removed.
 
 ## Running it
 

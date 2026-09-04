@@ -242,14 +242,74 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 .note{font-size:.79rem;color:var(--ink-3);max-width:70ch}
 .callout{border-left:2px solid var(--accent);background:var(--accent-soft);padding:11px 14px;border-radius:0 8px 8px 0;font-size:.85rem}
 
+/* ── Sleep ─────────────────────────────────────────────────────────── */
+.sleepcard{display:grid;grid-template-columns:repeat(auto-fit,minmax(112px,1fr));gap:12px;align-items:end}
+.hours{font-family:var(--mono);font-size:2.1rem;font-weight:600;letter-spacing:-.03em;line-height:1}
+.quality{display:flex;gap:5px}
+.quality button{width:30px;height:30px;border-radius:7px;border:1px solid var(--line-2);background:var(--sunk);
+                cursor:pointer;font-family:var(--mono);font-size:.78rem;color:var(--ink-2)}
+.quality button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+.spanrow{display:grid;grid-template-columns:58px minmax(0,1fr) 46px;gap:10px;align-items:center;font-size:.76rem}
+.spanrow .lb{font-family:var(--mono);color:var(--ink-3);font-size:.7rem}
+.spantrack{position:relative;height:15px;border-radius:4px;background:var(--track)}
+.spantrack i{position:absolute;top:0;height:100%;border-radius:4px;background:var(--accent)}
+.spantrack i.short{background:var(--warn)}
+.spanrow .hh{font-family:var(--mono);text-align:right;font-variant-numeric:tabular-nums}
+.spanscale{display:grid;grid-template-columns:58px minmax(0,1fr) 46px;gap:10px;font-size:.66rem;font-family:var(--mono);color:var(--ink-3)}
+.spanscale div:nth-child(2){display:flex;justify-content:space-between}
+
+/* ── Ihsan ──────────────────────────────────────────────────────────── */
+.triad{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:1px;background:var(--surface);
+       border-radius:0 0 var(--r) var(--r);overflow:hidden}
+.tri{background:var(--surface);padding:15px 17px;display:flex;flex-direction:column;gap:8px;box-shadow:0 0 0 1px var(--line)}
+.tri .ar{font-family:var(--disp);font-stretch:100%;font-size:1.05rem;font-weight:650;color:var(--accent)}
+.tri .when{font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.nnrow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:center;
+       padding:10px 18px;border-bottom:1px solid var(--line)}
+.nnrow:last-child{border-bottom:0}
+.nnrow .streak{font-family:var(--mono);font-size:.72rem;color:var(--ink-3)}
+.nnrow.hit .streak{color:var(--good)}
+.gridboard{overflow-x:auto;padding:4px 18px 16px}
+.gboard{display:grid;gap:3px;min-width:520px}
+.glabel{font-size:.75rem;color:var(--ink-2);padding-right:12px;white-space:nowrap;overflow:hidden;
+        text-overflow:ellipsis;display:block;line-height:1.9}
+.gcells{display:grid;gap:3px}
+.gc{aspect-ratio:1;border-radius:2px;background:var(--track);min-width:7px}
+.gc.on{background:var(--accent)}
+.gc.part{background:var(--accent);opacity:.42}
+.gc.future{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.rating{display:flex;gap:6px;flex-wrap:wrap}
+.rating button{padding:5px 11px;border-radius:999px;border:1px solid var(--line-2);background:var(--sunk);cursor:pointer;font-size:.8rem}
+.rating button[aria-pressed="true"]{background:var(--accent);border-color:var(--accent);color:var(--accent-ink);font-weight:600}
+
+/* ── Progress ───────────────────────────────────────────────────────── */
+.prtable{width:100%;border-collapse:collapse;font-size:.86rem}
+.prtable th{text-align:left;font-family:var(--mono);font-size:.66rem;letter-spacing:.1em;text-transform:uppercase;
+            color:var(--ink-3);font-weight:500;padding:0 12px 8px 0;border-bottom:1px solid var(--line)}
+.prtable td{padding:9px 12px 9px 0;border-bottom:1px solid var(--line)}
+.prtable tr:last-child td{border-bottom:0}
+.prtable td.n{font-family:var(--mono);font-variant-numeric:tabular-nums;white-space:nowrap}
+.prtable td.up{color:var(--good);font-family:var(--mono);font-size:.8rem}
+.skillrow{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 14px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.skillrow:last-child{border-bottom:0}
+.rungs{grid-column:1/-1;display:flex;gap:4px}
+.rung{flex:1;height:9px;border-radius:3px;background:var(--track);cursor:pointer;border:0;padding:0;
+      box-shadow:inset 0 0 0 1px var(--line-2)}
+.rung.on{background:var(--accent);box-shadow:none}
+.rung:hover{box-shadow:inset 0 0 0 1px var(--accent)}
+.rungname{font-size:.78rem;color:var(--ink-2);font-family:var(--mono)}
+
 /* ── Responsive ─────────────────────────────────────────────────────── */
 @media (max-width:880px){
   .shell{grid-template-columns:1fr}
   .rail{position:fixed;bottom:0;left:0;right:0;top:auto;height:auto;border-right:0;border-top:1px solid var(--line);
         flex-direction:row;padding:6px 8px calc(6px + env(safe-area-inset-bottom));z-index:50;gap:0}
   .brand,.railfoot{display:none}
-  .nav{flex-direction:row;width:100%;gap:0}
-  .nav button{flex-direction:column;gap:2px;font-size:.66rem;padding:6px 2px;justify-content:center;text-align:center}
+  .nav{flex-direction:row;width:100%;gap:0;overflow-x:auto;scrollbar-width:none}
+  .nav::-webkit-scrollbar{display:none}
+  .nav button{flex-direction:column;gap:2px;font-size:.6rem;padding:6px 2px;justify-content:center;text-align:center;
+              flex:1 0 auto;min-width:52px}
+  .glyph{font-size:1rem}
   .nav button[aria-current="true"]{box-shadow:none;background:var(--accent-soft)}
   .main{padding:20px 16px 92px}
   .today-top{grid-template-columns:1fr}
@@ -270,8 +330,10 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
       <button role="tab" data-view="today" aria-current="true"><span class="glyph">◉</span>Today</button>
       <button role="tab" data-view="train"><span class="glyph">▲</span>Train</button>
       <button role="tab" data-view="eat"><span class="glyph">◍</span>Eat</button>
+      <button role="tab" data-view="sleep"><span class="glyph">☾</span>Sleep</button>
+      <button role="tab" data-view="ihsan"><span class="glyph">✧</span>Ihsan</button>
       <button role="tab" data-view="stack"><span class="glyph">◇</span>Stack</button>
-      <button role="tab" data-view="trends"><span class="glyph">◢</span>Trends</button>
+      <button role="tab" data-view="progress"><span class="glyph">◢</span>Progress</button>
     </div>
     <div class="railfoot">
       <span class="chip-status"><i class="dot" id="dotSync"></i><span id="lblSync">Local only</span></span>
@@ -335,6 +397,50 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
               </label>
             </div>
             <div id="suppMini" class="grid" style="gap:6px"></div>
+          </div>
+        </section>
+      </div>
+
+      <div class="today-top">
+        <section class="panel">
+          <header><h2>Last night</h2><span class="eyebrow" id="sleepVerdict">—</span></header>
+          <div class="body" style="display:flex;flex-direction:column;gap:14px">
+            <div class="sleepcard">
+              <label class="field">Went to bed<input type="time" id="bedIn"></label>
+              <label class="field">Woke<input type="time" id="wakeIn"></label>
+              <div>
+                <div class="eyebrow">Slept</div>
+                <div class="hours" id="sleepHours">—</div>
+              </div>
+            </div>
+            <div>
+              <div class="eyebrow" style="margin-bottom:6px">How it felt</div>
+              <div class="quality" id="sleepQuality">
+                <button data-q="1" title="Wrecked">1</button><button data-q="2">2</button>
+                <button data-q="3">3</button><button data-q="4">4</button>
+                <button data-q="5" title="Fully rested">5</button>
+              </div>
+            </div>
+            <p class="note" id="sleepNote">Sleep is where the training turns into muscle. Under seven hours costs you
+               strength, appetite control and recovery before it costs you anything else.</p>
+          </div>
+        </section>
+
+        <section class="panel">
+          <header><h2>The day's account</h2><span class="eyebrow" id="deenState">—</span></header>
+          <div class="body" style="display:flex;flex-direction:column;gap:12px">
+            <label class="row" style="gap:9px;align-items:flex-start">
+              <input type="checkbox" id="pledgeTick">
+              <span><strong style="font-size:.9rem">Pledge made</strong>
+                <span class="note" style="display:block" id="pledgeEcho">—</span></span>
+            </label>
+            <div id="nnMini" class="grid" style="gap:6px"></div>
+            <label class="row" style="gap:9px;align-items:flex-start">
+              <input type="checkbox" id="muhTick">
+              <span><strong style="font-size:.9rem">Accounted for the day</strong>
+                <span class="note" style="display:block">Muhasabah, before sleep</span></span>
+            </label>
+            <button class="btn" id="goIhsan">Open the full account →</button>
           </div>
         </section>
       </div>
@@ -493,6 +599,145 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
       </section>
     </section>
 
+    <!-- ══ SLEEP ══════════════════════════════════════════════════════ -->
+    <section class="view" id="v-sleep">
+      <div class="pagehead">
+        <div>
+          <div class="eyebrow">Hours and hours kept</div>
+          <h1>Sleep</h1>
+          <p class="lede">Two numbers matter and they are not the same: how long you slept, and whether you slept at the
+             same time. The second one is what most people get wrong, and it costs about as much as an hour of the first.</p>
+        </div>
+        <label class="field" style="width:auto">Nightly target
+          <select id="sleepTarget" style="width:auto">
+            <option value="7">7 hours</option><option value="7.5">7½ hours</option>
+            <option value="8">8 hours</option><option value="8.5">8½ hours</option><option value="9">9 hours</option>
+          </select>
+        </label>
+      </div>
+
+      <section class="panel">
+        <header><h2>At a glance</h2><span class="eyebrow" id="sleepRange">Last 14 nights</span></header>
+        <div class="stats" id="sleepStats" style="border-radius:0 0 var(--r) var(--r)"></div>
+      </section>
+
+      <section class="panel">
+        <header><h2>When you slept</h2><span class="eyebrow">Each bar runs from lights-out to waking</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:5px">
+          <div class="spanscale"><div></div><div id="spanTicks"></div><div></div></div>
+          <div id="sleepSpans" style="display:flex;flex-direction:column;gap:4px"></div>
+          <div class="legend" style="padding:10px 0 0">
+            <span><i class="swatch" style="background:var(--accent)"></i>Hit the target</span>
+            <span><i class="swatch" style="background:var(--warn)"></i>Short of it</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Getting it right</h2><span class="eyebrow">What actually moves the number</span></header>
+        <div class="body" id="sleepRules" style="display:flex;flex-direction:column;gap:12px"></div>
+      </section>
+    </section>
+
+    <!-- ══ IHSAN ══════════════════════════════════════════════════════ -->
+    <section class="view" id="v-ihsan">
+      <div class="pagehead">
+        <div>
+          <div class="eyebrow">Mushāraṭa · Murāqaba · Muḥāsaba</div>
+          <h1>The daily account</h1>
+          <p class="lede">A day held between two conversations with yourself: a pledge in the morning setting the terms,
+             watchfulness through the hours, and an accounting at night. The three are treated as one practice in the
+             classical works on akhlāq — al-Ghazālī gives them a book of the <em>Iḥyāʾ</em> to themselves — and they only
+             work together. A pledge with no reckoning is a wish; a reckoning with no pledge has nothing to measure.</p>
+        </div>
+      </div>
+
+      <section class="panel">
+        <header><h2>The three</h2><span class="eyebrow" id="loopStreak">—</span></header>
+        <div class="triad">
+          <div class="tri">
+            <div class="ar">Mushāraṭa</div><div class="when">Morning · the pledge</div>
+            <p class="note">Stipulate the terms with yourself before the day starts. Name the one thing you will hold to
+               and the one thing you will keep away from.</p>
+          </div>
+          <div class="tri">
+            <div class="ar">Murāqaba</div><div class="when">Through the day · watchfulness</div>
+            <p class="note">Sitting with the awareness that you are seen. Two short sittings beat one long one, and the
+               minutes matter less than the fact that they happened.</p>
+          </div>
+          <div class="tri">
+            <div class="ar">Muḥāsaba</div><div class="when">Night · the reckoning</div>
+            <p class="note">Call yourself to account before you are called. Honest, brief, and written down — memory
+               flatters, paper doesn't.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Your standing pledge</h2><span class="eyebrow">Renewed each morning</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:12px">
+          <textarea id="standingPledge" placeholder="What you have bound yourself to, in your own words."></textarea>
+          <div class="row"><button class="btn" id="savePledge">Save the pledge</button></div>
+          <hr class="rule">
+          <label class="row" style="gap:9px;align-items:flex-start">
+            <input type="checkbox" id="pledgeTick2">
+            <span><strong>I made it this morning</strong>
+              <span class="note" style="display:block">Tick it when you have actually said it, not when you intend to.</span></span>
+          </label>
+          <label class="field">Today's one thing
+            <input type="text" id="pledgeFocus" placeholder="The single thing this day is being held to.">
+          </label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Murāqaba</h2><span class="eyebrow" id="muraqabaTotal">—</span></header>
+        <div class="body">
+          <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
+            <label class="field">Morning sitting (minutes)<input type="number" id="muraqAm" min="0" max="180" step="1"></label>
+            <label class="field">Evening sitting (minutes)<input type="number" id="muraqPm" min="0" max="180" step="1"></label>
+          </div>
+          <p class="note" style="margin-top:12px">Ten minutes at each end of the day is a real practice. Two minutes done
+             daily is worth more than forty done once a fortnight.</p>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Daily non-negotiables</h2><span class="eyebrow" id="nnScore">—</span></header>
+        <div id="nnList"></div>
+        <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
+          <input type="text" id="nnNew" placeholder="Add one of your own" style="flex:1 1 220px;width:auto">
+          <button class="btn" id="nnAdd">Add</button>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Muḥāsaba</h2><span class="eyebrow">Before sleep</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:14px">
+          <div>
+            <div class="eyebrow" style="margin-bottom:6px">Did the day hold to the pledge?</div>
+            <div class="rating" id="muhRating">
+              <button data-r="3">Held it</button><button data-r="2">Mostly</button>
+              <button data-r="1">Slipped</button><button data-r="0">Broke it</button>
+            </div>
+          </div>
+          <label class="field">The account
+            <textarea id="muhNote" placeholder="What was owed, what was given, what was wasted. Short and honest."></textarea>
+          </label>
+          <label class="field">One correction for tomorrow
+            <input type="text" id="muhFix" placeholder="The single thing to do differently.">
+          </label>
+          <label class="row" style="gap:9px"><input type="checkbox" id="muhTick2">
+            <span><strong>The account is closed for today</strong></span></label>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>The last thirty days</h2><span class="eyebrow">A filled square is a day it happened</span></header>
+        <div class="gridboard"><div class="gboard" id="deenBoard"></div></div>
+      </section>
+    </section>
+
     <!-- ══ STACK ══════════════════════════════════════════════════════ -->
     <section class="view" id="v-stack">
       <div class="pagehead">
@@ -524,18 +769,56 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
       </section>
     </section>
 
-    <!-- ══ TRENDS ═════════════════════════════════════════════════════ -->
-    <section class="view" id="v-trends">
+    <!-- ══ PROGRESS ═══════════════════════════════════════════════════ -->
+    <section class="view" id="v-progress">
       <div class="pagehead">
         <div>
-          <div class="eyebrow">Last 30 days</div>
-          <h1>Trends</h1>
-          <p class="lede">A lean gain should show roughly 0.25–0.5% of bodyweight added per week. Faster than that is
-             mostly fat; flat for a fortnight means eat more.</p>
+          <div class="eyebrow">Everything that is supposed to be moving</div>
+          <h1>Progress</h1>
+          <p class="lede">Four things tell you whether a block worked: the bar got heavier, the skills moved up a rung,
+             bodyweight went the right way at the right speed, and you actually turned up. Everything here is read back
+             from what you logged — nothing to fill in twice.</p>
         </div>
       </div>
+
       <section class="panel">
-        <header><h2>At a glance</h2><span class="eyebrow" id="statsNote">—</span></header>
+        <header><h2>Personal bests</h2><span class="eyebrow">Estimated one-rep max, from every set you logged</span></header>
+        <div class="body" style="overflow-x:auto;padding-bottom:6px">
+          <table class="prtable" id="prTable"></table>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header>
+          <h2>One lift over time</h2>
+          <select id="liftPick" style="width:auto"></select>
+        </header>
+        <div class="chartwrap"><svg class="chart" id="liftChart" viewBox="0 0 720 240" role="img" aria-label="Estimated one-rep max over time for the selected lift"></svg></div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Skill ladders</h2><span class="eyebrow">Tap the rung you own today</span></header>
+        <div id="skillProgress"></div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Tape</h2><span class="eyebrow">Once a week, same time, same conditions</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:12px">
+          <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(112px,1fr))" id="measureInputs"></div>
+          <div style="overflow-x:auto"><table class="prtable" id="measureTable"></table></div>
+        </div>
+      </section>
+
+      <section class="panel">
+        <header><h2>Turning up</h2><span class="eyebrow" id="consistencyNote">Sessions, protein and the account, week by week</span></header>
+        <div class="gridboard"><div class="gboard" id="consistBoard"></div></div>
+        <div class="legend"><span><i class="swatch" style="background:var(--accent)"></i>Done</span>
+          <span><i class="swatch" style="background:var(--accent);opacity:.42"></i>Partly</span>
+          <span><i class="swatch" style="background:var(--track)"></i>Missed or not logged</span>
+          <span><i class="swatch" style="background:transparent;box-shadow:inset 0 0 0 1px var(--line-2)"></i>Rest day</span></div>
+      </section>
+      <section class="panel">
+        <header><h2>Bodyweight and fuel</h2><span class="eyebrow" id="statsNote">—</span></header>
         <div class="stats" id="statTiles" style="border-radius:0 0 var(--r) var(--r)"></div>
       </section>
       <section class="panel">
@@ -861,10 +1144,35 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
 
 /* ── State ──────────────────────────────────────────────────────────── */
 const LS = "fuelframe.v1:";
+const NON_NEG = [
+  { id:"fajr",    label:"Fajr in its time" },
+  { id:"prayers", label:"Five prayers, none delayed" },
+  { id:"quran",   label:"Qur'an — a daily portion" },
+  { id:"dhikr",   label:"Morning and evening dhikr" },
+  { id:"salawat", label:"Salawāt" },
+  { id:"istigh",  label:"Istighfār before sleep" }
+];
+const SLEEP_RULES = [
+  { h:"The same wake time, every day", p:"Including the weekend. Anchoring the morning fixes the night far more reliably than trying to fall asleep earlier — the body sets its clock from light at waking, not from when you get into bed." },
+  { h:"Caffeine has a five-hour half-life", p:"A 200 mg pre-workout at 5 pm still has 100 mg in you at 10. If you train in the evening, that is the trade you're making." },
+  { h:"Under seven hours costs you the session", p:"Sleep restriction shows up as lower training volume, worse appetite control and higher perceived effort at the same load, well before it shows up as feeling tired." },
+  { h:"Dark, cool, and off the phone", p:"Around 18 °C, blackout if you can, and the screen out of the room. The last one is the hardest and the one that works." },
+  { h:"Sleep is when the training lands", p:"Growth hormone is pulsed in the first deep cycles and muscle protein synthesis runs overnight. A 3,000 kcal day on six hours' sleep is a worse investment than 2,700 on eight." }
+];
+const MAIN_LIFTS = ["Barbell bench press","Weighted pull-up","Back squat","Trap-bar deadlift","Standing overhead press",
+                    "Barbell row","Romanian deadlift","Weighted dip","Weighted chin-up"];
+const ADDED_WEIGHT = ["Weighted pull-up","Weighted dip","Weighted chin-up"];
+const TAPE = [{k:"chest",l:"Chest"},{k:"arm",l:"Arm, flexed"},{k:"waist",l:"Waist"},{k:"thigh",l:"Thigh"},{k:"shoulder",l:"Shoulders"}];
+
 const DEFAULT_PROFILE = { age:21, sex:"male", heightCm:178, weightKg:75, activity:"mod", goal:"gain",
-                          startDate:keyOf(new Date()), seeded:false };
+                          startDate:keyOf(new Date()), seeded:false, sleepTarget:8,
+                          standingPledge:"", nonNegotiables:NON_NEG.slice(), skills:{} };
 const emptyDay = k => ({ date:k, entries:[], training:{ dayKey:null, sets:{}, done:{} },
-                         supps:{}, waterMl:0, weightKg:null });
+                         supps:{}, waterMl:0, weightKg:null,
+                         sleep:{ bed:"", wake:"", quality:null },
+                         deen:{ pledge:{made:false, focus:""}, muraq:{am:0,pm:0},
+                                muh:{done:false, rating:null, note:"", fix:""}, nn:{} },
+                         measure:{} });
 
 let db = null, askClaude = null, canSendImages = false;
 let profile = Object.assign({}, DEFAULT_PROFILE);
@@ -917,6 +1225,8 @@ async function boot(){
 async function hydrate(){
   const p = await loadDoc("profile/main");
   if(p) profile = Object.assign({}, DEFAULT_PROFILE, p);
+  if(!Array.isArray(profile.nonNegotiables) || !profile.nonNegotiables.length) profile.nonNegotiables = NON_NEG.slice();
+  if(!profile.skills) profile.skills = {};
   targets = computeTargets(profile);
   await switchDay(dateKey, true);
   await loadHistory();
@@ -930,6 +1240,14 @@ async function switchDay(k, quiet){
   if(!day.training) day.training = { dayKey:null, sets:{}, done:{} };
   if(!day.training.dayKey) day.training.dayKey = scheduledDayKey(k);
   if(!day.entries) day.entries = [];
+  const blank = emptyDay(k);
+  day.sleep   = Object.assign({}, blank.sleep, day.sleep);
+  day.deen    = Object.assign({}, blank.deen, day.deen);
+  day.deen.pledge = Object.assign({}, blank.deen.pledge, day.deen.pledge);
+  day.deen.muraq  = Object.assign({}, blank.deen.muraq,  day.deen.muraq);
+  day.deen.muh    = Object.assign({}, blank.deen.muh,    day.deen.muh);
+  day.deen.nn     = day.deen.nn || {};
+  day.measure = day.measure || {};
   if(k===keyOf(new Date()) && !day.entries.length && !profile.seeded){ seedExample(); }
   if(!quiet) render();
 }
@@ -1003,7 +1321,8 @@ function phaseOf(w){ return (w%4===0) ? "deload" : (w===12 ? "test" : "build"); 
 function deloadSets(n, w){ return phaseOf(w)==="deload" ? Math.max(1, n-1) : n; }
 
 /* ── Render: master ─────────────────────────────────────────────────── */
-function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack(); renderTrends(); }
+function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
+                   renderSleep(); renderIhsan(); renderTrends(); renderProgress(); }
 
 function renderHeader(){
   const w = weekNumber(dateKey), sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
@@ -1504,6 +1823,279 @@ async function suggestMeal(){
   }
 }
 
+/* ── Sleep ──────────────────────────────────────────────────────────── */
+const toMin = t => { if(!t) return null; const [h,m]=t.split(":").map(Number);
+                     return Number.isFinite(h)&&Number.isFinite(m) ? h*60+m : null; };
+const asClock = m => String(Math.floor(((m%1440)+1440)%1440/60)).padStart(2,"0")+":"+String(m%60).padStart(2,"0");
+function sleepHours(sl){
+  const b = toMin(sl && sl.bed), w = toMin(sl && sl.wake);
+  if(b==null || w==null) return null;
+  let mins = w - b; if(mins <= 0) mins += 1440;
+  return round(mins/60, 2);
+}
+const hm = h => h==null ? "—" : Math.floor(h)+"h "+String(Math.round((h%1)*60)).padStart(2,"0")+"m";
+
+function renderSleep(){
+  const tgt = num(profile.sleepTarget) || 8;
+  $("#sleepTarget").value = String(tgt);
+  const h = sleepHours(day.sleep);
+  $("#bedIn").value  = day.sleep.bed  || "";
+  $("#wakeIn").value = day.sleep.wake || "";
+  $("#sleepHours").textContent = h==null ? "—" : hm(h);
+  $("#sleepVerdict").textContent = h==null ? "Not logged" : (h>=tgt ? "On target" : round(tgt-h,1)+" h short");
+  $$("#sleepQuality button").forEach(b=> b.setAttribute("aria-pressed", String(Number(b.dataset.q)===day.sleep.quality)));
+
+  const nights = seriesDays(14).map(d=>{
+    const rec = dayRec(d.date);
+    return { date:d.date, sl:rec && rec.sleep, h:sleepHours(rec && rec.sleep) };
+  });
+  const done = nights.filter(x=>x.h!=null);
+  const avg = done.length ? done.reduce((a,b)=>a+b.h,0)/done.length : null;
+  const beds = done.map(x=>{ let m = toMin(x.sl.bed); if(m < 720) m += 1440; return m; });
+  const avgBed = beds.length ? beds.reduce((a,b)=>a+b,0)/beds.length : null;
+  const spread = beds.length>1 ? Math.round(Math.sqrt(beds.reduce((a,b)=>a+Math.pow(b-avgBed,2),0)/beds.length)) : null;
+  $("#sleepStats").innerHTML = [
+    ["Average night", avg==null?"—":hm(avg), done.length+" of 14 nights logged"],
+    ["Hit the target", done.length?done.filter(x=>x.h>=tgt).length+"/"+done.length:"—", tgt+" hours or more"],
+    ["Usual lights-out", avgBed==null?"—":asClock(Math.round(avgBed)), "average across logged nights"],
+    ["Bedtime drift", spread==null?"—":"± "+spread+" min",
+      spread==null?"needs two nights":spread<30?"tight — this is the good one":spread<60?"a little loose":"this is costing you an hour of sleep"]
+  ].map(([k,v,sub])=>'<div class="stat"><div class="v">'+esc(v)+'</div><div class="k">'+esc(k)+'</div>'
+    + '<div class="k dim" style="font-size:.71rem">'+esc(sub)+'</div></div>').join("");
+
+  /* the span chart: an 18-hour clock from 18:00 to 12:00 the next day */
+  const T0 = 18*60, SPAN = 18*60;
+  $("#spanTicks").innerHTML = ["18:00","22:00","02:00","06:00","10:00"]
+    .map(t=>'<span>'+t+'</span>').join("");
+  $("#sleepSpans").innerHTML = nights.map(x=>{
+    const lbl = parseKey(x.date).toLocaleDateString(undefined,{weekday:"short", day:"numeric"});
+    if(x.h==null) return '<div class="spanrow"><span class="lb">'+esc(lbl)+'</span>'
+      + '<div class="spantrack"></div><span class="hh dim">—</span></div>';
+    let b = toMin(x.sl.bed); if(b < 720) b += 1440;
+    const startPct = clamp((b - T0)/SPAN, 0, 1)*100;
+    const widthPct = clamp((x.h*60)/SPAN, 0, 1 - startPct/100)*100;
+    return '<div class="spanrow"><span class="lb">'+esc(lbl)+'</span>'
+      + '<div class="spantrack"><i class="'+(x.h>=tgt?"":"short")+'" style="left:'+startPct.toFixed(1)+'%;width:'
+      + Math.max(1.5,widthPct).toFixed(1)+'%" title="'+esc(x.sl.bed+" to "+x.sl.wake)+'"></i></div>'
+      + '<span class="hh">'+round(x.h,1)+' h</span></div>';
+  }).join("");
+
+  $("#sleepRules").innerHTML = SLEEP_RULES.map(r=>
+    '<div><div style="font-weight:600">'+esc(r.h)+'</div><p class="muted" style="font-size:.88rem;margin-top:2px">'+esc(r.p)+'</p></div>').join("");
+}
+
+/* ── Ihsan ──────────────────────────────────────────────────────────── */
+function dayRec(k){ if(k===day.date) return day; return history.find(d=>d && d.date===k) || null; }
+function deenOf(rec){
+  const blank = emptyDay("x").deen;
+  if(!rec || !rec.deen) return blank;
+  return { pledge:Object.assign({}, blank.pledge, rec.deen.pledge),
+           muraq:Object.assign({}, blank.muraq, rec.deen.muraq),
+           muh:Object.assign({}, blank.muh, rec.deen.muh),
+           nn: rec.deen.nn || {} };
+}
+function streak(pred){
+  let c = 0;
+  for(let i=0;i<400;i++){
+    const d = parseKey(dateKey); d.setDate(d.getDate()-i);
+    const rec = dayRec(keyOf(d));
+    if(rec && pred(rec)) c++;
+    else if(i===0) continue;          /* today still open — don't break the count */
+    else break;
+  }
+  return c;
+}
+
+function renderIhsan(){
+  const dn = day.deen, mins = num(dn.muraq.am) + num(dn.muraq.pm);
+  const nnList = profile.nonNegotiables || NON_NEG;
+  const kept = nnList.filter(x=>dn.nn[x.id]).length;
+
+  $("#standingPledge").value = profile.standingPledge || "";
+  $("#pledgeFocus").value = dn.pledge.focus || "";
+  $("#pledgeTick").checked = $("#pledgeTick2").checked = !!dn.pledge.made;
+  $("#pledgeEcho").textContent = dn.pledge.focus || profile.standingPledge || "Set a standing pledge in the Ihsan tab.";
+  $("#muraqAm").value = dn.muraq.am || "";
+  $("#muraqPm").value = dn.muraq.pm || "";
+  $("#muraqabaTotal").textContent = mins ? mins + " minutes today" : "Not sat today";
+  $("#muhTick").checked = $("#muhTick2").checked = !!dn.muh.done;
+  $("#muhNote").value = dn.muh.note || "";
+  $("#muhFix").value = dn.muh.fix || "";
+  $$("#muhRating button").forEach(b=> b.setAttribute("aria-pressed", String(Number(b.dataset.r)===dn.muh.rating)));
+  $("#nnScore").textContent = kept + " of " + nnList.length + " kept";
+  $("#deenState").textContent = (dn.pledge.made?1:0) + (mins?1:0) + (dn.muh.done?1:0) + " of 3 · " + kept + "/" + nnList.length;
+
+  const loop = streak(r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done; });
+  $("#loopStreak").textContent = loop ? loop + (loop===1?" day closed":" days closed in a row") : "Close the loop today";
+
+  const rowFor = (x)=>{
+    const st = streak(r=>deenOf(r).nn[x.id]);
+    return '<div class="nnrow'+(dn.nn[x.id]?" hit":"")+'">'
+      + '<input type="checkbox" data-nn="'+esc(x.id)+'"'+(dn.nn[x.id]?" checked":"")+'>'
+      + '<span>'+esc(x.label)+'</span>'
+      + '<span class="streak">'+(st?st+"d":"—")+(x.custom?' <button class="btn ghost sm" data-nndel="'+esc(x.id)+'">✕</button>':"")+'</span></div>';
+  };
+  $("#nnList").innerHTML = nnList.map(rowFor).join("");
+  $("#nnMini").innerHTML = nnList.map(x=>
+    '<label class="row" style="gap:9px;font-size:.85rem"><input type="checkbox" data-nn="'+esc(x.id)+'"'
+    + (dn.nn[x.id]?" checked":"")+'><span>'+esc(x.label)+'</span></label>').join("");
+
+  /* thirty-day board */
+  const days = [];
+  for(let i=29;i>=0;i--){ const d=parseKey(dateKey); d.setDate(d.getDate()-i); days.push(keyOf(d)); }
+  const rows = [
+    { l:"Pledge", f:r=>deenOf(r).pledge.made },
+    { l:"Murāqaba", f:r=>num(deenOf(r).muraq.am)+num(deenOf(r).muraq.pm) > 0 },
+    ...nnList.map(x=>({ l:x.label, f:r=>!!deenOf(r).nn[x.id] })),
+    { l:"Muḥāsaba", f:r=>deenOf(r).muh.done }
+  ];
+  $("#deenBoard").style.gridTemplateColumns = "minmax(96px,168px) minmax(0,1fr)";
+  $("#deenBoard").innerHTML = rows.map(row=>
+    '<div class="glabel" title="'+esc(row.l)+'">'+esc(row.l)+'</div>'
+    + '<div class="gcells" style="grid-template-columns:repeat(30,1fr)">'
+    + days.map(k=>{ const rec=dayRec(k);
+        return '<i class="gc'+(rec&&row.f(rec)?" on":"")+'" title="'+esc(prettyDate(k))+'"></i>'; }).join("")
+    + '</div>').join("");
+}
+
+/* ── Progress ───────────────────────────────────────────────────────── */
+const e1rm = (w,r) => w * (1 + r/30);
+function allDays(){
+  const m = new Map();
+  for(const d of history) if(d && d.date) m.set(d.date, d);
+  m.set(day.date, day);
+  return Array.from(m.values()).sort((a,b)=> a.date<b.date ? -1 : 1);
+}
+function liftLog(){
+  /* every logged set, resolved back to the exercise it belongs to */
+  const out = {};
+  for(const rec of allDays()){
+    const sess = rec.training && PROGRAM.days[rec.training.dayKey];
+    if(!sess || !rec.training.sets) continue;
+    for(const [i, sets] of Object.entries(rec.training.sets)){
+      const ex = sess.ex[Number(i)];
+      if(!ex || !ex.n || (ex.units && ex.units[0] !== "kg")) continue;
+      for(const st of (sets||[])){
+        const w = num(st && st.w), r = num(st && st.r);
+        if(!(w>0 && r>0 && r<=30)) continue;
+        (out[ex.nm] = out[ex.nm] || []).push({ date:rec.date, w, r, e:e1rm(w,r) });
+      }
+    }
+  }
+  return out;
+}
+function renderProgress(){
+  const log = liftLog();
+  const names = Object.keys(log).sort((a,b)=>{
+    const ai = MAIN_LIFTS.indexOf(a), bi = MAIN_LIFTS.indexOf(b);
+    return (ai<0?99:ai) - (bi<0?99:bi) || a.localeCompare(b);
+  });
+
+  /* personal-best table */
+  $("#prTable").innerHTML = names.length
+    ? '<thead><tr><th>Lift</th><th>Best set</th><th>Est. 1RM</th><th>When</th><th>Since first logged</th></tr></thead><tbody>'
+      + names.map(nm=>{
+          const rows = log[nm].slice().sort((a,b)=>b.e-a.e);
+          const best = rows[0];
+          const first = log[nm].slice().sort((a,b)=> a.date<b.date?-1:1)[0];
+          const delta = best.e - first.e;
+          return '<tr><td>'+esc(nm)+(ADDED_WEIGHT.includes(nm)?' <span class="tag">added</span>':"")+'</td>'
+            + '<td class="n">'+round(best.w,1)+' kg × '+best.r+'</td>'
+            + '<td class="n"><strong>'+round(best.e,1)+' kg</strong></td>'
+            + '<td class="n dim">'+esc(parseKey(best.date).toLocaleDateString(undefined,{day:"numeric",month:"short"}))+'</td>'
+            + '<td class="'+(delta>0.5?"up":"n dim")+'">'+(delta>0.5?"+"+round(delta,1)+" kg":"—")+'</td></tr>';
+        }).join("") + '</tbody>'
+    : '<tbody><tr><td class="dim" style="padding:22px 0">Log a set with both a weight and a rep count and your bests start '
+      + 'building here. Weighted pull-ups, dips and chins record the <em>added</em> weight.</td></tr></tbody>';
+
+  /* one lift over time */
+  const sel = $("#liftPick");
+  const chosen = sel.value && log[sel.value] ? sel.value : (names[0] || "");
+  sel.innerHTML = names.map(nm=>'<option'+(nm===chosen?" selected":"")+'>'+esc(nm)+'</option>').join("")
+    || '<option>Nothing logged yet</option>';
+  drawLift(chosen ? log[chosen] : []);
+
+  /* skill ladders */
+  $("#skillProgress").innerHTML = PROGRAM.ladders.map((l,li)=>{
+    const cur = profile.skills[l.nm];
+    const at = cur ? cur.rung : -1;
+    return '<div class="skillrow"><div><strong>'+esc(l.nm)+'</strong>'
+      + '<div class="rungname">'+(at>=0 ? esc(l.steps[at]) : "not started")+'</div></div>'
+      + '<div class="num dim" style="font-size:.76rem;text-align:right">'+(at>=0?(at+1)+" of "+l.steps.length:"—")
+      + (cur && cur.since ? '<br>since '+esc(parseKey(cur.since).toLocaleDateString(undefined,{day:"numeric",month:"short"})) : "")
+      + '</div>'
+      + '<div class="rungs">'+l.steps.map((st,i)=>
+          '<button class="rung'+(i<=at?" on":"")+'" data-rung="'+li+'" data-ri="'+i+'" title="'+esc(st)+'"'
+          + ' aria-label="'+esc(l.nm+": "+st)+'"></button>').join("")+'</div></div>';
+  }).join("");
+
+  /* tape */
+  $("#measureInputs").innerHTML = TAPE.map(t=>
+    '<label class="field">'+esc(t.l)+' (cm)<input type="number" step="0.1" min="10" max="250" data-tape="'+t.k+'" '
+    + 'value="'+(day.measure[t.k] ?? "")+'"></label>').join("");
+  const taped = allDays().filter(d=>d.measure && Object.values(d.measure).some(v=>num(v)>0)).slice(-8).reverse();
+  $("#measureTable").innerHTML = taped.length
+    ? '<thead><tr><th>Date</th>'+TAPE.map(t=>'<th>'+esc(t.l)+'</th>').join("")+'</tr></thead><tbody>'
+      + taped.map(d=>'<tr><td>'+esc(prettyDate(d.date))+'</td>'
+        + TAPE.map(t=>'<td class="n">'+(num(d.measure[t.k])?round(num(d.measure[t.k]),1):"—")+'</td>').join("")+'</tr>').join("")
+      + '</tbody>'
+    : '<tbody><tr><td class="dim" style="padding:16px 0">Take the tape once a week, first thing, same spots. '
+      + 'Arms and shoulders up while the waist holds is the shape of a lean gain going right.</td></tr></tbody>';
+
+  /* turning up */
+  const days = [];
+  for(let i=27;i>=0;i--){ const d=parseKey(dateKey); d.setDate(d.getDate()-i); days.push(keyOf(d)); }
+  const rows = [
+    { l:"Trained", f:r=>{ const sess = PROGRAM.days[r.training && r.training.dayKey];
+        if(!sess) return "rest";
+        const done = Object.values(r.training.done||{}).filter(Boolean).length;
+        return done >= sess.ex.length-1 ? "on" : done>0 ? "part" : ""; } },
+    { l:"Protein hit", f:r=>{ const t=totals(r.entries); return !t.kcal ? "" : t.protein>=targets.protein ? "on" : "part"; } },
+    { l:"Slept enough", f:r=>{ const h=sleepHours(r.sleep); return h==null?"":h>=(num(profile.sleepTarget)||8)?"on":"part"; } },
+    { l:"Account closed", f:r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done ? "on" : (d.pledge.made||d.muh.done)?"part":""; } }
+  ];
+  $("#consistBoard").style.gridTemplateColumns = "minmax(96px,168px) minmax(0,1fr)";
+  $("#consistBoard").innerHTML = rows.map(row=>
+    '<div class="glabel" title="'+esc(row.l)+'">'+esc(row.l)+'</div>'
+    + '<div class="gcells" style="grid-template-columns:repeat(28,1fr)">'
+    + days.map(k=>{ const rec=dayRec(k); const v = rec ? row.f(rec) : "";
+        const cls = v==="on"?" on" : v==="part"?" part" : v==="rest"?" future" : "";
+        return '<i class="gc'+cls+'" title="'+esc(prettyDate(k))+'"></i>'; }).join("")
+    + '</div>').join("");
+}
+
+function drawLift(sets){
+  const svg = $("#liftChart");
+  if(!sets || sets.length<2){
+    svg.innerHTML = '<text x="'+(CH.w/2)+'" y="'+(CH.h/2)+'" text-anchor="middle" class="axis" style="font-size:12px">'
+      + 'Two logged sessions and the curve starts here.</text>';
+    return;
+  }
+  /* best estimated 1RM per session date */
+  const byDate = new Map();
+  for(const st of sets) if(!byDate.has(st.date) || byDate.get(st.date).e < st.e) byDate.set(st.date, st);
+  const pts = Array.from(byDate.values()).sort((a,b)=> a.date<b.date?-1:1);
+  if(pts.length<2){ svg.innerHTML = '<text x="'+(CH.w/2)+'" y="'+(CH.h/2)+'" text-anchor="middle" class="axis" '
+      + 'style="font-size:12px">Two logged sessions and the curve starts here.</text>'; return; }
+  const vals = pts.map(p=>p.e);
+  const pad = Math.max(2, (Math.max(...vals)-Math.min(...vals))*0.25);
+  const lo = Math.max(0, Math.min(...vals)-pad), hi = Math.max(...vals)+pad;
+  const P = pts.map((p,i)=>[px(i,pts.length), py(p.e,lo,hi)]);
+  const line = P.map((p,i)=>(i?"L":"M")+p[0].toFixed(1)+" "+p[1].toFixed(1)).join(" ");
+  const area = line+" L"+P[P.length-1][0].toFixed(1)+" "+(CH.h-CH.b)+" L"+P[0][0].toFixed(1)+" "+(CH.h-CH.b)+" Z";
+  const gy = ticks(lo,hi,4).map(v=>'<line class="grid" x1="'+CH.l+'" x2="'+(CH.w-CH.r)+'" y1="'+py(v,lo,hi).toFixed(1)+'" y2="'+py(v,lo,hi).toFixed(1)+'"/>'
+      + '<text class="axis" x="'+(CH.l-8)+'" y="'+(py(v,lo,hi)+3.2).toFixed(1)+'" text-anchor="end">'+round(v,0)+'</text>').join("");
+  const gx = pts.map((p,i)=> (i===0||i===pts.length-1||i===Math.floor(pts.length/2))
+      ? '<text class="axis" x="'+px(i,pts.length).toFixed(1)+'" y="'+(CH.h-CH.b+16)+'" text-anchor="middle">'+dm(p.date)+'</text>' : "").join("");
+  const dots = P.map((p,i)=>'<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="'+(i===P.length-1?4.5:2.6)+'" '
+      + 'fill="var(--accent)" stroke="var(--surface)" stroke-width="2"/>').join("");
+  const hit = P.map((p,i)=>'<rect x="'+(p[0]-11).toFixed(1)+'" y="'+CH.t+'" width="22" height="'+(CH.h-CH.t-CH.b)+'" fill="transparent" '
+      + 'data-tip="'+esc(dm(pts[i].date)+"\n"+round(pts[i].w,1)+" kg × "+pts[i].r+"\nest. 1RM "+round(pts[i].e,1)+" kg")+'"/>').join("");
+  svg.innerHTML = gy + gx + '<path d="'+area+'" fill="var(--accent)" opacity=".08"/>'
+    + '<path d="'+line+'" fill="none" stroke="var(--accent)" stroke-width="2" stroke-linejoin="round"/>' + dots + hit;
+  wireTips(svg);
+}
+
 /* ── Events ─────────────────────────────────────────────────────────── */
 function show(view){
   $$(".view").forEach(v=> v.classList.toggle("on", v.id === "v-"+view));
@@ -1550,12 +2142,48 @@ function bindStatic(){
     saveProfile(); render(); toast("Targets recalculated.");
   });
 
+  /* ── sleep ── */
+  const setSleep = (k,v)=>{ day.sleep[k]=v; saveDay(true); renderSleep(); renderProgress(); };
+  $("#bedIn").onchange  = e => setSleep("bed", e.target.value);
+  $("#wakeIn").onchange = e => setSleep("wake", e.target.value);
+  $("#sleepTarget").onchange = e => { profile.sleepTarget = num(e.target.value)||8; saveProfile(); renderSleep(); renderProgress(); };
+
+  /* ── the account ── */
+  const dn = ()=> day.deen;
+  const tickPledge = v => { dn().pledge.made = v; saveDay(true); renderIhsan(); renderToday(); };
+  $("#pledgeTick").onchange  = e => tickPledge(e.target.checked);
+  $("#pledgeTick2").onchange = e => tickPledge(e.target.checked);
+  const tickMuh = v => { dn().muh.done = v; saveDay(true); renderIhsan(); renderToday(); };
+  $("#muhTick").onchange  = e => tickMuh(e.target.checked);
+  $("#muhTick2").onchange = e => tickMuh(e.target.checked);
+  $("#pledgeFocus").oninput = e => { dn().pledge.focus = e.target.value; saveDay();
+                                     $("#pledgeEcho").textContent = e.target.value || profile.standingPledge || "—"; };
+  $("#muhNote").oninput = e => { dn().muh.note = e.target.value; saveDay(); };
+  $("#muhFix").oninput  = e => { dn().muh.fix  = e.target.value; saveDay(); };
+  $("#muraqAm").oninput = e => { dn().muraq.am = clamp(num(e.target.value),0,180); saveDay();
+                                 $("#muraqabaTotal").textContent = (num(dn().muraq.am)+num(dn().muraq.pm) || 0) + " minutes today"; };
+  $("#muraqPm").oninput = e => { dn().muraq.pm = clamp(num(e.target.value),0,180); saveDay();
+                                 $("#muraqabaTotal").textContent = (num(dn().muraq.am)+num(dn().muraq.pm) || 0) + " minutes today"; };
+  $("#savePledge").onclick = ()=>{ profile.standingPledge = $("#standingPledge").value.trim();
+                                   saveProfile(); renderIhsan(); toast("Pledge saved."); };
+  $("#goIhsan").onclick = ()=> show("ihsan");
+  $("#nnAdd").onclick = ()=>{
+    const label = $("#nnNew").value.trim();
+    if(!label){ toast("Write it first."); return; }
+    profile.nonNegotiables = (profile.nonNegotiables||NON_NEG.slice()).concat(
+      [{ id:"c"+Math.random().toString(36).slice(2,8), label, custom:true }]);
+    $("#nnNew").value = ""; saveProfile(); renderIhsan(); renderToday();
+  };
+
+  /* ── progress ── */
+  $("#liftPick").onchange = ()=> renderProgress();
+
   $("#clearSets").onclick = ()=>{ day.training.sets = {}; day.training.done = {}; saveDay(true); render(); };
 
   /* delegated clicks */
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
-      + "[data-discard],[data-manualsave],[data-addsug]");
+      + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung]");
     if(!t) return;
     if(t.dataset.del !== undefined){
       day.entries.splice(Number(t.dataset.del), 1); saveDay(true); render(); return;
@@ -1574,6 +2202,27 @@ function bindStatic(){
     if(t.hasAttribute("data-commit")){ commitPending(); return; }
     if(t.hasAttribute("data-discard")){ pending=null; $("#reviewSlot").innerHTML=""; return; }
     if(t.hasAttribute("data-manualsave")){ saveManual(); return; }
+    if(t.dataset.q !== undefined){
+      const q = Number(t.dataset.q);
+      day.sleep.quality = day.sleep.quality === q ? null : q;
+      saveDay(true); renderSleep(); return;
+    }
+    if(t.dataset.r !== undefined){
+      const r = Number(t.dataset.r);
+      day.deen.muh.rating = day.deen.muh.rating === r ? null : r;
+      saveDay(true); renderIhsan(); return;
+    }
+    if(t.dataset.nndel){
+      profile.nonNegotiables = (profile.nonNegotiables||[]).filter(x=>x.id!==t.dataset.nndel);
+      saveProfile(); renderIhsan(); renderToday(); return;
+    }
+    if(t.dataset.rung !== undefined){
+      const l = PROGRAM.ladders[Number(t.dataset.rung)], i = Number(t.dataset.ri);
+      const cur = profile.skills[l.nm];
+      profile.skills[l.nm] = (cur && cur.rung === i) ? undefined : { rung:i, since:dateKey };
+      if(!profile.skills[l.nm]) delete profile.skills[l.nm];
+      saveProfile(); renderProgress(); return;
+    }
     if(t.hasAttribute("data-addsug")){
       let r; try{ r = JSON.parse($("#suggestOut").dataset.payload||"{}"); }catch(_){ return; }
       const e2 = { name:r.name||"Suggested meal", portion:(r.ingredients||[]).join(" · "),
@@ -1591,7 +2240,13 @@ function bindStatic(){
       day.supps[el.dataset.supp] = el.checked; saveDay(); renderToday(); renderStack(); return;
     }
     if(el.dataset.exdone !== undefined){
-      day.training.done[el.dataset.exdone] = el.checked; saveDay(); renderTrain(); renderToday(); return;
+      day.training.done[el.dataset.exdone] = el.checked; saveDay(); renderTrain(); renderToday(); renderProgress(); return;
+    }
+    if(el.dataset.nn !== undefined){
+      day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderToday(); return;
+    }
+    if(el.dataset.tape !== undefined){
+      const v = num(el.value); day.measure[el.dataset.tape] = v>0 ? v : null; saveDay(true); return;
     }
   });
   document.addEventListener("input", e => {
