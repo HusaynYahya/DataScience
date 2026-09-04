@@ -112,7 +112,7 @@ label.field{display:flex;flex-direction:column;gap:5px;font-size:.78rem;color:va
 
 /* ── Today: fuel gauge ──────────────────────────────────────────────── */
 .today-top{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(0,1fr);gap:18px;align-items:start}
-.gauge{display:grid;grid-template-columns:154px minmax(0,1fr);gap:20px;align-items:center}
+.gauge{display:grid;grid-template-columns:154px minmax(0,1fr);gap:24px;align-items:center;max-width:620px}
 .ring{position:relative;width:154px;height:154px}
 .ring svg{transform:rotate(-90deg)}
 .ring .mid{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:1px}
@@ -292,6 +292,29 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 .rung:hover{box-shadow:inset 0 0 0 1px var(--accent)}
 .rungname{font-size:.78rem;color:var(--ink-2);font-family:var(--mono)}
 
+/* ── Sub-navigation: one panel to a page ────────────────────────────── */
+.subnav{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);
+        margin-top:-4px;flex:none}
+.subnav::-webkit-scrollbar{display:none}
+.subnav button{border:0;background:none;cursor:pointer;padding:9px 13px 10px;color:var(--ink-3);font-size:.85rem;
+               font-weight:500;white-space:nowrap;border-bottom:2px solid transparent;margin-bottom:-1px;
+               transition:color .12s}
+.subnav button:hover{color:var(--ink)}
+.subnav button[aria-current="true"]{color:var(--ink);border-bottom-color:var(--accent);font-weight:650}
+.subnav button .i{font-family:var(--mono);font-size:.66rem;color:var(--ink-3);margin-right:6px}
+.subnav button[aria-current="true"] .i{color:var(--accent)}
+.panel[data-page]{display:none}
+.panel[data-page].on{display:block}
+.pager{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:1px solid var(--line)}
+.pager button{background:none;border:0;cursor:pointer;color:var(--ink-2);font-size:.86rem;font-weight:550;
+              padding:11px 2px;display:flex;flex-direction:column;gap:1px;max-width:44%;text-align:left}
+.pager button:hover:not([disabled]){color:var(--accent)}
+.pager button[disabled]{opacity:.3;cursor:default}
+.pager button .k{font-family:var(--mono);font-size:.63rem;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.pager button .t{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%}
+.pager button.next{text-align:right;align-items:flex-end}
+.pager .count{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);white-space:nowrap}
+
 /* ── Overload rows ──────────────────────────────────────────────────── */
 .ovgroup{border-bottom:1px solid var(--line)}
 .ovgroup:last-child{border-bottom:0}
@@ -347,8 +370,8 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
   .brand,.railfoot{display:none}
   .nav{flex-direction:row;width:100%;gap:0;overflow-x:auto;scrollbar-width:none}
   .nav::-webkit-scrollbar{display:none}
-  .nav button{flex-direction:column;gap:2px;font-size:.6rem;padding:6px 2px;justify-content:center;text-align:center;
-              flex:1 0 auto;min-width:52px}
+  .nav button{flex-direction:column;gap:2px;font-size:.58rem;padding:7px 1px;justify-content:center;text-align:center;
+              flex:1 1 0;width:auto;min-width:0;overflow:hidden;border-radius:7px}
   .glyph{font-size:1rem}
   .nav button[aria-current="true"]{box-shadow:none;background:var(--accent-soft)}
   .main{padding:20px 16px 92px}
@@ -401,10 +424,11 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </div>
 
-      <div class="today-top">
-        <section class="panel">
-          <header><h2>Fuel</h2><span class="eyebrow" id="fuelState">—</span></header>
-          <div class="body gauge">
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="Fuel" data-lede="Energy and macronutrients against today's target.">
+        <header><h2>Fuel</h2><span class="eyebrow" id="fuelState">—</span></header>
+        <div class="body gauge">
             <div class="ring">
               <svg viewBox="0 0 120 120" width="100%" height="100%" aria-hidden="true">
                 <circle cx="60" cy="60" r="52" fill="none" stroke="var(--track)" stroke-width="13"></circle>
@@ -416,14 +440,18 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
                 <div class="eyebrow" id="kcalLeftLbl">kcal left</div>
               </div>
             </div>
-            <div class="macros" id="macroBars"></div>
-          </div>
-          <div class="micros" id="microBoard"></div>
-        </section>
+          <div class="macros" id="macroBars"></div>
+        </div>
+      </section>
 
-        <section class="panel">
-          <header><h2 id="sessionTitle">Session</h2><span class="tag" id="sessionTag">—</span></header>
-          <div class="body" style="display:flex;flex-direction:column;gap:12px">
+      <section class="panel" data-page="Micronutrients" data-lede="Thirteen nutrients, each against its RDA or its ceiling.">
+        <header><h2>Micronutrients</h2><span class="eyebrow">Met, short, or over the ceiling</span></header>
+        <div class="micros" id="microBoard"></div>
+      </section>
+
+      <section class="panel" data-page="Session" data-lede="What's scheduled today, and how much of it is done.">
+        <header><h2 id="sessionTitle">Session</h2><span class="tag" id="sessionTag">—</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:12px">
             <div id="sessionPreview" class="grid" style="gap:8px"></div>
             <button class="btn" id="goTrain">Open the session →</button>
             <hr class="rule">
@@ -439,14 +467,12 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
                 </div>
               </label>
             </div>
-            <div id="suppMini" class="grid" style="gap:6px"></div>
-          </div>
-        </section>
-      </div>
+          <div id="suppMini" class="grid" style="gap:6px"></div>
+        </div>
+      </section>
 
-      <div class="today-top">
-        <section class="panel">
-          <header><h2>Last night</h2><span class="eyebrow" id="sleepVerdict">—</span></header>
+      <section class="panel" data-page="Sleep" data-lede="Last night's hours, logged before you forget them.">
+        <header><h2>Last night</h2><span class="eyebrow" id="sleepVerdict">—</span></header>
           <div class="body" style="display:flex;flex-direction:column;gap:14px">
             <div class="sleepcard">
               <label class="field">Went to bed<input type="time" id="bedIn"></label>
@@ -464,14 +490,14 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
                 <button data-q="5" title="Fully rested">5</button>
               </div>
             </div>
-            <p class="note" id="sleepNote">Sleep is where the training turns into muscle. Under seven hours costs you
-               strength, appetite control and recovery before it costs you anything else.</p>
-          </div>
-        </section>
+          <p class="note" id="sleepNote">Sleep is where the training turns into muscle. Under seven hours costs you
+             strength, appetite control and recovery before it costs you anything else.</p>
+        </div>
+      </section>
 
-        <section class="panel">
-          <header><h2>The day's account</h2><span class="eyebrow" id="deenState">—</span></header>
-          <div class="body" style="display:flex;flex-direction:column;gap:12px">
+      <section class="panel" data-page="Account" data-lede="The pledge, the non-negotiables, and the night's reckoning.">
+        <header><h2>The day's account</h2><span class="eyebrow" id="deenState">—</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:12px">
             <label class="row" style="gap:9px;align-items:flex-start">
               <input type="checkbox" id="pledgeTick">
               <span><strong style="font-size:.9rem">Pledge made</strong>
@@ -483,12 +509,11 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
               <span><strong style="font-size:.9rem">Accounted for the day</strong>
                 <span class="note" style="display:block">Muhasabah, before sleep</span></span>
             </label>
-            <button class="btn" id="goIhsan">Open the full account →</button>
-          </div>
-        </section>
-      </div>
+          <button class="btn" id="goIhsan">Open the full account →</button>
+        </div>
+      </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Add food" data-lede="Photograph a meal, describe it, or type the numbers in.">
         <header>
           <h2>Add food</h2>
           <span class="eyebrow">Photo · description · library</span>
@@ -515,7 +540,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Log" data-lede="Everything eaten today, and what it cost.">
         <header>
           <h2>Today's log</h2>
           <span class="eyebrow"><span class="num" id="logCount">0</span> items · <span class="num" id="logKcal">0</span> kcal</span>
@@ -523,11 +548,9 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <div class="log" id="foodLog"></div>
       </section>
 
-      <details class="panel">
-        <summary style="padding:14px 18px;cursor:pointer;font-family:var(--disp);font-stretch:82%;font-weight:650;font-size:1.05rem">
-          Your numbers &amp; targets
-        </summary>
-        <div class="body" style="border-top:1px solid var(--line);display:flex;flex-direction:column;gap:16px">
+      <section class="panel" data-page="Targets" data-lede="Your stats, and the targets they produce.">
+        <header><h2>Your numbers &amp; targets</h2><span class="eyebrow">Everything recalculates from these</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:16px">
           <p class="note" id="profileNote">These are example figures so you can see the tracker working — put your own in and every target recalculates.</p>
           <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
             <label class="field">Age<input type="number" id="pAge" min="14" max="90"></label>
@@ -552,7 +575,9 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
           <div id="targetSummary" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden"></div>
           <p class="note">Energy from Mifflin–St Jeor × activity, then adjusted for the goal. Protein and fat are set per kg of bodyweight; carbohydrate takes whatever energy is left. Micronutrient targets are the US RDA for men aged 19–30.</p>
         </div>
-      </details>
+      </section>
+      <div class="pager"></div>
+
     </section>
 
     <!-- ══ TRAIN ══════════════════════════════════════════════════════ -->
@@ -566,7 +591,9 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </div>
 
-      <section class="panel">
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="This week" data-lede="Five sessions, two rest days, and where this week sits in the block.">
         <header><h2>This week</h2><span class="eyebrow" id="weekLabel">Week 1 · build</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:14px">
           <div class="weekstrip" id="weekStrip"></div>
@@ -574,7 +601,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Session" data-lede="Today's exercises, with every set logged as you do it.">
         <header>
           <div><h2 id="exTitle">Session</h2><div class="eyebrow" id="exFocus">—</div></div>
           <div class="row">
@@ -585,20 +612,22 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <div class="session" id="exList"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Warm-up" data-lede="Eight minutes, the same before every session.">
         <header><h2>Warm-up, every session</h2><span class="eyebrow">8 minutes</span></header>
         <div class="body"><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))" id="warmupList"></div></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Ladders" data-lede="The five skill progressions, and what moves you up a rung.">
         <header><h2>Skill ladders</h2><span class="eyebrow">Move up when the top step is clean</span></header>
         <div class="ladder" id="ladders"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="The block" data-lede="Three waves, three deloads, twelve weeks.">
         <header><h2>The twelve weeks</h2><span class="eyebrow">Three waves, three deloads</span></header>
         <div class="body" id="phases"></div>
       </section>
+      <div class="pager"></div>
+
     </section>
 
     <!-- ══ EAT ════════════════════════════════════════════════════════ -->
@@ -612,7 +641,9 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </div>
 
-      <section class="panel">
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="Fill the gap" data-lede="One meal fitted to whatever you have left today.">
         <header><h2>Fill the gap</h2><span class="eyebrow" id="gapLine">—</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:12px">
           <div class="row">
@@ -629,14 +660,14 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Library" data-lede="Fifteen halal meals, costed in real portions.">
         <header><h2>The library</h2>
           <div class="row" id="mealFilter"></div>
         </header>
         <div class="cards" id="mealCards"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="How you've eaten" data-lede="Energy and protein across the last fortnight.">
         <header><h2>How you've been eating</h2><span class="eyebrow" id="statsNote">—</span></header>
         <div class="stats" id="statTiles"></div>
         <div class="chartwrap"><svg class="chart" id="kcalChart" viewBox="0 0 720 240" role="img" aria-label="Daily energy intake against target for the last 14 days"></svg></div>
@@ -647,15 +678,17 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="The record" data-lede="Every day you have logged.">
         <header><h2>The record</h2><span class="eyebrow" id="kcalNote">Every logged day</span></header>
         <div class="log" id="historyList"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="The rules" data-lede="Six things that decide whether a lean gain works.">
         <header><h2>Eating for a lean gain</h2><span class="eyebrow">The rules that matter</span></header>
         <div class="body" id="eatRules" style="display:flex;flex-direction:column;gap:12px"></div>
       </section>
+      <div class="pager"></div>
+
     </section>
 
     <!-- ══ SLEEP ══════════════════════════════════════════════════════ -->
@@ -675,12 +708,14 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </label>
       </div>
 
-      <section class="panel">
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="At a glance" data-lede="Duration, timing, and how far your bedtime wanders.">
         <header><h2>At a glance</h2><span class="eyebrow" id="sleepRange">Last 14 nights</span></header>
         <div class="stats" id="sleepStats" style="border-radius:0 0 var(--r) var(--r)"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="When you slept" data-lede="Each night as a bar from lights-out to waking.">
         <header><h2>When you slept</h2><span class="eyebrow">Each bar runs from lights-out to waking</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:5px">
           <div class="spanscale"><div></div><div id="spanTicks"></div><div></div></div>
@@ -692,10 +727,12 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Getting it right" data-lede="What actually moves the number.">
         <header><h2>Getting it right</h2><span class="eyebrow">What actually moves the number</span></header>
         <div class="body" id="sleepRules" style="display:flex;flex-direction:column;gap:12px"></div>
       </section>
+      <div class="pager"></div>
+
     </section>
 
     <!-- ══ IHSAN ══════════════════════════════════════════════════════ -->
@@ -711,7 +748,9 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </div>
 
-      <section class="panel">
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="The three" data-lede="Mushāraṭa, murāqaba, muḥāsaba — one practice in three parts.">
         <header><h2>The three</h2><span class="eyebrow" id="loopStreak">—</span></header>
         <div class="triad">
           <div class="tri">
@@ -732,7 +771,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Pledge" data-lede="The terms you set with yourself before the day starts.">
         <header><h2>Your standing pledge</h2><span class="eyebrow">Renewed each morning</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:12px">
           <textarea id="standingPledge" placeholder="What you have bound yourself to, in your own words."></textarea>
@@ -749,7 +788,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Murāqaba" data-lede="Two sittings, one at each end of the day.">
         <header><h2>Murāqaba</h2><span class="eyebrow" id="muraqabaTotal">—</span></header>
         <div class="body">
           <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))">
@@ -761,7 +800,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Non-negotiables" data-lede="The daily floor. Yours to write.">
         <header><h2>Daily non-negotiables</h2><span class="eyebrow" id="nnScore">—</span></header>
         <div id="nnList"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
@@ -770,7 +809,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Muḥāsaba" data-lede="Calling the day to account before sleep.">
         <header><h2>Muḥāsaba</h2><span class="eyebrow">Before sleep</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:14px">
           <div>
@@ -791,10 +830,12 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Thirty days" data-lede="Every practice, every day, as a filled square or a gap.">
         <header><h2>The last thirty days</h2><span class="eyebrow">A filled square is a day it happened</span></header>
         <div class="gridboard"><div class="gboard" id="deenBoard"></div></div>
       </section>
+      <div class="pager"></div>
+
     </section>
 
     <!-- ══ STACK ══════════════════════════════════════════════════════ -->
@@ -807,25 +848,29 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
              21-year-old men does nothing at all.</p>
         </div>
       </div>
-      <section class="panel">
+
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+      <section class="panel" data-page="Core" data-lede="The three that do most of the work.">
         <header><h2>Daily core</h2><span class="eyebrow">Tick as you take them</span></header>
         <div id="suppCore"></div>
       </section>
-      <section class="panel">
+      <section class="panel" data-page="Situational" data-lede="Worth taking only when the condition holds.">
         <header><h2>Situational</h2><span class="eyebrow">Only when the condition holds</span></header>
         <div id="suppSit"></div>
       </section>
-      <section class="panel">
+      <section class="panel" data-page="Skip" data-lede="Money better spent on food.">
         <header><h2>Skip these</h2><span class="eyebrow">Money better spent on food</span></header>
         <div class="cards" id="suppSkip"></div>
       </section>
-      <section class="panel">
+      <section class="panel" data-page="Safety" data-lede="Halal checks, and when to ask a doctor.">
         <div class="body" style="display:flex;flex-direction:column;gap:10px">
           <div class="callout" id="halalNote"></div>
           <p class="note">This is general information, not medical advice. Check with a GP before starting anything if you take
              medication or have a kidney, liver or heart condition — and creatine specifically if you have any kidney history.</p>
         </div>
       </section>
+      <div class="pager"></div>
+
     </section>
 
     <!-- ══ OVERLOAD ═══════════════════════════════════════════════════ -->
@@ -844,22 +889,24 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </div>
 
-      <section class="panel">
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="At a glance" data-lede="How many movements are climbing, and how many have stalled.">
         <header><h2>At a glance</h2><span class="eyebrow" id="ovNote">—</span></header>
         <div class="stats" id="ovStats" style="border-radius:0 0 var(--r) var(--r)"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Movements" data-lede="Every exercise across the sessions you logged it in.">
         <header><h2>Movement by movement</h2><span class="eyebrow">Tap a row for its full history</span></header>
         <div id="ovList"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Ladders" data-lede="The rung you own on each skill, and when you got there.">
         <header><h2>Skill ladders</h2><span class="eyebrow">Tap the rung you own today</span></header>
         <div id="skillProgress"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Turning up" data-lede="Training, protein, sleep and the account across four weeks.">
         <header><h2>Turning up</h2><span class="eyebrow" id="consistencyNote">Sessions, protein, sleep and the account</span></header>
         <div class="gridboard"><div class="gboard" id="consistBoard"></div></div>
         <div class="legend"><span><i class="swatch" style="background:var(--accent)"></i>Done</span>
@@ -867,6 +914,8 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
           <span><i class="swatch" style="background:var(--track)"></i>Missed or not logged</span>
           <span><i class="swatch" style="background:transparent;box-shadow:inset 0 0 0 1px var(--line-2)"></i>Rest day</span></div>
       </section>
+      <div class="pager"></div>
+
     </section>
 
     <!-- ══ BODY ═══════════════════════════════════════════════════════ -->
@@ -880,12 +929,14 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </div>
 
-      <section class="panel">
+      <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="Where you are" data-lede="Weight, body fat, lean mass, and the rate of change.">
         <header><h2>Where you are</h2><span class="eyebrow" id="bodyAsOf">—</span></header>
         <div class="stats" id="bodyStats" style="border-radius:0 0 var(--r) var(--r)"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Log today" data-lede="This morning's numbers.">
         <header><h2>Log today</h2><span class="eyebrow" id="bfSource">—</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:12px">
           <div class="bodylog">
@@ -898,7 +949,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Composition" data-lede="Lean and fat mass, indexed to your first reading.">
         <header><h2>What the weight is made of</h2><span class="eyebrow" id="compNote">Change since your first reading</span></header>
         <div class="chartwrap"><svg class="chart" id="compChart" viewBox="0 0 720 260" role="img" aria-label="Change in lean mass and fat mass since the first reading"></svg></div>
         <div class="legend">
@@ -907,7 +958,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Bodyweight" data-lede="Every weigh-in, with the seven-day average through it.">
         <header><h2>Bodyweight</h2><span class="eyebrow" id="bwTrendLbl">—</span></header>
         <div class="chartwrap"><svg class="chart" id="weightChart" viewBox="0 0 720 240" role="img" aria-label="Bodyweight with a seven-day average"></svg></div>
         <div class="legend">
@@ -916,12 +967,12 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Tape" data-lede="Nine sites, each against where you started.">
         <header><h2>The tape</h2><span class="eyebrow">Once a week, same spots, relaxed unless noted</span></header>
         <div class="tapegrid" id="tapeGrid"></div>
       </section>
 
-      <section class="panel">
+      <section class="panel" data-page="Method" data-lede="How body fat and lean mass are worked out.">
         <div class="body" style="display:flex;flex-direction:column;gap:10px">
           <h3>How the numbers are worked out</h3>
           <p class="methodnote">Body fat, when you don't enter one, is the US Navy circumference estimate:
@@ -934,6 +985,8 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
             because it moves before the scale says anything useful.</p>
         </div>
       </section>
+      <div class="pager"></div>
+
     </section>
 
   </main>
@@ -1317,6 +1370,7 @@ function totals(entries){
 /* ── Boot ───────────────────────────────────────────────────────────── */
 async function boot(){
   bindStatic();
+  show(section);
   render();                                   // paint immediately from defaults
   await hydrate();
   connectRuntime();                           // capabilities light up when ready
@@ -1431,7 +1485,6 @@ function renderHeader(){
   $("#datePick").value = dateKey;
   $("#todayTitle").textContent = prettyDate(dateKey);
   $("#todayEyebrow").textContent = DAYNAMES[parseKey(dateKey).getDay()] + " · " + (s ? s.title + " day" : "Rest day");
-  $("#todayLede").textContent = GOALS[profile.goal].cue;
   $("#sessionTitle").textContent = s ? s.title : "Rest day";
   $("#sessionTag").textContent = s ? ("Week " + w + " · " + (phaseOf(w)==="deload" ? "deload" : s.tag)) : "Recover";
 }
@@ -1818,7 +1871,7 @@ function commitPending(){
   }
   pending = null; $("#reviewSlot").innerHTML = "";
   profile.seeded = true; saveProfile();
-  saveDay(true); render(); toast("Added to today's log.");
+  saveDay(true); render(); show("today", "Log"); toast("Added to today's log.");
 }
 
 function clearDemo(){ if(day.entries.some(e=>e.demo)) day.entries = day.entries.filter(e=>!e.demo); }
@@ -1853,7 +1906,7 @@ function saveManual(){
   const e = { name, portion:"", time:new Date().toTimeString().slice(0,5), source:"manual", id:Math.random().toString(36).slice(2) };
   for(const k of ALL_KEYS) e[k] = round(num(get(k)?.value), 2);
   day.entries.push(e); $("#reviewSlot").innerHTML = "";
-  profile.seeded = true; saveProfile(); saveDay(true); render(); toast("Added to today's log.");
+  profile.seeded = true; saveProfile(); saveDay(true); render(); show("today", "Log"); toast("Added to today's log.");
 }
 
 /* ── Meal suggestion ────────────────────────────────────────────────── */
@@ -2400,15 +2453,68 @@ function drawWeight(S){
 }
 
 /* ── Events ─────────────────────────────────────────────────────────── */
-function show(view){
+/* Two levels of navigation: a section in the rail, and one panel to a
+   page inside it. Nothing shows two subjects at once.                  */
+let section = "today";
+const pageAt = {};
+
+const pagesOf = view => {
+  const v = document.getElementById("v-"+view);
+  return v ? $$(":scope > .panel[data-page]", v) : [];
+};
+const pageIndex = (view, name) => pagesOf(view).findIndex(p => p.dataset.page === name);
+
+function buildSubnavs(){
+  $$(".view").forEach(v=>{
+    const view = v.id.slice(2), nav = $(".subnav", v);
+    if(!nav) return;
+    nav.innerHTML = pagesOf(view).map((p,i)=>
+      '<button data-goto="'+i+'" data-sec="'+view+'"><span class="i">'+String(i+1).padStart(2,"0")+'</span>'
+      + esc(p.dataset.page)+'</button>').join("");
+  });
+  try{ Object.assign(pageAt, local.get("nav") || {}); }catch(e){}
+}
+
+function show(view, page){
+  section = view;
+  const pages = pagesOf(view);
+  let i = typeof page === "number" ? page
+        : typeof page === "string" ? Math.max(0, pageIndex(view, page))
+        : (pageAt[view] || 0);
+  i = clamp(i, 0, Math.max(0, pages.length-1));
+  pageAt[view] = i;
+  local.set("nav", pageAt);
+
   $$(".view").forEach(v=> v.classList.toggle("on", v.id === "v-"+view));
   $$(".nav button").forEach(b=> b.setAttribute("aria-current", String(b.dataset.view===view)));
+  pages.forEach((p,j)=> p.classList.toggle("on", j===i));
+
+  const v = document.getElementById("v-"+view), cur = pages[i];
+  $$(".subnav button", v).forEach((b,j)=> b.setAttribute("aria-current", String(j===i)));
+  const lede = $(".pagehead .lede", v);
+  if(lede && cur){
+    lede.textContent = cur.dataset.lede || "";
+    if(view==="today" && cur.dataset.page==="Fuel") lede.textContent += " " + GOALS[profile.goal].cue;
+  }
+  const pager = $(".pager", v);
+  if(pager){
+    const prev = pages[i-1], next = pages[i+1];
+    pager.innerHTML =
+      '<button class="prev" data-goto="'+(i-1)+'" data-sec="'+view+'"'+(prev?"":" disabled")+'>'
+      + '<span class="k">← Previous</span><span class="t">'+(prev?esc(prev.dataset.page):"—")+'</span></button>'
+      + '<span class="count">'+(i+1)+' of '+pages.length+'</span>'
+      + '<button class="next" data-goto="'+(i+1)+'" data-sec="'+view+'"'+(next?"":" disabled")+'>'
+      + '<span class="k">Next →</span><span class="t">'+(next?esc(next.dataset.page):"—")+'</span></button>';
+  }
+  const active = $('.subnav button[aria-current="true"]', v);
+  if(active && active.scrollIntoView) active.scrollIntoView({ block:"nearest", inline:"nearest" });
   window.scrollTo(0, 0);
 }
 
 function bindStatic(){
+  buildSubnavs();
   $$(".nav button").forEach(b=> b.onclick = ()=> show(b.dataset.view));
-  $("#goTrain").onclick = ()=> show("train");
+  $("#goTrain").onclick = ()=> show("train", "Session");
 
   $("#datePick").onchange = e => switchDay(e.target.value);
   $("#dayPrev").onclick = ()=>{ const d=parseKey(dateKey); d.setDate(d.getDate()-1); switchDay(keyOf(d)); };
@@ -2469,7 +2575,7 @@ function bindStatic(){
                                  $("#muraqabaTotal").textContent = (num(dn().muraq.am)+num(dn().muraq.pm) || 0) + " minutes today"; };
   $("#savePledge").onclick = ()=>{ profile.standingPledge = $("#standingPledge").value.trim();
                                    saveProfile(); renderIhsan(); toast("Pledge saved."); };
-  $("#goIhsan").onclick = ()=> show("ihsan");
+  $("#goIhsan").onclick = ()=> show("ihsan", "Pledge");
   $("#nnAdd").onclick = ()=>{
     const label = $("#nnNew").value.trim();
     if(!label){ toast("Write it first."); return; }
@@ -2494,7 +2600,8 @@ function bindStatic(){
   /* delegated clicks */
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
-      + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex]");
+      + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
+      + "[data-goto]");
     if(!t) return;
     if(t.dataset.del !== undefined){
       day.entries.splice(Number(t.dataset.del), 1); saveDay(true); render(); return;
@@ -2506,13 +2613,17 @@ function bindStatic(){
     if(t.dataset.addmeal){
       const m = MEALS.find(x=>x.nm===t.dataset.addmeal); if(!m) return;
       clearDemo(); day.entries.push(entryFromMeal(m,1)); profile.seeded=true; saveProfile();
-      saveDay(true); render(); toast(m.nm+" added."); return;
+      saveDay(true); render(); show("today", "Log"); toast(m.nm+" added."); return;
     }
     if(t.dataset.slot){ mealSlot = t.dataset.slot; renderEat(); return; }
     if(t.dataset.goday){ switchDay(t.dataset.goday); return; }
     if(t.hasAttribute("data-commit")){ commitPending(); return; }
     if(t.hasAttribute("data-discard")){ pending=null; $("#reviewSlot").innerHTML=""; return; }
     if(t.hasAttribute("data-manualsave")){ saveManual(); return; }
+    if(t.dataset.goto !== undefined){
+      if(!t.disabled) show(t.dataset.sec, Number(t.dataset.goto));
+      return;
+    }
     if(t.dataset.ex !== undefined){
       ovOpen = ovOpen === t.dataset.ex ? null : t.dataset.ex;
       renderOverload(); return;
@@ -2544,7 +2655,7 @@ function bindStatic(){
                    time:new Date().toTimeString().slice(0,5), source:"suggested", id:Math.random().toString(36).slice(2) };
       for(const k of ALL_KEYS) e2[k] = round(num(r[k]), 2);
       clearDemo(); day.entries.push(e2); profile.seeded=true; saveProfile(); saveDay(true); render();
-      show("today"); toast("Added to today's log.");
+      show("today", "Log"); toast("Added to today's log.");
     }
   });
 

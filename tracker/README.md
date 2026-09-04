@@ -13,6 +13,25 @@ Two documents hold the plan in readable form:
 **Live app:** https://claude.ai/code/artifact/cd10bf45-3c95-4c5c-9f84-631af2c1522e
 (private to your account — sync and photo reading are on there)
 
+## How it's laid out
+
+Two levels of navigation, and never more than one subject on screen. The rail
+picks a **section**; a strip under the heading picks a **page** within it. Every
+panel is its own page — 41 across eight sections — with a pager at the foot to
+step through them in order. The page you were last on in each section is
+remembered.
+
+| Section | Pages |
+|---------|-------|
+| Today | Fuel · Micronutrients · Session · Sleep · Account · Add food · Log · Targets |
+| Train | This week · Session · Warm-up · Ladders · The block |
+| Overload | At a glance · Movements · Ladders · Turning up |
+| Eat | Fill the gap · Library · How you've eaten · The record · The rules |
+| Body | Where you are · Log today · Composition · Bodyweight · Tape · Method |
+| Sleep | At a glance · When you slept · Getting it right |
+| Ihsan | The three · Pledge · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
+| Stack | Core · Situational · Skip · Safety |
+
 ## What the app does
 
 - **Today** — an energy ring against your daily target, macro bars, and a
