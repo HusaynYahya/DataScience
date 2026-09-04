@@ -145,3 +145,12 @@ nothing to build.
 - Images carry alt text (from `content.js`); gallery images lazy-load.
 - No external fonts or scripts — fully offline, no tracking, fast.
 - Respects `prefers-reduced-motion` throughout.
+
+---
+
+## Also in this repository
+
+`tracker/` — **Fuel & Frame**, a self-contained health tracker (diet, training and
+supplements) built around a twelve-week calisthenics-and-barbell programme. It
+shares nothing with the Falak 1259 site: no shared assets, no links between them,
+its own README. See [`tracker/README.md`](tracker/README.md).
