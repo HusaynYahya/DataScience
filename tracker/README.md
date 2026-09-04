@@ -32,16 +32,23 @@ Two documents hold the plan in readable form:
   *muḥāsaba* (the reckoning at night), plus your own editable non-negotiables. A
   thirty-day board shows every practice as a filled square or a gap.
 - **Stack** — the supplement list with doses and reasons, ticked off daily.
-- **Progress** — personal bests read back from every set you logged (estimated
-  1RM by the Epley formula), one lift charted over time, the skill ladders with
-  the rung you currently own, tape measurements, a four-row consistency board,
-  and bodyweight against energy.
+- **Overload** — every exercise in the programme, grouped by session, each with a
+  sparkline across the sessions you logged it in and the percentage it has moved.
+  Switch between *top set* (estimated 1RM by the Epley formula) and *total
+  volume*; tap any row for its full chart and a session-by-session table. Held
+  positions progress in seconds, carries in load and distance. Also holds the
+  skill ladders and a four-row consistency board.
+- **Body** — bodyweight with a seven-day average, body fat (entered, or estimated
+  from waist, neck and height by the US Navy formula), lean and fat mass charted
+  as change since your first reading, waist-to-height, resting heart rate, and
+  nine tape sites each showing the change since you started.
 
 Targets recalculate from your age, height, weight, training frequency and goal —
 Mifflin–St Jeor for resting rate, an activity multiplier, then a goal adjustment.
 
-Nothing in Progress is entered twice: personal bests, streaks and the consistency
-board are all derived from the sets, meals, nights and ticks already logged.
+Nothing is entered twice: progression lines, body composition, streaks and the
+consistency board are all derived from the sets, weigh-ins, meals, nights and
+ticks already logged.
 
 ## On the Ihsan tab
 

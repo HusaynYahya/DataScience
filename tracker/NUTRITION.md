@@ -126,3 +126,24 @@ which is fine; lichen-derived D3 is the vegan option.
 *General information, not medical advice. Check with a GP before starting anything
 if you take medication or have a kidney, liver or heart condition — creatine
 specifically if you have any kidney history.*
+
+---
+
+## Body composition
+
+Body fat, when you don't measure it directly, is estimated from the tape by the
+US Navy circumference formula (metric):
+
+```
+BF% = 495 / (1.0324 − 0.19077·log₁₀(waist − neck) + 0.15456·log₁₀(height)) − 450
+```
+
+Waist at the navel, neck just below the larynx, both relaxed, in centimetres. It
+lands within about three to four percentage points of a DEXA scan — enough to
+track a direction, not enough to argue about a single reading. Lean mass is
+bodyweight minus fat mass, so it carries the same error.
+
+What you want to see across a lean-gain block: lean mass climbing, fat mass close
+to flat, waist steady. If fat is rising as fast as lean, the surplus is too big —
+take 150 kcal off and reassess in a fortnight. Waist-to-height below 0.5 is the
+usual health marker, and the waist moves before the scale tells you anything.
