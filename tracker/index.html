@@ -1901,7 +1901,9 @@ function renderEat(){
     + '<div class="ing">'+esc(m.ing)+'</div>'
     + '<div class="macroline"><span><b>'+m.n.kcal+'</b> kcal</span><span>P <b>'+m.n.protein+'</b></span>'
     + '<span>C <b>'+m.n.carbs+'</b></span><span>F <b>'+m.n.fat+'</b></span></div>'
-    + '<div class="row"><button class="btn sm" data-addmeal="'+esc(m.nm)+'">Add to today</button></div></div>').join("");
+    + '<div class="row"><button class="btn sm" data-addmeal="'+esc(m.nm)+'">Add to '
+    + esc((SLOTS.find(x=>x.k===((mealSlot!=="all" && SLOTS.some(y=>y.k===mealSlot)) ? mealSlot : m.slot))||SLOTS[3]).l.toLowerCase())
+    + '</button></div></div>').join("");
 
 }
 
@@ -3044,8 +3046,12 @@ function bindStatic(){
     }
     if(t.dataset.addmeal){
       const m = MEALS.find(x=>x.nm===t.dataset.addmeal); if(!m) return;
-      clearDemo(); day.entries.push(entryFromMeal(m,1)); profile.seeded=true; saveProfile();
-      saveDay(true); render(); show("eat", "Today's meals"); toast(m.nm+" added."); return;
+      const slot = (mealSlot !== "all" && SLOTS.some(x=>x.k===mealSlot)) ? mealSlot : (m.slot || addSlot);
+      addSlot = slot;
+      clearDemo(); day.entries.push(entryFromMeal(m, 1, null, false, slot));
+      profile.seeded = true; saveProfile();
+      saveDay(true); render(); show("eat", "Today's meals");
+      toast(m.nm + " → " + (SLOTS.find(x=>x.k===slot)||SLOTS[3]).l.toLowerCase()); return;
     }
     if(t.dataset.slot){ mealSlot = t.dataset.slot; renderEat(); return; }
     if(t.dataset.goday){ switchDay(t.dataset.goday); return; }
@@ -3069,8 +3075,17 @@ function bindStatic(){
       if(en){ en.sets.push({}); saveDay(); renderTrain(); }
       return;
     }
-    if(t.dataset.slotadd){ addSlot = t.dataset.slotadd; renderMealSlots();
-      $("#descInput").focus(); return; }
+    if(t.dataset.slotadd){
+      addSlot = t.dataset.slotadd;
+      renderMealSlots();
+      if(askClaude){
+        const cap = $("#descInput");
+        if(cap){ cap.scrollIntoView({ block:"center", behavior:"smooth" }); cap.focus(); }
+      } else {
+        mealSlot = addSlot; renderEat(); show("eat", "Library");
+      }
+      return;
+    }
     if(t.dataset.goto !== undefined){
       if(!t.disabled) show(t.dataset.sec, Number(t.dataset.goto));
       return;
