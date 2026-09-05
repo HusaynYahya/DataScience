@@ -147,3 +147,30 @@ What you want to see across a lean-gain block: lean mass climbing, fat mass clos
 to flat, waist steady. If fat is rising as fast as lean, the surplus is too big —
 take 150 kcal off and reassess in a fortnight. Waist-to-height below 0.5 is the
 usual health marker, and the waist moves before the scale tells you anything.
+
+---
+
+## Food quality
+
+Macros tell you how much; they say nothing about what. The tracker scores every
+logged meal on a third axis, after the SAPIEN framework from Brian Sanders'
+*Food Lies* and Santa Cruz Medicinals' line on ultra-processed food:
+
+- **Whole** — recognisable as what it came from, cooked at home.
+- **Mixed** — real food with processed parts, or cooked out of the house in oil
+  you didn't choose. Most takeaway sits here.
+- **Ultra-processed** — industrial formulations: refined flour and sugar,
+  seed-oil heavy, additives you wouldn't have in a kitchen.
+
+A day can hit every macro target and still be built out of packets. Aim for the
+whole-food share above 70% across a fortnight and the micronutrient board mostly
+takes care of itself.
+
+**The nutrient-density additions to the library** — lamb's liver with eggs
+(once a week, not more, for the vitamin A), sardines on sourdough, steak and eggs,
+grilled mackerel, bone broth with chicken — exist because they carry the
+micronutrients the rest of the list is thin on: retinol, B12, omega-3, iron,
+zinc, and vitamin D.
+
+**Carbohydrate is the one real disagreement** between the sources. See
+[`SOURCES.md`](SOURCES.md) for the three settings and the trade-off.

@@ -9,6 +9,8 @@ Two documents hold the plan in readable form:
   progression rule, the skill ladders, the twelve-week wave structure.
 - [`NUTRITION.md`](NUTRITION.md) — how the calorie and macro targets are derived,
   the halal meal library, and the supplement stack (and what to skip).
+- [`SOURCES.md`](SOURCES.md) — the three sources the guidance draws on, what each
+  contributed, and the three places they contradict one another.
 
 **Live app:** https://claude.ai/code/artifact/cd10bf45-3c95-4c5c-9f84-631af2c1522e
 (private to your account — sync and photo reading are on there)
@@ -17,20 +19,20 @@ Two documents hold the plan in readable form:
 
 Two levels of navigation, and never more than one subject on screen. The rail
 picks a **section**; a strip under the heading picks a **page** within it. Every
-panel is its own page — 41 across eight sections — with a pager at the foot to
+panel is its own page — 47 across eight sections — with a pager at the foot to
 step through them in order. The page you were last on in each section is
 remembered.
 
 | Section | Pages |
 |---------|-------|
-| Today | Fuel · Micronutrients · Session · Sleep · Account · Add food · Log · Targets |
-| Train | This week · Session · Warm-up · Ladders · The block |
+| Today | Fuel · Micronutrients · Session · Sleep · Account · Protocol · Add food · Log · Targets |
+| Train | This week · Session · Warm-up · Ladders · The block · Wider week |
 | Overload | At a glance · Movements · Ladders · Turning up |
-| Eat | Fill the gap · Library · How you've eaten · The record · The rules |
+| Eat | Fill the gap · Library · How you've eaten · The record · The rules · Food quality |
 | Body | Where you are · Log today · Composition · Bodyweight · Tape · Method |
-| Sleep | At a glance · When you slept · Getting it right |
+| Sleep | At a glance · When you slept · The toolkit · Getting it right |
 | Ihsan | The three · Pledge · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
-| Stack | Core · Situational · Skip · Safety |
+| Stack | Core · Situational · Skip · Safety · Judging one · Sources |
 
 ## What the app does
 
@@ -50,7 +52,14 @@ remembered.
   *mushāraṭa* (the morning pledge), *murāqaba* (watchfulness through the day) and
   *muḥāsaba* (the reckoning at night), plus your own editable non-negotiables. A
   thirty-day board shows every practice as a filled square or a gap.
-- **Stack** — the supplement list with doses and reasons, ticked off daily.
+- **Protocol** (on Today) — Huberman's daily blueprint as a ten-item checklist:
+  morning sunlight, delayed caffeine, NSDR, sunset light, last meal, dim light,
+  cool room, same wake time. Plus zone-2 minutes tracked against 150 a week.
+- **Food quality** (on Eat) — every logged meal carries a tier (whole / mixed /
+  ultra-processed), graded by Claude for photographed and described meals. The
+  fortnight's split sits beside the Sapien framework it came from.
+- **Stack** — the supplement list with doses, evidence grades and reasons, ticked
+  off daily, plus how to judge one and where all the advice came from.
 - **Overload** — every exercise in the programme, grouped by session, each with a
   sparkline across the sessions you logged it in and the percentage it has moved.
   Switch between *top set* (estimated 1RM by the Epley formula) and *total

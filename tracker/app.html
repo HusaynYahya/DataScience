@@ -292,6 +292,39 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 .rung:hover{box-shadow:inset 0 0 0 1px var(--accent)}
 .rungname{font-size:.78rem;color:var(--ink-2);font-family:var(--mono)}
 
+/* ── Protocol, quality and sources ──────────────────────────────────── */
+.protorow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;padding:12px 18px;
+          border-bottom:1px solid var(--line);align-items:start}
+.protorow:last-child{border-bottom:0}
+.protorow.done{background:var(--sunk)}
+.protorow .nm{font-weight:600;font-size:.92rem}
+.protorow.done .nm{color:var(--ink-2)}
+.protorow .d{font-size:.83rem;color:var(--ink-2);margin-top:3px;max-width:66ch}
+.protorow .when{font-family:var(--mono);font-size:.7rem;color:var(--accent);white-space:nowrap;padding-top:2px}
+.qchip{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;
+       border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.qchip.good{color:var(--good)} .qchip.warn{color:var(--warn)} .qchip.over{color:var(--over)}
+.ev{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;
+    border-radius:3px;white-space:nowrap;border:1px solid currentColor}
+.ev.strong{color:var(--good)} .ev.good{color:var(--accent)} .ev.thin{color:var(--ink-3)}
+.qbar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--track)}
+.qbar i{display:block;height:100%}
+.gapsrow{display:grid;grid-template-columns:22px minmax(0,1fr);gap:12px;padding:13px 18px;border-bottom:1px solid var(--line)}
+.gapsrow:last-child{border-bottom:0}
+.gapsrow .mark{font-family:var(--mono);font-size:.9rem;line-height:1.4}
+.gapsrow .mark.ok{color:var(--good)} .gapsrow .mark.no{color:var(--warn)}
+.gapsrow .got{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);margin-top:2px}
+.gapsrow .p{font-size:.85rem;color:var(--ink-2);margin-top:5px;max-width:66ch}
+.srcrow{padding:14px 18px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:5px}
+.srcrow:last-child{border-bottom:0}
+.srcrow .who{font-weight:650}
+.srcrow .url{font-family:var(--mono);font-size:.7rem;color:var(--accent)}
+.srcrow .p{font-size:.85rem;color:var(--ink-2);max-width:70ch}
+.srcrow .used{font-size:.8rem;color:var(--ink-3);max-width:70ch}
+.toolrow{display:grid;grid-template-columns:34px minmax(0,1fr);gap:12px;padding:14px 18px;border-bottom:1px solid var(--line)}
+.toolrow:last-child{border-bottom:0}
+.toolrow .n{font-family:var(--disp);font-stretch:70%;font-size:1.5rem;font-weight:700;color:var(--accent);line-height:1}
+
 /* ── Sub-navigation: one panel to a page ────────────────────────────── */
 .subnav{display:flex;gap:0;overflow-x:auto;scrollbar-width:none;border-bottom:1px solid var(--line);
         margin-top:-4px;flex:none}
@@ -513,6 +546,17 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
+      <section class="panel" data-page="Protocol" data-lede="Andrew Huberman's daily blueprint, from waking to lights out.">
+        <header><h2>The daily protocol</h2><span class="eyebrow" id="protoScore">—</span></header>
+        <div id="protoList"></div>
+        <div class="body" style="border-top:1px solid var(--line)">
+          <label class="field" style="max-width:230px">Zone 2 today (minutes)
+            <input type="number" id="zone2In" min="0" max="300" step="5" placeholder="walk, bike, ruck">
+          </label>
+          <p class="note" style="margin-top:10px" id="zone2Note">—</p>
+        </div>
+      </section>
+
       <section class="panel" data-page="Add food" data-lede="Photograph a meal, describe it, or type the numbers in.">
         <header>
           <h2>Add food</h2>
@@ -563,6 +607,13 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
                 <option value="high">6 – 7</option>
               </select>
             </label>
+            <label class="field">Carbohydrate
+              <select id="pCarb">
+                <option value="performance">Performance</option>
+                <option value="moderate">Moderate</option>
+                <option value="lower">Lower-carb (Sapien)</option>
+              </select>
+            </label>
             <label class="field">Goal
               <select id="pGoal">
                 <option value="gain">Lean muscle gain</option>
@@ -573,7 +624,8 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
             </label>
           </div>
           <div id="targetSummary" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden"></div>
-          <p class="note">Energy from Mifflin–St Jeor × activity, then adjusted for the goal. Protein and fat are set per kg of bodyweight; carbohydrate takes whatever energy is left. Micronutrient targets are the US RDA for men aged 19–30.</p>
+          <p class="note" id="carbNote">—</p>
+          <p class="note">Energy from Mifflin–St Jeor × activity, then adjusted for the goal. Protein is set per kg of bodyweight. Micronutrient targets are the US RDA for men aged 19–30.</p>
         </div>
       </section>
       <div class="pager"></div>
@@ -625,6 +677,16 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
       <section class="panel" data-page="The block" data-lede="Three waves, three deloads, twelve weeks.">
         <header><h2>The twelve weeks</h2><span class="eyebrow">Three waves, three deloads</span></header>
         <div class="body" id="phases"></div>
+      </section>
+
+      <section class="panel" data-page="Wider week" data-lede="Huberman's foundational fitness week, against what Base 12 already covers.">
+        <header><h2>The week around the programme</h2><span class="eyebrow" id="z2Week">—</span></header>
+        <div id="fitnessGaps"></div>
+        <div class="body" style="border-top:1px solid var(--line)">
+          <p class="note">Huberman's foundational protocol is three or more resistance sessions, 150–200 minutes of zone 2,
+             one long and one short high-intensity effort, and some heat or cold for recovery. Base 12 covers the lifting
+             comfortably. The gap is aerobic, and it gets filled on the days you aren't lifting.</p>
+        </div>
       </section>
       <div class="pager"></div>
 
@@ -687,6 +749,19 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <header><h2>Eating for a lean gain</h2><span class="eyebrow">The rules that matter</span></header>
         <div class="body" id="eatRules" style="display:flex;flex-direction:column;gap:12px"></div>
       </section>
+
+      <section class="panel" data-page="Food quality" data-lede="The Sapien framework from Brian Sanders' Food Lies, and how the log scores against it.">
+        <header><h2>Food quality</h2><span class="eyebrow" id="qualityShare">—</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:14px">
+          <div class="bar" style="height:12px" id="qualityBar"></div>
+          <div class="legend" style="padding:0" id="qualityLegend"></div>
+          <p class="note">Every meal you log carries a tier. Photographed and described meals are graded by Claude,
+             library meals come pre-tagged, manual entries you set yourself. It sits beside the macros, never instead of
+             them — a day can hit every number and still be built out of packets.</p>
+        </div>
+        <hr class="rule">
+        <div class="body" id="sapienList" style="display:flex;flex-direction:column;gap:12px"></div>
+      </section>
       <div class="pager"></div>
 
     </section>
@@ -727,8 +802,13 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel" data-page="Getting it right" data-lede="What actually moves the number.">
-        <header><h2>Getting it right</h2><span class="eyebrow">What actually moves the number</span></header>
+      <section class="panel" data-page="The toolkit" data-lede="Huberman's sleep toolkit, in his order of priority — light first, supplements last.">
+        <header><h2>The toolkit</h2><span class="eyebrow">Fix them in this order</span></header>
+        <div id="sleepToolkit"></div>
+      </section>
+
+      <section class="panel" data-page="Getting it right" data-lede="The rest of what actually moves the number.">
+        <header><h2>Getting it right</h2><span class="eyebrow">Beyond the toolkit</span></header>
         <div class="body" id="sleepRules" style="display:flex;flex-direction:column;gap:12px"></div>
       </section>
       <div class="pager"></div>
@@ -865,8 +945,23 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
       <section class="panel" data-page="Safety" data-lede="Halal checks, and when to ask a doctor.">
         <div class="body" style="display:flex;flex-direction:column;gap:10px">
           <div class="callout" id="halalNote"></div>
+          <div id="safetyExtra"></div>
           <p class="note">This is general information, not medical advice. Check with a GP before starting anything if you take
              medication or have a kidney, liver or heart condition — and creatine specifically if you have any kidney history.</p>
+        </div>
+      </section>
+
+      <section class="panel" data-page="Judging one" data-lede="How Santa Cruz Medicinals argues you should pick a supplement.">
+        <header><h2>Judging a supplement</h2><span class="eyebrow">Five questions, in order</span></header>
+        <div class="body" id="suppJudge" style="display:flex;flex-direction:column;gap:12px"></div>
+      </section>
+
+      <section class="panel" data-page="Sources" data-lede="Where the advice in this app comes from, and where it disagrees with itself.">
+        <header><h2>Sources</h2><span class="eyebrow">And the places they conflict</span></header>
+        <div id="sourceList"></div>
+        <div class="body" style="border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px">
+          <h3>Where they disagree</h3>
+          <div id="conflictList" style="display:flex;flex-direction:column;gap:12px"></div>
         </div>
       </section>
       <div class="pager"></div>
@@ -1027,10 +1122,32 @@ const MICROS = [
 ];
 const ALL_KEYS = ["kcal", ...MACROS.map(m=>m.key), ...MICROS.map(m=>m.key)];
 
+/* Food quality, after the Sapien framework and Santa Cruz Medicinals'
+   line on ultra-processed food. Tracked alongside the macros, never
+   instead of them.                                                     */
+const QUALITY = {
+  whole: { label:"Whole food",      short:"whole", tone:"good",
+           d:"Recognisable as what it came from. Meat, fish, eggs, dairy, fruit, vegetables, whole grains, nuts — cooked at home." },
+  mixed: { label:"Mixed",           short:"mixed", tone:"warn",
+           d:"Real food with processed parts, or cooked out of the house in oil you didn't choose. Most takeaway sits here." },
+  upf:   { label:"Ultra-processed", short:"UPF",   tone:"over",
+           d:"Industrial formulations — refined flour and sugar, seed-oil-heavy, additives you wouldn't have in a kitchen." }
+};
+
 /* RDA / adequate intake, men 19–30. Sodium and saturated fat are ceilings. */
 const RDA = { calcium:1000, iron:8, potassium:3400, magnesium:400, zinc:11,
               vitc:90, vitd:15, vita:900, b12:2.4, folate:400, omega3:500, sodium:2300 };
 const ACTIVITY = { light:1.375, mod:1.55, high:1.725 };
+/* Food Lies argues for minimising carbohydrate; a five-session lean gain
+   argues for fuelling it. This is the switch between them.             */
+const CARB_APPROACH = {
+  performance: { label:"Performance", fat:0.9, capPct:null,
+                 cue:"Fat set at 0.9 g/kg, carbohydrate takes the rest. Fuels heavy sessions best." },
+  moderate:    { label:"Moderate", fat:1.3, capPct:null,
+                 cue:"More fat, fewer carbohydrates, still enough glycogen for the heavy days." },
+  lower:       { label:"Lower-carb", fat:null, capPct:0.25,
+                 cue:"Carbohydrate capped at a quarter of energy, fat takes the rest — the Sapien split. Expect a few weeks of lower training volume while you adapt." }
+};
 const GOALS = {
   gain:   { mult:1.11, pro:2.0, fat:0.9, label:"Lean muscle gain",
             cue:"About +300 kcal over maintenance. Expect 0.25–0.5% of bodyweight a week." },
@@ -1045,10 +1162,17 @@ const GOALS = {
 function computeTargets(p){
   const bmr  = 10*p.weightKg + 6.25*p.heightCm - 5*p.age + 5;
   const g    = GOALS[p.goal] || GOALS.gain;
+  const ca   = CARB_APPROACH[p.carbApproach] || CARB_APPROACH.performance;
   const kcal = Math.round(bmr * (ACTIVITY[p.activity]||1.55) * g.mult / 10) * 10;
   const protein = Math.round(p.weightKg * g.pro);
-  const fat     = Math.round(p.weightKg * g.fat);
-  const carbs   = Math.max(60, Math.round((kcal - protein*4 - fat*9)/4));
+  let fat, carbs;
+  if(ca.capPct){
+    carbs = Math.round(kcal * ca.capPct / 4);
+    fat   = Math.round((kcal - protein*4 - carbs*4) / 9);
+  } else {
+    fat   = Math.round(p.weightKg * (ca.fat || g.fat));
+    carbs = Math.max(60, Math.round((kcal - protein*4 - fat*9)/4));
+  }
   return Object.assign({
     kcal, protein, carbs, fat,
     fibre:  Math.round(kcal/1000*14),
@@ -1177,73 +1301,91 @@ const PROGRAM = {
 /* ── Halal meal library. Figures are cooked-portion estimates. ───────── */
 function N(o){ const b={}; for(const k of ALL_KEYS) b[k]=o[k]||0; return b; }
 const MEALS = [
-  { nm:"Four-egg omelette, sourdough, avocado", slot:"breakfast",
+  { nm:"Four-egg omelette, sourdough, avocado", slot:"breakfast", q:"whole",
     ing:"4 eggs · 2 slices sourdough · ½ avocado · spinach · olive oil",
     n:N({kcal:640,protein:34,carbs:44,fat:36,fibre:9,satfat:9,sodium:720,calcium:180,iron:4.5,potassium:900,magnesium:90,zinc:3.5,vitc:12,vitd:4.4,vita:630,b12:2,folate:180,omega3:320}) },
-  { nm:"Overnight oats with whey", slot:"breakfast",
+  { nm:"Overnight oats with whey", slot:"breakfast", q:"mixed",
     ing:"90 g oats · 300 ml milk · 30 g whey · banana · 20 g peanut butter",
     n:N({kcal:750,protein:48,carbs:88,fat:24,fibre:12,satfat:6,sodium:260,calcium:520,iron:4.2,potassium:1250,magnesium:220,zinc:4.5,vitc:12,vitd:2.5,vita:150,b12:1.8,folate:90,omega3:120}) },
-  { nm:"Shakshuka with pita", slot:"breakfast",
+  { nm:"Shakshuka with pita", slot:"breakfast", q:"whole",
     ing:"3 eggs · tomato & pepper base · 1 wholemeal pita · feta",
     n:N({kcal:560,protein:28,carbs:52,fat:26,fibre:8,satfat:7,sodium:980,calcium:160,iron:5,potassium:950,magnesium:80,zinc:3,vitc:75,vitd:3.3,vita:750,b12:1.5,folate:150,omega3:220}) },
-  { nm:"Chicken shawarma bowl", slot:"lunch",
+  { nm:"Chicken shawarma bowl", slot:"lunch", q:"mixed",
     ing:"200 g thigh · 250 g rice · salad · garlic sauce · pickles",
     n:N({kcal:850,protein:55,carbs:92,fat:26,fibre:7,satfat:6,sodium:1250,calcium:130,iron:4,potassium:1100,magnesium:130,zinc:5,vitc:30,vitd:0.4,vita:220,b12:1.2,folate:120,omega3:150}) },
-  { nm:"Beef kofta, couscous, yoghurt", slot:"lunch",
+  { nm:"Beef kofta, couscous, yoghurt", slot:"lunch", q:"whole",
     ing:"180 g lean beef kofta · 200 g couscous · 150 g yoghurt · herbs",
     n:N({kcal:780,protein:48,carbs:78,fat:28,fibre:6,satfat:11,sodium:840,calcium:280,iron:5.5,potassium:900,magnesium:110,zinc:9,vitc:14,vitd:0.3,vita:120,b12:3.4,folate:70,omega3:120}) },
-  { nm:"Tuna and chickpea salad with pita", slot:"lunch",
+  { nm:"Tuna and chickpea salad with pita", slot:"lunch", q:"whole",
     ing:"2 tins tuna · 240 g chickpeas · red onion · lemon · olive oil · pita",
     n:N({kcal:600,protein:45,carbs:58,fat:18,fibre:14,satfat:3,sodium:900,calcium:130,iron:5.5,potassium:1050,magnesium:140,zinc:4,vitc:20,vitd:2.4,vita:60,b12:3,folate:220,omega3:1100}) },
-  { nm:"Grilled chicken, sweet potato, broccoli", slot:"dinner",
+  { nm:"Grilled chicken, sweet potato, broccoli", slot:"dinner", q:"whole",
     ing:"250 g breast · 300 g sweet potato · 200 g broccoli · olive oil",
     n:N({kcal:780,protein:65,carbs:76,fat:20,fibre:14,satfat:4,sodium:520,calcium:180,iron:4,potassium:2100,magnesium:180,zinc:4,vitc:180,vitd:0.3,vita:1600,b12:0.9,folate:200,omega3:180}) },
-  { nm:"Baked salmon, rice, greens", slot:"dinner",
+  { nm:"Baked salmon, rice, greens", slot:"dinner", q:"whole",
     ing:"180 g salmon · 200 g cooked rice · green beans · lemon",
     n:N({kcal:750,protein:45,carbs:72,fat:30,fibre:6,satfat:6,sodium:420,calcium:90,iron:2.5,potassium:1150,magnesium:130,zinc:2,vitc:22,vitd:19,vita:110,b12:5.4,folate:90,omega3:3200}) },
-  { nm:"Lamb and lentil stew with rice", slot:"dinner",
+  { nm:"Lamb and lentil stew with rice", slot:"dinner", q:"whole",
     ing:"180 g lamb · 150 g lentils · tomato · 180 g rice",
     n:N({kcal:820,protein:45,carbs:88,fat:28,fibre:15,satfat:10,sodium:780,calcium:120,iron:8,potassium:1300,magnesium:160,zinc:8,vitc:16,vitd:0.2,vita:180,b12:2.8,folate:300,omega3:180}) },
-  { nm:"Chicken biryani, home portion", slot:"dinner",
+  { nm:"Chicken biryani, home portion", slot:"dinner", q:"whole",
     ing:"200 g chicken · 220 g basmati · yoghurt · whole spices",
     n:N({kcal:800,protein:48,carbs:94,fat:24,fibre:5,satfat:8,sodium:960,calcium:190,iron:3.5,potassium:800,magnesium:110,zinc:4,vitc:12,vitd:0.4,vita:150,b12:1.4,folate:80,omega3:120}) },
-  { nm:"Greek yoghurt, honey, walnuts", slot:"snack",
+  { nm:"Greek yoghurt, honey, walnuts", slot:"snack", q:"whole",
     ing:"200 g 5% Greek yoghurt · 1 tbsp honey · 25 g walnuts",
     n:N({kcal:380,protein:22,carbs:28,fat:20,fibre:2,satfat:6,sodium:110,calcium:280,iron:1,potassium:450,magnesium:70,zinc:2,vitc:2,vitd:0.2,vita:80,b12:1.2,folate:30,omega3:2200}) },
-  { nm:"Whey shake and a banana", slot:"snack",
+  { nm:"Whey shake and a banana", slot:"snack", q:"mixed",
     ing:"30 g whey · 300 ml milk · 1 banana",
     n:N({kcal:330,protein:28,carbs:42,fat:6,fibre:3,satfat:3,sodium:190,calcium:450,iron:0.6,potassium:1000,magnesium:80,zinc:2,vitc:12,vitd:2.4,vita:130,b12:1.6,folate:40,omega3:40}) },
-  { nm:"Cottage cheese and pineapple", slot:"snack",
+  { nm:"Cottage cheese and pineapple", slot:"snack", q:"whole",
     ing:"200 g cottage cheese · 120 g pineapple",
     n:N({kcal:250,protein:26,carbs:22,fat:5,fibre:2,satfat:3,sodium:640,calcium:180,iron:0.3,potassium:400,magnesium:20,zinc:1,vitc:55,vitd:0.1,vita:50,b12:1.1,folate:30,omega3:20}) },
-  { nm:"Dates and almonds", slot:"snack",
+  { nm:"Dates and almonds", slot:"snack", q:"whole",
     ing:"4 medjool dates · 30 g almonds",
     n:N({kcal:350,protein:8,carbs:52,fat:15,fibre:8,satfat:1,sodium:5,calcium:110,iron:1.6,potassium:800,magnesium:110,zinc:1.2,vitc:0,vitd:0,vita:5,b12:0,folate:30,omega3:0}) },
-  { nm:"Peanut butter on toast, twice over", slot:"snack",
+  { nm:"Peanut butter on toast, twice over", slot:"snack", q:"mixed",
     ing:"2 slices wholemeal · 40 g peanut butter",
-    n:N({kcal:420,protein:16,carbs:38,fat:24,fibre:7,satfat:5,sodium:420,calcium:80,iron:2.4,potassium:450,magnesium:100,zinc:2,vitc:0,vitd:0,vita:0,b12:0,folate:60,omega3:30}) }
+    n:N({kcal:420,protein:16,carbs:38,fat:24,fibre:7,satfat:5,sodium:420,calcium:80,iron:2.4,potassium:450,magnesium:100,zinc:2,vitc:0,vitd:0,vita:0,b12:0,folate:60,omega3:30}) }  ,
+  /* Nutrient-density additions, after the Sapien framework. */
+  { nm:"Lamb's liver with onions and eggs", slot:"breakfast", q:"whole",
+    ing:"150 g lamb's liver · 2 eggs · onion · butter — once a week, not more, for the vitamin A",
+    n:N({kcal:420,protein:42,carbs:8,fat:24,fibre:1,satfat:10,sodium:300,calcium:60,iron:14,potassium:520,magnesium:40,zinc:8,vitc:5,vitd:2.4,vita:10500,b12:102,folate:430,omega3:200}) },
+  { nm:"Sardines on sourdough, olive oil and lemon", slot:"lunch", q:"whole",
+    ing:"1 tin sardines in olive oil · 2 slices sourdough · lemon · parsley",
+    n:N({kcal:520,protein:34,carbs:34,fat:26,fibre:4,satfat:5,sodium:800,calcium:500,iron:3.5,potassium:600,magnesium:70,zinc:2,vitc:2,vitd:12,vita:60,b12:15,folate:60,omega3:2800}) },
+  { nm:"Steak, eggs and greens", slot:"dinner", q:"whole",
+    ing:"250 g ribeye · 2 eggs · spinach · butter",
+    n:N({kcal:780,protein:62,carbs:6,fat:56,fibre:3,satfat:22,sodium:450,calcium:110,iron:6,potassium:1100,magnesium:90,zinc:14,vitc:25,vitd:2,vita:300,b12:5,folate:120,omega3:250}) },
+  { nm:"Grilled mackerel with salad", slot:"dinner", q:"whole",
+    ing:"180 g mackerel · leaves · tomato · olive oil · lemon",
+    n:N({kcal:560,protein:42,carbs:8,fat:40,fibre:4,satfat:9,sodium:320,calcium:60,iron:2,potassium:700,magnesium:80,zinc:1.5,vitc:20,vitd:16,vita:100,b12:19,folate:40,omega3:5000}) },
+  { nm:"Bone broth with shredded chicken", slot:"lunch", q:"whole",
+    ing:"500 ml bone broth · 180 g chicken · carrot · celery · greens",
+    n:N({kcal:380,protein:42,carbs:18,fat:14,fibre:4,satfat:4,sodium:900,calcium:80,iron:2.5,potassium:800,magnesium:60,zinc:3,vitc:30,vitd:0.3,vita:400,b12:0.8,folate:80,omega3:120}) }
 ];
 
 /* ── Supplements ────────────────────────────────────────────────────── */
 const SUPPS = {
   core: [
-    { id:"creatine", nm:"Creatine monohydrate", dose:"5 g daily",
+    { id:"creatine", nm:"Creatine monohydrate", dose:"5 g daily", ev:"strong",
       why:"The single best-evidenced supplement in strength sport. Roughly 5–15% more reps at a given load over a training block, and it works whether you take it before, after or nowhere near training. No loading phase needed — 5 g a day gets you saturated in about three weeks. Take it every day, rest days included." },
-    { id:"vitd", nm:"Vitamin D3", dose:"1000–2000 IU with a meal",
+    { id:"vitd", nm:"Vitamin D3", dose:"1000–2000 IU with a meal", ev:"good",
       why:"If you're at UK latitude, your skin makes essentially none between October and April. Low vitamin D drags on strength, mood and immunity. Take it with something fatty so it absorbs." },
-    { id:"protein", nm:"Whey or casein powder", dose:"25–30 g, as needed",
+    { id:"protein", nm:"Whey or casein powder", dose:"25–30 g, as needed", ev:"strong",
       why:"Not magic, just convenient protein. Use it only to close the gap between what you ate and your target — if you hit 150 g from food, skip it. Casein before bed if your evening protein is thin." }
   ],
   sit: [
-    { id:"omega3", nm:"Omega-3 (EPA + DHA)", dose:"1 g combined EPA+DHA",
+    { id:"omega3", nm:"Omega-3 (EPA + DHA)", dose:"1 g combined EPA+DHA", ev:"good",
       why:"Worth it only if you eat oily fish fewer than twice a week. Check the label for actual EPA/DHA content, not total fish oil." },
-    { id:"caffeine", nm:"Caffeine", dose:"3 mg/kg, 45 min pre-session",
-      why:"Reliably improves training output. Nothing after about 2 pm — the half-life is around five hours and sleep is where the training actually turns into muscle." },
-    { id:"magnesium", nm:"Magnesium glycinate", dose:"200–300 mg, evening",
-      why:"Only if your sleep is poor or your diet is short on greens, nuts and legumes. Glycinate over oxide — oxide mostly just gives you loose stools." },
-    { id:"electrolytes", nm:"Electrolytes", dose:"On heavy-sweat days",
+    { id:"caffeine", nm:"Caffeine", dose:"3 mg/kg, 45 min pre-session", ev:"strong",
+      why:"Reliably improves training output. Huberman's addition: delay the first dose 90–120 minutes after waking so it extends your natural cortisol peak instead of competing with it, and take none within about ten hours of bed. The half-life is around five hours." },
+    { id:"magnesium", nm:"Magnesium glycinate or threonate", dose:"200–300 mg, evening", ev:"good",
+      why:"Only if sleep is poor or the diet is short on greens, nuts and legumes. Glycinate or threonate over oxide — oxide mostly just gives you loose stools. Threonate is the form Huberman names in his sleep stack, alongside apigenin and theanine; he is also explicit that anyone who has actually fixed light, temperature and caffeine rarely needs any of it." },
+    { id:"theanine", nm:"L-theanine", dose:"100–400 mg before bed", ev:"good",
+      why:"Takes the edge off a racing mind without sedation, and pairs well with caffeine earlier in the day. Skip it if you get vivid dreams or sleep-walk." },
+    { id:"electrolytes", nm:"Electrolytes", dose:"On heavy-sweat days", ev:"good",
       why:"Long sessions, hot rooms, or fasting. Sodium and potassium, not a sugar drink pretending to be one." },
-    { id:"multi", nm:"Multivitamin", dose:"One a day",
+    { id:"multi", nm:"Multivitamin", dose:"One a day", ev:"thin",
       why:"Cheap insurance against a week of bad eating. It is not a substitute for vegetables and it does not replace anything above." }
   ],
   skip: [
@@ -1252,7 +1394,17 @@ const SUPPS = {
     { nm:"Fat burners", why:"Caffeine plus stimulants at an undisclosed dose, sold at a markup. Buy caffeine." },
     { nm:"Mass gainers", why:"Sugar and maltodextrin at four times the price of oats, milk and peanut butter." },
     { nm:"Glutamine", why:"Well studied, consistently does nothing for trained people eating enough protein." },
-    { nm:"Proprietary blend pre-workouts", why:"If the label won't tell you the doses, you can't know whether anything in it is dosed to work." }
+    { nm:"Proprietary blend pre-workouts", why:"If the label won't tell you the doses, you can't know whether anything in it is dosed to work." },
+    { nm:"Tongkat Ali", why:"Huberman discusses it for testosterone. The human trials are small, short and mostly in older or stressed men — not 21-year-olds with normal levels. Some products have also come back with heavy-metal contamination. Not worth it here." },
+    { nm:"Fadogia agrestis", why:"Also discussed on Huberman Lab, and the one to be most careful with: essentially no human safety data, and rodent studies at higher doses show testicular toxicity. Named here so you know why it is being left out rather than finding it somewhere else." }
+  ],
+  /* How Santa Cruz Medicinals argues you should judge any supplement. */
+  judge: [
+    { h:"An effective dose, or nothing", p:"Most products carry a fraction of the dose the study used, which makes them a cheaper way to buy nothing. Check the label against the trial dose before the price." },
+    { h:"A third-party certificate of analysis", p:"Purity and potency tested by someone who isn't selling it. If a brand won't publish the COA, that is the answer." },
+    { h:"No proprietary blends", p:"A blend hides the doses inside it. Every gram should be named." },
+    { h:"Nothing in there for the manufacturer's convenience", p:"Fillers, unnecessary flavourings, alcohol carriers, gelatin shells — all reasons to pick powders and vegetarian capsules." },
+    { h:"Price per effective dose, not per tub", p:"The only comparison that means anything." }
   ],
   halal:"Two things to check on any capsule: the shell (bovine or porcine gelatin is common — look for vegetarian/HPMC capsules or buy powders instead) and flavourings, which occasionally carry alcohol as a solvent. Creatine monohydrate, whey isolate and D3 all come in powder or veg-cap form. Vitamin D3 is usually lanolin-derived, which is fine; lichen-derived D3 is the vegan option."
 };
@@ -1301,6 +1453,80 @@ const NON_NEG = [
   { id:"salawat", label:"Salawāt" },
   { id:"istigh",  label:"Istighfār before sleep" }
 ];
+/* Andrew Huberman's daily protocol, in the order the day runs.        */
+const PROTOCOL = [
+  { id:"sunlight", nm:"Sunlight in the eyes", when:"Within 30–60 min of waking",
+    d:"10 minutes outside on a clear morning, 20–30 if it's overcast. Through a window doesn't count — glass filters most of what sets the clock. This is the single highest-leverage thing on the list, and everything downstream depends on it." },
+  { id:"hydrate", nm:"Water and salt before anything", when:"On waking",
+    d:"You wake dehydrated. A large glass of water with a pinch of salt before coffee." },
+  { id:"caffeine", nm:"Delay caffeine 90–120 minutes", when:"After waking",
+    d:"Cortisol peaks 30–45 minutes after waking and holds for about 90. Caffeine inside that window competes with your own alertness and buys you an afternoon crash instead. Wait, and you extend the natural window rather than replacing it." },
+  { id:"train", nm:"Train", when:"Whenever you'll actually do it",
+    d:"Huberman trains fasted in the morning; the evidence for any particular hour is weak. Consistency beats timing." },
+  { id:"nsdr", nm:"NSDR or a nap", when:"Early afternoon",
+    d:"10–30 minutes of non-sleep deep rest instead of a second coffee. It restores alertness without borrowing from tonight." },
+  { id:"afternoonlight", nm:"Afternoon or sunset light", when:"Late afternoon",
+    d:"A few minutes of low-angle light tells the clock the day is ending, and blunts how much a bright evening disrupts you." },
+  { id:"lastmeal", nm:"Last meal 2–3 hours before bed", when:"Evening",
+    d:"Digestion raises core temperature, and falling asleep needs it to drop." },
+  { id:"dimlight", nm:"Dim the lights after sunset", when:"Evening",
+    d:"Bright overhead light between about 10 pm and 4 am is the worst of it. Low lamps, screens dimmed, nothing at eye level." },
+  { id:"coolroom", nm:"Cool room, warm shower", when:"Before bed",
+    d:"Around 18–19 °C, and a warm shower 60–90 minutes before bed — the rebound drop in core temperature is what actually puts you under." },
+  { id:"waketime", nm:"Same wake time", when:"Tomorrow",
+    d:"Weekends included. The morning anchors the night far more reliably than trying to fall asleep earlier." }
+];
+
+/* Huberman's sleep toolkit, in his stated order of priority. */
+const SLEEP_TOOLKIT = [
+  { n:"1", h:"Light", p:"Morning sunlight within an hour of waking; dim light from sunset. Fix nothing else and you still get most of the benefit — light sets the clock everything else runs on." },
+  { n:"2", h:"Temperature", p:"Bedroom around 18–19 °C. Warm shower or bath 60–90 minutes before bed so core temperature falls as you get in. Sleep needs a drop of 1–3 °C; waking needs the same rise." },
+  { n:"3", h:"Caffeine", p:"Delayed 90–120 minutes in the morning, and none within about 10 hours of bed. The half-life is around five hours, so an evening coffee is still working at midnight." },
+  { n:"4", h:"Supplements, last", p:"Only after the first three are actually in place. Magnesium threonate, apigenin and theanine are the ones Huberman names — and he is explicit that most people who fix light, temperature and caffeine never need them." }
+];
+
+/* Huberman's foundational fitness protocol, against what Base 12 already does. */
+const FITNESS_GAPS = [
+  { h:"Resistance training, 3+ sessions", got:"Base 12 runs five, three of them heavy",
+    p:"Covered, and then some. Huberman alternates strength blocks (4–8 reps) with hypertrophy blocks (8–15) roughly monthly; Base 12's three waves do the same thing over twelve weeks.", ok:true },
+  { h:"Zone 2 cardio, 150–200 min a week", got:"Base 12 has 15–20 minutes on Saturday",
+    p:"This is the real gap. Zone 2 is the pace at which you can still hold a conversation. Add two 45–60 minute walks, cycles or rucks on rest days — Wednesday and Sunday — and you're inside the range without touching the lifting.", ok:false },
+  { h:"One long, one short high-intensity effort", got:"Not in the programme",
+    p:"Huberman's week includes a longer endurance session and a brief all-out one. The heavy days already cover the anaerobic end; if you want it, a few hill sprints after Saturday's carries is enough.", ok:false },
+  { h:"Heat and cold for recovery", got:"Not in the programme",
+    p:"Sauna or cold exposure on a rest day. Worth knowing: cold immediately after lifting blunts some of the hypertrophy signal, so keep it away from training by several hours — or take it on Wednesday and Sunday.", ok:false }
+];
+
+/* The Sapien framework, from Brian Sanders' Food Lies. */
+const SAPIEN = [
+  { h:"Nutrient-dense, bioavailable whole food", p:"Judge food by nutrients per calorie, not calories alone. Liver, eggs, oily fish, red meat and shellfish sit at the top of that list; refined flour and sugar sit at the bottom of it." },
+  { h:"Protein first, fat welcome, carbohydrate earned", p:"Build the plate around animal protein and stop treating dietary fat as the problem. Where this framework and a lean-gain surplus disagree is carbohydrate — see the note below." },
+  { h:"No sugar, refined grain or industrial seed oil", p:"The three things every version of this argument agrees on. Cook in butter, ghee, tallow or olive oil; the sunflower and rapeseed oil in most takeaway food is the hardest one to avoid." },
+  { h:"Don't always be eating", p:"Two or three meals with real gaps between them, rather than grazing from waking to bed. Easier said than done at 3,000 kcal — bigger meals, not more of them." },
+  { h:"Eat with the seasons, and know the source", p:"Pasture-raised where you can afford it, wild fish over farmed, and vegetables in season. Cost is a real constraint; spend it on the animal protein first." },
+  { h:"Reduce what comes with the food", p:"Plastic, pesticide residue, additives. Glass over plastic for storage and reheating is the cheapest win here." }
+];
+
+/* Where the three sources actually disagree — worth knowing before following any of them. */
+const CONFLICTS = [
+  { h:"Carbohydrate", p:"Food Lies says minimise it. Your programme is five hard sessions a week in a surplus, and heavy resistance training runs on muscle glycogen. Both can be true: the Targets page lets you pick the split, and the honest trade is that a low-carbohydrate lean gain usually costs some training volume for the first few weeks while you adapt." },
+  { h:"Seed oils", p:"Brendan Ruh's own position is that they are worth avoiding but not worth fearing in moderation — which is more measured than the internet version of the argument. The stronger and less contested claim is simply that the foods carrying most of them are ultra-processed anyway." },
+  { h:"Supplements", p:"Huberman discusses a much longer list than either of the other two, and some of it — Tongkat Ali, Fadogia agrestis — rests on thin human evidence. They're named on the Skip page with the reason, not hidden." },
+  { h:"None of them is your doctor", p:"A neuroscientist, a filmmaker and a supplement founder. Take the protocols that are cheap, reversible and well-evidenced; be slower with anything you swallow." }
+];
+
+const SOURCES = [
+  { nm:"Andrew Huberman — Huberman Lab", what:"Daily light, caffeine and sleep protocols; the foundational fitness week; NSDR.",
+    used:"The Protocol page on Today, the sleep toolkit, and the wider-week page in Train.",
+    url:"hubermanlab.com" },
+  { nm:"Brian Sanders — Food Lies", what:"The SAPIEN framework: nutrient density, protein first, no sugar, refined grain or industrial seed oil, don't always be eating.",
+    used:"The Food quality page, the quality tier on every logged meal, and the nutrient-dense additions to the library.",
+    url:"foodlies.org" },
+  { nm:"Brendan Ruh — Santa Cruz Medicinals", what:"Effective doses at an affordable price, third-party lab testing for purity and potency, and a hard line on ultra-processed food.",
+    used:"How the Stack pages judge a supplement, and the ultra-processed flag on the food log.",
+    url:"santacruzmedicinals.com" }
+];
+
 const SLEEP_RULES = [
   { h:"The same wake time, every day", p:"Including the weekend. Anchoring the morning fixes the night far more reliably than trying to fall asleep earlier — the body sets its clock from light at waking, not from when you get into bed." },
   { h:"Caffeine has a five-hour half-life", p:"A 200 mg pre-workout at 5 pm still has 100 mg in you at 10. If you train in the evening, that is the trade you're making." },
@@ -1318,14 +1544,14 @@ const TAPE = [
 ];
 
 const DEFAULT_PROFILE = { age:21, sex:"male", heightCm:178, weightKg:75, activity:"mod", goal:"gain",
-                          startDate:keyOf(new Date()), seeded:false, sleepTarget:8,
+                          startDate:keyOf(new Date()), seeded:false, sleepTarget:8, carbApproach:"performance",
                           standingPledge:"", nonNegotiables:NON_NEG.slice(), skills:{} };
 const emptyDay = k => ({ date:k, entries:[], training:{ dayKey:null, sets:{}, done:{} },
                          supps:{}, waterMl:0, weightKg:null,
                          sleep:{ bed:"", wake:"", quality:null },
                          deen:{ pledge:{made:false, focus:""}, muraq:{am:0,pm:0},
                                 muh:{done:false, rating:null, note:"", fix:""}, nn:{} },
-                         measure:{}, body:{ bf:null, rhr:null } });
+                         measure:{}, body:{ bf:null, rhr:null }, protocol:{}, zone2:0 });
 
 let db = null, askClaude = null, canSendImages = false;
 let profile = Object.assign({}, DEFAULT_PROFILE);
@@ -1381,6 +1607,7 @@ async function hydrate(){
   if(p) profile = Object.assign({}, DEFAULT_PROFILE, p);
   if(!Array.isArray(profile.nonNegotiables) || !profile.nonNegotiables.length) profile.nonNegotiables = NON_NEG.slice();
   if(!profile.skills) profile.skills = {};
+  if(!CARB_APPROACH[profile.carbApproach]) profile.carbApproach = "performance";
   targets = computeTargets(profile);
   await switchDay(dateKey, true);
   await loadHistory();
@@ -1402,7 +1629,9 @@ async function switchDay(k, quiet){
   day.deen.muh    = Object.assign({}, blank.deen.muh,    day.deen.muh);
   day.deen.nn     = day.deen.nn || {};
   day.measure = day.measure || {};
-  day.body    = Object.assign({}, blank.body, day.body);
+  day.body     = Object.assign({}, blank.body, day.body);
+  day.protocol = day.protocol || {};
+  day.zone2    = num(day.zone2);
   if(k===keyOf(new Date()) && !day.entries.length && !profile.seeded){ seedExample(); }
   if(!quiet) render();
 }
@@ -1477,7 +1706,8 @@ function deloadSets(n, w){ return phaseOf(w)==="deload" ? Math.max(1, n-1) : n; 
 
 /* ── Render: master ─────────────────────────────────────────────────── */
 function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
-                   renderSleep(); renderIhsan(); renderTrends(); renderOverload(); renderBody(); }
+                   renderSleep(); renderIhsan(); renderTrends(); renderOverload(); renderBody();
+                   renderProtocol(); renderFitness(); renderQuality(); renderSources(); }
 
 function renderHeader(){
   const w = weekNumber(dateKey), sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
@@ -1536,7 +1766,9 @@ function renderToday(){
       : "")
     + (day.entries.length ? day.entries.map((e,i)=>
         '<div class="entry">'
-        + '<div class="nm">'+esc(e.name)+'</div>'
+        + '<div class="nm">'+esc(e.name)
+        + (QUALITY[e.quality] ? ' <span class="qchip '+QUALITY[e.quality].tone+'">'+esc(QUALITY[e.quality].short)+'</span>' : "")
+        + '</div>'
         + '<div class="kcal">'+Math.round(num(e.kcal))+'</div>'
         + '<div class="acts"><button class="btn ghost sm" data-del="'+i+'" title="Remove">✕</button></div>'
         + '<div class="sub">'+esc(e.time||"")+(e.portion?" · "+esc(e.portion):"")
@@ -1565,6 +1797,8 @@ function renderToday(){
   /* target summary */
   $("#pAge").value = profile.age; $("#pHeight").value = profile.heightCm;
   $("#pWeight").value = profile.weightKg; $("#pActivity").value = profile.activity; $("#pGoal").value = profile.goal;
+  $("#pCarb").value = profile.carbApproach;
+  $("#carbNote").textContent = (CARB_APPROACH[profile.carbApproach] || CARB_APPROACH.performance).cue;
   $("#targetSummary").innerHTML = [
     ["Energy", targets.kcal+" kcal"], ["Protein", targets.protein+" g"], ["Carbohydrate", targets.carbs+" g"],
     ["Fat", targets.fat+" g"], ["Fibre", targets.fibre+" g"], ["Water", (targets.water/1000).toFixed(1)+" L"]
@@ -1657,9 +1891,12 @@ function renderEat(){
 
 /* ── Render: Stack ──────────────────────────────────────────────────── */
 function renderStack(){
+  const EVL = { strong:"Strong evidence", good:"Good evidence", thin:"Thin evidence" };
   const row = (s,checkable)=>'<div class="supp">'
     + '<div>'+(checkable?'<input type="checkbox" data-supp="'+s.id+'"'+(day.supps[s.id]?" checked":"")+'>':'<span class="dim">◇</span>')+'</div>'
-    + '<div><div style="font-weight:600">'+esc(s.nm)+'</div><div class="why">'+esc(s.why)+'</div></div>'
+    + '<div><div class="row" style="gap:8px"><span style="font-weight:600">'+esc(s.nm)+'</span>'
+    + (s.ev ? '<span class="ev '+s.ev+'">'+esc(EVL[s.ev])+'</span>' : "")+'</div>'
+    + '<div class="why">'+esc(s.why)+'</div></div>'
     + '<div class="dose">'+esc(s.dose)+'</div></div>';
   $("#suppCore").innerHTML = SUPPS.core.map(s=>row(s,true)).join("");
   $("#suppSit").innerHTML  = SUPPS.sit.map(s=>row(s,false)).join("");
@@ -1789,10 +2026,14 @@ const UNITS = "Units: kcal for energy; grams for protein, carbs, fat, fibre and 
   + "milligrams for sodium, calcium, iron, potassium, magnesium, zinc, vitc and omega3; "
   + "micrograms for vitd, vita, b12 and folate. Every key must be a number, never a string or a range.";
 const SHAPE = 'Reply with only a JSON object of this exact shape:\n'
-  + '{"name":"Chicken shawarma and chips","confidence":"medium","notes":"assumed a large wrap and a restaurant portion of oil",'
-  + '"items":[{"name":"Chicken shawarma wrap","portion":"1 large, about 280 g","kcal":620,"protein":38,"carbs":58,"fat":24,'
+  + '{"name":"Chicken shawarma and chips","confidence":"medium","notes":"assumed a large wrap and a restaurant portion of seed oil",'
+  + '"items":[{"name":"Chicken shawarma wrap","portion":"1 large, about 280 g","quality":"mixed","kcal":620,"protein":38,"carbs":58,"fat":24,'
   + '"fibre":5,"satfat":6,"sodium":1200,"calcium":140,"iron":3.5,"potassium":700,"magnesium":90,"zinc":4,"vitc":12,'
-  + '"vitd":0.4,"vita":150,"b12":1.2,"folate":90,"omega3":120}]}\n' + UNITS;
+  + '"vitd":0.4,"vita":150,"b12":1.2,"folate":90,"omega3":120}]}\n' + UNITS
+  + '\n"quality" is one of "whole" (recognisable whole food, cooked at home), "mixed" (real food with processed parts, '
+  + 'or cooked out of the house in oil the eater did not choose — most takeaway), or "upf" (an industrial formulation: '
+  + 'refined flour or sugar, seed-oil heavy, additives you would not have in a kitchen). Mention visible or likely '
+  + 'industrial seed oil in notes.';
 
 async function analyse(kind, payload){
   if(!askClaude){ toast("Claude isn't available in this view — enter the numbers yourself."); return; }
@@ -1830,7 +2071,8 @@ async function analyse(kind, payload){
 
 function showReview(res, imgUrl, source){
   const items = (res && Array.isArray(res.items) ? res.items : []).map(it=>{
-    const o = N(it); o.name = it.name || "Item"; o.portion = it.portion || ""; o.qty = 1; return o;
+    const o = N(it); o.name = it.name || "Item"; o.portion = it.portion || ""; o.qty = 1;
+    o.quality = QUALITY[it.quality] ? it.quality : "mixed"; return o;
   });
   if(!items.length){ $("#reviewSlot").innerHTML = '<p class="note">Nothing recognisable came back. Try another photo or describe it.</p>'; return; }
   pending = { items, source, name: res.name || "Meal" };
@@ -1853,8 +2095,12 @@ function showReview(res, imgUrl, source){
 }
 function paintItems(){
   $("#itemHost").innerHTML = pending.items.map((it,i)=>
-    '<div class="itemrow"><input type="text" data-iname="'+i+'" value="'+esc(it.name)+'">'
-    + '<span class="num dim" style="font-size:.76rem;text-align:right">'+esc(it.portion||"")+'</span>'
+    '<div class="itemrow" style="grid-template-columns:minmax(0,1fr) 112px 58px">'
+    + '<div><input type="text" data-iname="'+i+'" value="'+esc(it.name)+'">'
+    + '<div class="num dim" style="font-size:.72rem">'+esc(it.portion||"")+'</div></div>'
+    + '<select data-iq="'+i+'" style="padding:4px 6px;font-size:.78rem">'
+    + Object.entries(QUALITY).map(([k,v])=>'<option value="'+k+'"'+(it.quality===k?" selected":"")+'>'
+        +esc(v.label)+'</option>').join("")+'</select>'
     + '<input class="qty num" inputmode="decimal" data-iqty="'+i+'" value="'+it.qty+'" style="padding:4px 6px">'
     + '</div>').join("");
   const tot = pending.items.reduce((a,it)=>a+it.kcal*it.qty, 0);
@@ -1865,7 +2111,8 @@ function commitPending(){
   clearDemo();
   const now = new Date().toTimeString().slice(0,5);
   for(const it of pending.items){
-    const e = { name:it.name, portion:it.portion, time:now, source:pending.source, id:Math.random().toString(36).slice(2) };
+    const e = { name:it.name, portion:it.portion, time:now, source:pending.source,
+                quality:it.quality || "mixed", id:Math.random().toString(36).slice(2) };
     for(const k of ALL_KEYS) e[k] = round(num(it[k]) * num(it.qty||1), 2);
     day.entries.push(e);
   }
@@ -1878,7 +2125,7 @@ function clearDemo(){ if(day.entries.some(e=>e.demo)) day.entries = day.entries.
 
 function entryFromMeal(m, qty, time, demo){
   const e = { name:m.nm, portion:m.ing, time:time || new Date().toTimeString().slice(0,5),
-              source:"library", demo:!!demo, id:Math.random().toString(36).slice(2) };
+              source:"library", quality:m.q || "whole", demo:!!demo, id:Math.random().toString(36).slice(2) };
   for(const k of ALL_KEYS) e[k] = round(m.n[k]*(qty||1), 2);
   return e;
 }
@@ -1890,6 +2137,9 @@ function showManual(){
     + '<header><h3>Enter it yourself</h3><span class="eyebrow">From a label or a recipe</span></header>'
     + '<div class="body" style="display:flex;flex-direction:column;gap:12px">'
     + '<label class="field">What was it<input type="text" data-mf="name" placeholder="Chicken and rice"></label>'
+    + '<label class="field">Quality<select data-mf="quality">'
+    + Object.entries(QUALITY).map(([k,v])=>'<option value="'+k+'">'+esc(v.label)+' — '+esc(v.d.split(".")[0])+'</option>').join("")
+    + '</select></label>'
     + '<div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(104px,1fr))">'
     + f("kcal","Energy","kcal")+f("protein","Protein","g")+f("carbs","Carbs","g")+f("fat","Fat","g")+f("fibre","Fibre","g")+'</div>'
     + '<details><summary style="cursor:pointer;font-size:.84rem;color:var(--ink-2)">Micronutrients, if you have them</summary>'
@@ -1903,7 +2153,8 @@ function saveManual(){
   const name = (get("name").value||"").trim();
   if(!name){ toast("Give it a name first."); return; }
   clearDemo();
-  const e = { name, portion:"", time:new Date().toTimeString().slice(0,5), source:"manual", id:Math.random().toString(36).slice(2) };
+  const e = { name, portion:"", time:new Date().toTimeString().slice(0,5), source:"manual",
+              quality:(get("quality")||{}).value || "mixed", id:Math.random().toString(36).slice(2) };
   for(const k of ALL_KEYS) e[k] = round(num(get(k)?.value), 2);
   day.entries.push(e); $("#reviewSlot").innerHTML = "";
   profile.seeded = true; saveProfile(); saveDay(true); render(); show("today", "Log"); toast("Added to today's log.");
@@ -1925,8 +2176,10 @@ async function suggestMeal(){
       + "UK supermarket, give real weights, and keep it within about 15% of the energy and protein left.\n\n"
       + "Meal slot: " + slot + "\nRemaining today: " + gap.kcal + " kcal, " + gap.protein + " g protein, "
       + gap.carbs + " g carbohydrate, " + gap.fat + " g fat, " + gap.fibre + " g fibre.\n\n"
+      + "Build it from whole ingredients — animal protein, vegetables, whole grains — cooked in butter, ghee or olive oil "
+      + "rather than industrial seed oil, and with nothing ultra-processed in it.\n\n"
       + 'Reply with only a JSON object: {"name":"...","why":"one sentence on why it fits","ingredients":["200 g chicken thigh","..."],'
-      + '"method":"two or three sentences","kcal":0,"protein":0,"carbs":0,"fat":0,"fibre":0}',
+      + '"method":"two or three sentences","quality":"whole","kcal":0,"protein":0,"carbs":0,"fat":0,"fibre":0}',
       { modelTier:"default", cache:false });
     out.innerHTML = '<div class="card" style="border:1px solid var(--line);border-radius:8px">'
       + '<div class="nm">'+esc(res.name||"Meal")+'</div>'
@@ -2001,6 +2254,9 @@ function renderSleep(){
       + '<span class="hh">'+round(x.h,1)+' h</span></div>';
   }).join("");
 
+  $("#sleepToolkit").innerHTML = SLEEP_TOOLKIT.map(t=>
+    '<div class="toolrow"><div class="n">'+esc(t.n)+'</div><div><div style="font-weight:600">'+esc(t.h)+'</div>'
+    + '<p class="muted" style="font-size:.88rem;margin-top:3px;max-width:66ch">'+esc(t.p)+'</p></div></div>').join("");
   $("#sleepRules").innerHTML = SLEEP_RULES.map(r=>
     '<div><div style="font-weight:600">'+esc(r.h)+'</div><p class="muted" style="font-size:.88rem;margin-top:2px">'+esc(r.p)+'</p></div>').join("");
 }
@@ -2288,7 +2544,9 @@ function renderConsistency(){
         return done >= sess.ex.length-1 ? "on" : done>0 ? "part" : ""; } },
     { l:"Protein hit", f:r=>{ const t=totals(r.entries); return !t.kcal ? "" : t.protein>=targets.protein ? "on" : "part"; } },
     { l:"Slept enough", f:r=>{ const h=sleepHours(r.sleep); return h==null?"":h>=(num(profile.sleepTarget)||8)?"on":"part"; } },
-    { l:"Account closed", f:r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done ? "on" : (d.pledge.made||d.muh.done)?"part":""; } }
+    { l:"Account closed", f:r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done ? "on" : (d.pledge.made||d.muh.done)?"part":""; } },
+    { l:"Protocol kept", f:r=>{ const k = Object.values(r.protocol||{}).filter(Boolean).length;
+        return k>=7 ? "on" : k>=3 ? "part" : ""; } }
   ];
   $("#consistBoard").style.gridTemplateColumns = "minmax(96px,168px) minmax(0,1fr)";
   $("#consistBoard").innerHTML = rows.map(row=>
@@ -2452,6 +2710,93 @@ function drawWeight(S){
   wireTips(svg);
 }
 
+/* ── Protocol, quality and sources ──────────────────────────────────── */
+function renderProtocol(){
+  const done = PROTOCOL.filter(x=>day.protocol[x.id]).length;
+  $("#protoScore").textContent = done + " of " + PROTOCOL.length + " today";
+  $("#protoList").innerHTML = PROTOCOL.map(x=>
+    '<div class="protorow'+(day.protocol[x.id]?" done":"")+'">'
+    + '<input type="checkbox" data-proto="'+esc(x.id)+'"'+(day.protocol[x.id]?" checked":"")+'>'
+    + '<div><div class="nm">'+esc(x.nm)+'</div><div class="d">'+esc(x.d)+'</div></div>'
+    + '<div class="when">'+esc(x.when)+'</div></div>').join("");
+  $("#zone2In").value = day.zone2 || "";
+  const week = zone2Week();
+  $("#zone2Note").textContent = week >= 150
+    ? week + " minutes this week — inside Huberman's 150–200 minute range."
+    : week + " of 150 minutes this week. Two 45–60 minute walks on the rest days close it.";
+  $("#z2Week").textContent = week + " min zone 2 this week";
+}
+function zone2Week(){
+  const monday = parseKey(dateKey); monday.setDate(monday.getDate() - ((monday.getDay()+6)%7));
+  let total = 0;
+  for(let i=0;i<7;i++){
+    const d = new Date(monday); d.setDate(monday.getDate()+i);
+    const rec = dayRec(keyOf(d));
+    if(rec) total += num(rec.zone2);
+  }
+  return Math.round(total);
+}
+function renderFitness(){
+  const week = zone2Week();
+  $("#fitnessGaps").innerHTML = FITNESS_GAPS.map(g=>{
+    const ok = g.ok || (g.h.startsWith("Zone 2") && week>=150);
+    return '<div class="gapsrow"><div class="mark '+(ok?"ok":"no")+'">'+(ok?"✓":"○")+'</div>'
+      + '<div><div style="font-weight:600">'+esc(g.h)+'</div>'
+      + '<div class="got">'+esc(g.h.startsWith("Zone 2") ? "Base 12 has 15–20 minutes on Saturday · you have logged "+week+" this week" : g.got)+'</div>'
+      + '<div class="p">'+esc(g.p)+'</div></div></div>';
+  }).join("");
+}
+
+/* Quality: kcal by tier, over the last fourteen logged days. */
+function qualitySplit(entries){
+  const out = { whole:0, mixed:0, upf:0, unknown:0 };
+  for(const e of entries||[]){ const k = QUALITY[e.quality] ? e.quality : "unknown"; out[k] += num(e.kcal); }
+  return out;
+}
+function renderQuality(){
+  let all = [];
+  for(const d of seriesDays(14)){ const rec = dayRec(d.date); if(rec && rec.entries) all = all.concat(rec.entries); }
+  const q = qualitySplit(all);
+  const total = q.whole + q.mixed + q.upf + q.unknown;
+  const pct = k => total ? q[k]/total*100 : 0;
+  $("#qualityShare").textContent = total
+    ? Math.round(pct("whole")) + "% whole food, last 14 days"
+    : "Nothing logged yet";
+  $("#qualityBar").outerHTML = '<div class="qbar" id="qualityBar">'
+    + (total
+      ? '<i style="width:'+pct("whole").toFixed(1)+'%;background:var(--good)"></i>'
+        + '<i style="width:'+pct("mixed").toFixed(1)+'%;background:var(--warn)"></i>'
+        + '<i style="width:'+pct("upf").toFixed(1)+'%;background:var(--over)"></i>'
+        + '<i style="width:'+pct("unknown").toFixed(1)+'%;background:var(--track)"></i>'
+      : "") + '</div>';
+  $("#qualityLegend").innerHTML = Object.entries(QUALITY).map(([k,v])=>
+    '<span><i class="swatch" style="background:var(--'+v.tone+')"></i>'+esc(v.label)
+    + ' <span class="num dim">'+Math.round(pct(k))+'%</span></span>').join("")
+    + (q.unknown ? '<span><i class="swatch" style="background:var(--track)"></i>Ungraded <span class="num dim">'
+        + Math.round(pct("unknown"))+'%</span></span>' : "");
+  $("#sapienList").innerHTML = '<h3>The Sapien framework</h3>'
+    + SAPIEN.map(r=>'<div><div style="font-weight:600">'+esc(r.h)+'</div>'
+      + '<p class="muted" style="font-size:.88rem;margin-top:2px">'+esc(r.p)+'</p></div>').join("");
+}
+
+function renderSources(){
+  $("#suppJudge").innerHTML = SUPPS.judge.map((r,i)=>
+    '<div><div style="font-weight:600"><span class="num" style="color:var(--accent);margin-right:8px">'
+    + String(i+1).padStart(2,"0")+'</span>'+esc(r.h)+'</div>'
+    + '<p class="muted" style="font-size:.88rem;margin-top:2px;padding-left:32px">'+esc(r.p)+'</p></div>').join("");
+  $("#sourceList").innerHTML = SOURCES.map(x=>
+    '<div class="srcrow"><div class="who">'+esc(x.nm)+' <span class="url">'+esc(x.url)+'</span></div>'
+    + '<div class="p">'+esc(x.what)+'</div>'
+    + '<div class="used">Used for: '+esc(x.used)+'</div></div>').join("");
+  $("#conflictList").innerHTML = CONFLICTS.map(c=>
+    '<div><div style="font-weight:600">'+esc(c.h)+'</div>'
+    + '<p class="muted" style="font-size:.88rem;margin-top:2px">'+esc(c.p)+'</p></div>').join("");
+  $("#safetyExtra").innerHTML = '<p class="note" style="margin-top:10px">Nothing here is a prescription from the '
+    + 'people it is credited to. A neuroscientist, a filmmaker and a supplement founder are not your doctor, and where '
+    + 'their advice is cheap and reversible — light, sleep timing, walking, cooking your own food — it costs you nothing '
+    + 'to try. Be slower with anything you swallow.</p>';
+}
+
 /* ── Events ─────────────────────────────────────────────────────────── */
 /* Two levels of navigation: a section in the rail, and one panel to a
    page inside it. Nothing shows two subjects at once.                  */
@@ -2540,12 +2885,15 @@ function bindStatic(){
   $("#bwInput").onchange = e => { const v=parseFloat(e.target.value);
     day.weightKg = Number.isFinite(v) ? v : null; saveDay(true); renderBody(); };
 
-  ["pAge","pHeight","pWeight","pActivity","pGoal"].forEach(id => $("#"+id).onchange = ()=>{
+  $("#zone2In").oninput = e => { day.zone2 = clamp(num(e.target.value),0,300); saveDay(); renderProtocol(); renderFitness(); };
+
+  ["pAge","pHeight","pWeight","pActivity","pGoal","pCarb"].forEach(id => $("#"+id).onchange = ()=>{
     profile.age = clamp(num($("#pAge").value)||21, 14, 90);
     profile.heightCm = clamp(num($("#pHeight").value)||178, 120, 230);
     profile.weightKg = clamp(num($("#pWeight").value)||75, 30, 250);
     profile.activity = $("#pActivity").value;
     profile.goal = $("#pGoal").value;
+    profile.carbApproach = $("#pCarb").value;
     profile.seeded = true;
     targets = computeTargets(profile);
     saveProfile(); render(); toast("Targets recalculated.");
@@ -2652,7 +3000,8 @@ function bindStatic(){
     if(t.hasAttribute("data-addsug")){
       let r; try{ r = JSON.parse($("#suggestOut").dataset.payload||"{}"); }catch(_){ return; }
       const e2 = { name:r.name||"Suggested meal", portion:(r.ingredients||[]).join(" · "),
-                   time:new Date().toTimeString().slice(0,5), source:"suggested", id:Math.random().toString(36).slice(2) };
+                   time:new Date().toTimeString().slice(0,5), source:"suggested",
+                   quality:QUALITY[r.quality] ? r.quality : "whole", id:Math.random().toString(36).slice(2) };
       for(const k of ALL_KEYS) e2[k] = round(num(r[k]), 2);
       clearDemo(); day.entries.push(e2); profile.seeded=true; saveProfile(); saveDay(true); render();
       show("today", "Log"); toast("Added to today's log.");
@@ -2667,6 +3016,9 @@ function bindStatic(){
     }
     if(el.dataset.exdone !== undefined){
       day.training.done[el.dataset.exdone] = el.checked; saveDay(); renderTrain(); renderToday(); renderOverload(); return;
+    }
+    if(el.dataset.proto !== undefined){
+      day.protocol[el.dataset.proto] = el.checked; saveDay(true); renderProtocol(); renderOverload(); return;
     }
     if(el.dataset.nn !== undefined){
       day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderToday(); return;
@@ -2694,6 +3046,7 @@ function bindStatic(){
       return;
     }
     if(el.dataset.iname !== undefined && pending){ pending.items[Number(el.dataset.iname)].name = el.value; }
+    if(el.dataset.iq !== undefined && pending){ pending.items[Number(el.dataset.iq)].quality = el.value; }
   });
 
   /* whole-card click opens the photo picker */
