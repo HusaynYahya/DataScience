@@ -19,32 +19,44 @@ Two documents hold the plan in readable form:
 
 Two levels of navigation, and never more than one subject on screen. The rail
 picks a **section**; a strip under the heading picks a **page** within it. Every
-panel is its own page — 47 across eight sections — with a pager at the foot to
-step through them in order. The page you were last on in each section is
-remembered.
+panel is its own page — 46 across eight sections — with a pager at the foot to
+step through them in order.
+
+**Every section opens on the day's entry**: what you ate, what you trained, the
+pledge you gave. Reference and analysis come after.
 
 | Section | Pages |
 |---------|-------|
-| Today | Fuel · Micronutrients · Session · Sleep · Account · Protocol · Add food · Log · Targets |
-| Train | This week · Session · Warm-up · Ladders · The block · Wider week |
+| Today | **The day** · Fuel · Micronutrients · Protocol · Targets |
+| Train | **Log a workout** · Add an exercise · This week · Warm-up · Ladders · The block · Wider week |
 | Overload | At a glance · Movements · Ladders · Turning up |
-| Eat | Fill the gap · Library · How you've eaten · The record · The rules · Food quality |
-| Body | Where you are · Log today · Composition · Bodyweight · Tape · Method |
-| Sleep | At a glance · When you slept · The toolkit · Getting it right |
-| Ihsan | The three · Pledge · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
-| Stack | Core · Situational · Skip · Safety · Judging one · Sources |
+| Eat | **Today's meals** · Fill the gap · Library · How you've eaten · The record · The rules · Food quality |
+| Body | **Log today** · Where you are · Composition · Bodyweight · Tape · Method |
+| Sleep | **Last night** · At a glance · When you slept · The toolkit · Getting it right |
+| Ihsan | **Pledge** · The three · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
+| Stack | **Core** · Situational · Skip · Safety · Judging one · Sources |
+
+**The day** is the home page: eight rows — meals, training, pledge,
+non-negotiables, reckoning, sleep, bodyweight, protocol — each showing what has
+been logged and linking straight to where you enter the rest.
 
 ## What the app does
 
-- **Today** — an energy ring against your daily target, macro bars, and a
+- **Today** — the day's record first: eight rows showing what is logged and what
+  is still open. Then the energy ring against your daily target, macro bars, and a
   thirteen-nutrient board showing what's been met and what's still short.
 - **Photograph a meal** and get a per-item calorie and nutrient breakdown you can
   adjust before it goes in the log. Or describe the meal in words. Or type the
   numbers off a label.
-- **Train** — this week's schedule, today's session with every set logged (weight
-  and reps, or seconds for holds), the skill ladders, and the twelve-week map.
-- **Eat** — the halal meal library, plus a suggestion built around whatever macros
-  you have left today.
+- **Train** — opens on the workout log: today's scheduled session prefilled, with
+  every set recorded as you do it (weight and reps, seconds for holds, load and
+  distance for carries). A second page lists **every exercise the programme knows**,
+  searchable, so you can add anything you actually did — plus your own movements.
+  Then this week's schedule, the warm-up, the skill ladders and the twelve-week map.
+- **Eat** — opens on today's meals, split into breakfast, lunch, dinner and snacks,
+  each slot showing what went in it and what it cost. Add to any slot by photo,
+  description, library or by hand. Then the suggestion built around whatever macros
+  you have left, the library itself, and how you've been eating.
 - **Sleep** — bedtime and waking time per night, hours computed, and a span chart
   showing *when* you slept across the last fortnight. Tracks average duration,
   usual lights-out, and bedtime drift — the number most people never look at.

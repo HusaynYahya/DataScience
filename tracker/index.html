@@ -303,6 +303,37 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 .rung:hover{box-shadow:inset 0 0 0 1px var(--accent)}
 .rungname{font-size:.78rem;color:var(--ink-2);font-family:var(--mono)}
 
+/* ── Exercise picker ────────────────────────────────────────────────── */
+.pickrow{display:grid;grid-template-columns:minmax(0,1fr) auto 52px;gap:12px;align-items:center;width:100%;
+         padding:9px 18px;border:0;border-top:1px solid var(--line);background:none;cursor:pointer;
+         text-align:left;font:inherit;color:inherit}
+.pickrow:hover:not([disabled]){background:var(--sunk)}
+.pickrow[disabled]{opacity:.42;cursor:default}
+.pickrow .nm{font-size:.88rem;font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pickrow .from{font-family:var(--mono);font-size:.68rem;color:var(--ink-3);white-space:nowrap}
+.pickrow .plus{font-family:var(--mono);font-size:.72rem;color:var(--accent);text-align:right;white-space:nowrap}
+.picklist{max-height:360px;overflow-y:auto}
+
+/* ── Meal slots ─────────────────────────────────────────────────────── */
+.slot{border-bottom:1px solid var(--line)}
+.slot:last-child{border-bottom:0}
+.slothead{display:flex;align-items:baseline;gap:10px;padding:11px 18px;background:var(--sunk)}
+.slothead h3{font-size:.86rem}
+.slothead .k{font-family:var(--mono);font-size:.7rem;color:var(--ink-3);margin-left:auto}
+.slotempty{padding:13px 18px;color:var(--ink-3);font-size:.85rem;display:flex;justify-content:space-between;
+           align-items:center;gap:12px;flex-wrap:wrap}
+.daylist{display:flex;flex-direction:column}
+.dayrow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;align-items:center;
+        padding:13px 18px;border-bottom:1px solid var(--line);width:100%;border-left:0;border-right:0;border-top:0;
+        background:none;cursor:pointer;text-align:left;font:inherit;color:inherit}
+.dayrow:last-child{border-bottom:0}
+.dayrow:hover{background:var(--sunk)}
+.dayrow .mark{font-family:var(--mono);font-size:.95rem;color:var(--ink-3)}
+.dayrow.on .mark{color:var(--good)}
+.dayrow .nm{font-weight:600;font-size:.92rem}
+.dayrow .sub{font-size:.79rem;color:var(--ink-2);margin-top:2px}
+.dayrow .go{font-family:var(--mono);font-size:.72rem;color:var(--accent);white-space:nowrap}
+
 /* ── Protocol, quality and sources ──────────────────────────────────── */
 .protorow{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;padding:12px 18px;
           border-bottom:1px solid var(--line);align-items:start}
@@ -470,6 +501,23 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
+      <section class="panel" data-page="The day" data-lede="Everything logged today, and what is still open.">
+        <header><h2 id="dayTitle">The day</h2><span class="eyebrow" id="dayScore">—</span></header>
+        <div class="daylist" id="dayList"></div>
+        <div class="body" style="border-top:1px solid var(--line)">
+          <div class="row" style="justify-content:space-between;gap:14px">
+            <div>
+              <div class="eyebrow">Water</div>
+              <div class="num" id="waterVal" style="font-size:1.2rem;font-weight:600">0 L</div>
+            </div>
+            <div class="row" style="gap:6px">
+              <button class="btn sm" id="waterMinus">− 250 ml</button>
+              <button class="btn sm" id="waterPlus">+ 250 ml</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <section class="panel" data-page="Fuel" data-lede="Energy and macronutrients against today's target.">
         <header><h2>Fuel</h2><span class="eyebrow" id="fuelState">—</span></header>
         <div class="body gauge">
@@ -493,69 +541,8 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <div class="micros" id="microBoard"></div>
       </section>
 
-      <section class="panel" data-page="Session" data-lede="What's scheduled today, and how much of it is done.">
-        <header><h2 id="sessionTitle">Session</h2><span class="tag" id="sessionTag">—</span></header>
-        <div class="body" style="display:flex;flex-direction:column;gap:12px">
-            <div id="sessionPreview" class="grid" style="gap:8px"></div>
-            <button class="btn" id="goTrain">Open the session →</button>
-            <hr class="rule">
-            <div class="row" style="justify-content:space-between">
-              <label class="field" style="flex:1 1 110px">Bodyweight (kg)
-                <input type="number" id="bwInput" step="0.1" min="30" max="250" placeholder="—">
-              </label>
-              <label class="field" style="flex:1 1 110px">Water
-                <div class="row" style="gap:6px">
-                  <button class="btn sm" id="waterMinus">−</button>
-                  <span class="num" id="waterVal" style="flex:1;text-align:center">0.0 L</span>
-                  <button class="btn sm" id="waterPlus">+</button>
-                </div>
-              </label>
-            </div>
-          <div id="suppMini" class="grid" style="gap:6px"></div>
-        </div>
-      </section>
 
-      <section class="panel" data-page="Sleep" data-lede="Last night's hours, logged before you forget them.">
-        <header><h2>Last night</h2><span class="eyebrow" id="sleepVerdict">—</span></header>
-          <div class="body" style="display:flex;flex-direction:column;gap:14px">
-            <div class="sleepcard">
-              <label class="field">Went to bed<input type="time" id="bedIn"></label>
-              <label class="field">Woke<input type="time" id="wakeIn"></label>
-              <div>
-                <div class="eyebrow">Slept</div>
-                <div class="hours" id="sleepHours">—</div>
-              </div>
-            </div>
-            <div>
-              <div class="eyebrow" style="margin-bottom:6px">How it felt</div>
-              <div class="quality" id="sleepQuality">
-                <button data-q="1" title="Wrecked">1</button><button data-q="2">2</button>
-                <button data-q="3">3</button><button data-q="4">4</button>
-                <button data-q="5" title="Fully rested">5</button>
-              </div>
-            </div>
-          <p class="note" id="sleepNote">Sleep is where the training turns into muscle. Under seven hours costs you
-             strength, appetite control and recovery before it costs you anything else.</p>
-        </div>
-      </section>
 
-      <section class="panel" data-page="Account" data-lede="The pledge, the non-negotiables, and the night's reckoning.">
-        <header><h2>The day's account</h2><span class="eyebrow" id="deenState">—</span></header>
-        <div class="body" style="display:flex;flex-direction:column;gap:12px">
-            <label class="row" style="gap:9px;align-items:flex-start">
-              <input type="checkbox" id="pledgeTick">
-              <span><strong style="font-size:.9rem">Pledge made</strong>
-                <span class="note" style="display:block" id="pledgeEcho">—</span></span>
-            </label>
-            <div id="nnMini" class="grid" style="gap:6px"></div>
-            <label class="row" style="gap:9px;align-items:flex-start">
-              <input type="checkbox" id="muhTick">
-              <span><strong style="font-size:.9rem">Accounted for the day</strong>
-                <span class="note" style="display:block">Muhasabah, before sleep</span></span>
-            </label>
-          <button class="btn" id="goIhsan">Open the full account →</button>
-        </div>
-      </section>
 
       <section class="panel" data-page="Protocol" data-lede="Andrew Huberman's daily blueprint, from waking to lights out.">
         <header><h2>The daily protocol</h2><span class="eyebrow" id="protoScore">—</span></header>
@@ -568,40 +555,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel" data-page="Add food" data-lede="Photograph a meal, describe it, or type the numbers in.">
-        <header>
-          <h2>Add food</h2>
-          <span class="eyebrow">Photo · description · library</span>
-        </header>
-        <div class="body" style="display:flex;flex-direction:column;gap:14px">
-          <div class="capture">
-            <label class="drop" id="dropPhoto">
-              <span class="big">▣</span>
-              <strong>Snap or upload a meal</strong>
-              <span class="note" id="photoHint">Claude reads the plate and estimates the breakdown.</span>
-              <input type="file" id="photoInput" accept="image/*" capture="environment" class="sr">
-            </label>
-            <div class="grid" style="gap:8px">
-              <label class="field">Or describe it
-                <textarea id="descInput" placeholder="2 chicken shawarma wraps with garlic sauce, a handful of chips, 500ml orange juice"></textarea>
-              </label>
-              <div class="row">
-                <button class="btn primary" id="descGo">Estimate</button>
-                <button class="btn ghost" id="manualGo">Enter numbers myself</button>
-              </div>
-            </div>
-          </div>
-          <div id="reviewSlot"></div>
-        </div>
-      </section>
 
-      <section class="panel" data-page="Log" data-lede="Everything eaten today, and what it cost.">
-        <header>
-          <h2>Today's log</h2>
-          <span class="eyebrow"><span class="num" id="logCount">0</span> items · <span class="num" id="logKcal">0</span> kcal</span>
-        </header>
-        <div class="log" id="foodLog"></div>
-      </section>
 
       <section class="panel" data-page="Targets" data-lede="Your stats, and the targets they produce.">
         <header><h2>Your numbers &amp; targets</h2><span class="eyebrow">Everything recalculates from these</span></header>
@@ -656,15 +610,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
-      <section class="panel" data-page="This week" data-lede="Five sessions, two rest days, and where this week sits in the block.">
-        <header><h2>This week</h2><span class="eyebrow" id="weekLabel">Week 1 · build</span></header>
-        <div class="body" style="display:flex;flex-direction:column;gap:14px">
-          <div class="weekstrip" id="weekStrip"></div>
-          <p class="note" id="weekNote"></p>
-        </div>
-      </section>
-
-      <section class="panel" data-page="Session" data-lede="Today's exercises, with every set logged as you do it.">
+      <section class="panel" data-page="Log a workout" data-lede="What you actually trained today — the scheduled session, or anything else.">
         <header>
           <div><h2 id="exTitle">Session</h2><div class="eyebrow" id="exFocus">—</div></div>
           <div class="row">
@@ -674,6 +620,26 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </header>
         <div class="session" id="exList"></div>
       </section>
+
+      <section class="panel" data-page="Add an exercise" data-lede="Everything the programme knows, plus anything of your own.">
+        <header><h2>Add an exercise</h2><span class="eyebrow">Adds to today's session</span></header>
+        <div class="body" style="padding-bottom:12px">
+          <input type="text" id="exSearch" placeholder="Search all exercises — bench, lever, carry…">
+        </div>
+        <div class="picklist" id="exPicker"></div>
+        <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
+          <input type="text" id="exCustom" placeholder="Or something of your own" style="flex:1 1 220px;width:auto">
+          <button class="btn" id="exCustomAdd">Add</button>
+        </div>
+      </section>
+      <section class="panel" data-page="This week" data-lede="Five sessions, two rest days, and where this week sits in the block.">
+        <header><h2>This week</h2><span class="eyebrow" id="weekLabel">Week 1 · build</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:14px">
+          <div class="weekstrip" id="weekStrip"></div>
+          <p class="note" id="weekNote"></p>
+        </div>
+      </section>
+
 
       <section class="panel" data-page="Warm-up" data-lede="Eight minutes, the same before every session.">
         <header><h2>Warm-up, every session</h2><span class="eyebrow">8 minutes</span></header>
@@ -715,6 +681,41 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
       </div>
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
+
+      <section class="panel" data-page="Today&#39;s meals" data-lede="What you ate today, meal by meal.">
+        <header><h2>Today's meals</h2>
+          <span class="eyebrow"><span class="num" id="logCount">0</span> items · <span class="num" id="logKcal">0</span> kcal</span>
+        </header>
+        <div id="mealSlots"></div>
+        <div class="body" style="border-top:1px solid var(--line);display:flex;flex-direction:column;gap:14px">
+          <div class="row" style="justify-content:space-between">
+            <strong id="addingTo" style="font-size:.9rem">Adding to snacks</strong>
+            <select id="slotPick" style="width:auto">
+              <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option>
+              <option value="dinner">Dinner</option><option value="snack">Snacks</option>
+            </select>
+          </div>
+          <div class="capture">
+            <label class="drop" id="dropPhoto">
+              <span class="big">▣</span>
+              <strong>Snap or upload a meal</strong>
+              <span class="note" id="photoHint">Claude reads the plate and estimates the breakdown.</span>
+              <input type="file" id="photoInput" accept="image/*" capture="environment" class="sr">
+            </label>
+            <div class="grid" style="gap:8px">
+              <label class="field">Or describe it
+                <textarea id="descInput" placeholder="2 chicken shawarma wraps with garlic sauce, a handful of chips, 500ml orange juice"></textarea>
+              </label>
+              <div class="row">
+                <button class="btn primary" id="descGo">Estimate</button>
+                <button class="btn ghost" id="manualGo">Type the numbers</button>
+                <button class="btn ghost" id="fromLibrary">From the library</button>
+              </div>
+            </div>
+          </div>
+          <div id="reviewSlot"></div>
+        </div>
+      </section>
 
       <section class="panel" data-page="Fill the gap" data-lede="One meal fitted to whatever you have left today.">
         <header><h2>Fill the gap</h2><span class="eyebrow" id="gapLine">—</span></header>
@@ -796,6 +797,29 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
+      <section class="panel" data-page="Last night" data-lede="Last night&#39;s hours, logged before you forget them.">
+        <header><h2>Last night</h2><span class="eyebrow" id="sleepVerdict">—</span></header>
+          <div class="body" style="display:flex;flex-direction:column;gap:14px">
+            <div class="sleepcard">
+              <label class="field">Went to bed<input type="time" id="bedIn"></label>
+              <label class="field">Woke<input type="time" id="wakeIn"></label>
+              <div>
+                <div class="eyebrow">Slept</div>
+                <div class="hours" id="sleepHours">—</div>
+              </div>
+            </div>
+            <div>
+              <div class="eyebrow" style="margin-bottom:6px">How it felt</div>
+              <div class="quality" id="sleepQuality">
+                <button data-q="1" title="Wrecked">1</button><button data-q="2">2</button>
+                <button data-q="3">3</button><button data-q="4">4</button>
+                <button data-q="5" title="Fully rested">5</button>
+              </div>
+            </div>
+          <p class="note" id="sleepNote">Sleep is where the training turns into muscle. Under seven hours costs you
+             strength, appetite control and recovery before it costs you anything else.</p>
+        </div>
+      </section>
       <section class="panel" data-page="At a glance" data-lede="Duration, timing, and how far your bedtime wanders.">
         <header><h2>At a glance</h2><span class="eyebrow" id="sleepRange">Last 14 nights</span></header>
         <div class="stats" id="sleepStats" style="border-radius:0 0 var(--r) var(--r)"></div>
@@ -841,6 +865,22 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
+      <section class="panel" data-page="Pledge" data-lede="The terms you set with yourself before the day starts.">
+        <header><h2>Your standing pledge</h2><span class="eyebrow">Renewed each morning</span></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:12px">
+          <textarea id="standingPledge" placeholder="What you have bound yourself to, in your own words."></textarea>
+          <div class="row"><button class="btn" id="savePledge">Save the pledge</button></div>
+          <hr class="rule">
+          <label class="row" style="gap:9px;align-items:flex-start">
+            <input type="checkbox" id="pledgeTick2">
+            <span><strong>I made it this morning</strong>
+              <span class="note" style="display:block">Tick it when you have actually said it, not when you intend to.</span></span>
+          </label>
+          <label class="field">Today's one thing
+            <input type="text" id="pledgeFocus" placeholder="The single thing this day is being held to.">
+          </label>
+        </div>
+      </section>
       <section class="panel" data-page="The three" data-lede="Mushāraṭa, murāqaba, muḥāsaba — one practice in three parts.">
         <header><h2>The three</h2><span class="eyebrow" id="loopStreak">—</span></header>
         <div class="triad">
@@ -862,22 +902,6 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
-      <section class="panel" data-page="Pledge" data-lede="The terms you set with yourself before the day starts.">
-        <header><h2>Your standing pledge</h2><span class="eyebrow">Renewed each morning</span></header>
-        <div class="body" style="display:flex;flex-direction:column;gap:12px">
-          <textarea id="standingPledge" placeholder="What you have bound yourself to, in your own words."></textarea>
-          <div class="row"><button class="btn" id="savePledge">Save the pledge</button></div>
-          <hr class="rule">
-          <label class="row" style="gap:9px;align-items:flex-start">
-            <input type="checkbox" id="pledgeTick2">
-            <span><strong>I made it this morning</strong>
-              <span class="note" style="display:block">Tick it when you have actually said it, not when you intend to.</span></span>
-          </label>
-          <label class="field">Today's one thing
-            <input type="text" id="pledgeFocus" placeholder="The single thing this day is being held to.">
-          </label>
-        </div>
-      </section>
 
       <section class="panel" data-page="Murāqaba" data-lede="Two sittings, one at each end of the day.">
         <header><h2>Murāqaba</h2><span class="eyebrow" id="muraqabaTotal">—</span></header>
@@ -1037,11 +1061,6 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
-      <section class="panel" data-page="Where you are" data-lede="Weight, body fat, lean mass, and the rate of change.">
-        <header><h2>Where you are</h2><span class="eyebrow" id="bodyAsOf">—</span></header>
-        <div class="stats" id="bodyStats" style="border-radius:0 0 var(--r) var(--r)"></div>
-      </section>
-
       <section class="panel" data-page="Log today" data-lede="This morning's numbers.">
         <header><h2>Log today</h2><span class="eyebrow" id="bfSource">—</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:12px">
@@ -1054,6 +1073,11 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
              Leave body fat blank and it is estimated from your waist, neck and height instead.</p>
         </div>
       </section>
+      <section class="panel" data-page="Where you are" data-lede="Weight, body fat, lean mass, and the rate of change.">
+        <header><h2>Where you are</h2><span class="eyebrow" id="bodyAsOf">—</span></header>
+        <div class="stats" id="bodyStats" style="border-radius:0 0 var(--r) var(--r)"></div>
+      </section>
+
 
       <section class="panel" data-page="Composition" data-lede="Lean and fat mass, indexed to your first reading.">
         <header><h2>What the weight is made of</h2><span class="eyebrow" id="compNote">Change since your first reading</span></header>
@@ -1132,6 +1156,20 @@ const MICROS = [
   { key:"omega3",    label:"Omega-3",       unit:"mg" }
 ];
 const ALL_KEYS = ["kcal", ...MACROS.map(m=>m.key), ...MICROS.map(m=>m.key)];
+
+const SLOTS = [ { k:"breakfast", l:"Breakfast" }, { k:"lunch", l:"Lunch" },
+                { k:"dinner", l:"Dinner" }, { k:"snack", l:"Snacks" } ];
+/* An entry logged before slots existed is placed by the clock. */
+function slotOf(e){
+  if(e.slot && SLOTS.some(x=>x.k===e.slot)) return e.slot;
+  const h = parseInt((e.time||"12:00").slice(0,2), 10);
+  return h < 11 ? "breakfast" : h < 16 ? "lunch" : h < 21 ? "dinner" : "snack";
+}
+function currentSlot(){
+  const h = new Date().getHours();
+  return h < 11 ? "breakfast" : h < 16 ? "lunch" : h < 21 ? "dinner" : "snack";
+}
+let addSlot = currentSlot();
 
 /* Food quality, after the Sapien framework and Santa Cruz Medicinals'
    line on ultra-processed food. Tracked alongside the macros, never
@@ -1308,6 +1346,25 @@ const PROGRAM = {
     { wk:"12",   nm:"Test & reset", d:"Test: bench, squat, trap-bar 3RM; max weighted pull-up; longest front-lever hold; handstand hold. Then take five easy days and start Base 12 again from the new numbers." }
   ]
 };
+
+/* Every exercise the programme knows about, flattened and deduped, so a
+   session can be built out of any of them rather than only today's.    */
+const EXERCISES = (()=>{
+  const seen = new Map();
+  for(const [dk, sess] of Object.entries(PROGRAM.days))
+    for(const ex of sess.ex){
+      if(seen.has(ex.nm)) continue;
+      seen.set(ex.nm, { nm:ex.nm, from:sess.title, dayKey:dk, scheme:ex.scheme,
+                        n:ex.n, units:ex.units || ["kg","rep"], cue:ex.cue, rest:ex.rest });
+    }
+  return Array.from(seen.values());
+})();
+const exByName = nm => EXERCISES.find(x=>x.nm===nm);
+function blankEntry(ex){
+  return { nm:ex.nm, dayKey:ex.dayKey || null, scheme:ex.scheme || "", n:(ex.n === 0 ? 0 : (ex.n || 3)),
+           units:ex.units || ["kg","rep"], cue:ex.cue || "", rest:ex.rest || "",
+           custom:!!ex.custom, sets:[], done:false };
+}
 
 /* ── Halal meal library. Figures are cooked-portion estimates. ───────── */
 function N(o){ const b={}; for(const k of ALL_KEYS) b[k]=o[k]||0; return b; }
@@ -1557,7 +1614,7 @@ const TAPE = [
 const DEFAULT_PROFILE = { age:21, sex:"male", heightCm:178, weightKg:75, activity:"mod", goal:"gain",
                           startDate:keyOf(new Date()), seeded:false, sleepTarget:8, carbApproach:"performance",
                           standingPledge:"", nonNegotiables:NON_NEG.slice(), skills:{} };
-const emptyDay = k => ({ date:k, entries:[], training:{ dayKey:null, sets:{}, done:{} },
+const emptyDay = k => ({ date:k, entries:[], training:{ dayKey:null, entries:[] },
                          supps:{}, waterMl:0, weightKg:null,
                          sleep:{ bed:"", wake:"", quality:null },
                          deen:{ pledge:{made:false, focus:""}, muraq:{am:0,pm:0},
@@ -1572,6 +1629,7 @@ let day = emptyDay(dateKey);
 let history = [];            // [{date, kcal, protein, weightKg, ...}]
 let pending = null;          // meal awaiting confirmation
 let mealSlot = "all";
+let exFilter = "";           // the exercise picker's search box
 
 /* ── Storage: localStorage always, db when the runtime offers it ────── */
 const local = {
@@ -1629,8 +1687,13 @@ async function switchDay(k, quiet){
   dateKey = k;
   const d = await loadDoc("days/"+k);
   day = d ? Object.assign(emptyDay(k), d) : emptyDay(k);
-  if(!day.training) day.training = { dayKey:null, sets:{}, done:{} };
+  if(!day.training) day.training = { dayKey:null, entries:[] };
   if(!day.training.dayKey) day.training.dayKey = scheduledDayKey(k);
+  migrateTraining(day.training);
+  if(!day.training.entries.length){
+    const sess = PROGRAM.days[day.training.dayKey];
+    if(sess) day.training.entries = sess.ex.map(ex=>blankEntry(Object.assign({dayKey:day.training.dayKey}, ex)));
+  }
   if(!day.entries) day.entries = [];
   const blank = emptyDay(k);
   day.sleep   = Object.assign({}, blank.sleep, day.sleep);
@@ -1650,8 +1713,8 @@ async function switchDay(k, quiet){
 function seedExample(){
   const oats = MEALS[1], shawarma = MEALS[3];
   day.entries = [
-    entryFromMeal(oats, 1, "08:10", true),
-    entryFromMeal(shawarma, 1, "13:25", true)
+    entryFromMeal(oats, 1, "08:10", true, "breakfast"),
+    entryFromMeal(shawarma, 1, "13:25", true, "lunch")
   ];
   day.waterMl = 1250;
   day.weightKg = profile.weightKg;
@@ -1705,6 +1768,22 @@ function setStatus(){
 }
 
 /* ── Schedule helpers ───────────────────────────────────────────────── */
+/* Days logged before exercises were name-keyed stored sets under the
+   session index. Convert them once, on load.                          */
+function migrateTraining(t){
+  if(Array.isArray(t.entries)) return;
+  const sess = PROGRAM.days[t.dayKey];
+  t.entries = [];
+  if(!sess){ delete t.sets; delete t.done; return; }
+  sess.ex.forEach((ex,i)=>{
+    const e = blankEntry(Object.assign({dayKey:t.dayKey}, ex));
+    e.sets = ((t.sets||{})[i] || []).map(st=>({ w:(st&&st.w)??"", r:(st&&st.r)??"" }));
+    e.done = !!(t.done||{})[i];
+    t.entries.push(e);
+  });
+  delete t.sets; delete t.done;
+}
+
 function scheduledDayKey(k){ const dow = parseKey(k).getDay(); return PROGRAM.week[(dow+6)%7]; }
 function weekNumber(k){
   const start = parseKey(profile.startDate || k), here = parseKey(k);
@@ -1718,7 +1797,8 @@ function deloadSets(n, w){ return phaseOf(w)==="deload" ? Math.max(1, n-1) : n; 
 /* ── Render: master ─────────────────────────────────────────────────── */
 function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
                    renderSleep(); renderIhsan(); renderTrends(); renderOverload(); renderBody();
-                   renderProtocol(); renderFitness(); renderQuality(); renderSources(); }
+                   renderProtocol(); renderFitness(); renderQuality(); renderSources();
+                   renderDay(); renderMealSlots(); }
 
 function renderHeader(){
   const w = weekNumber(dateKey), sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
@@ -1726,8 +1806,7 @@ function renderHeader(){
   $("#datePick").value = dateKey;
   $("#todayTitle").textContent = prettyDate(dateKey);
   $("#todayEyebrow").textContent = DAYNAMES[parseKey(dateKey).getDay()] + " · " + (s ? s.title + " day" : "Rest day");
-  $("#sessionTitle").textContent = s ? s.title : "Rest day";
-  $("#sessionTag").textContent = s ? ("Week " + w + " · " + (phaseOf(w)==="deload" ? "deload" : s.tag)) : "Recover";
+
 }
 
 /* ── Render: Today ──────────────────────────────────────────────────── */
@@ -1766,45 +1845,6 @@ function renderToday(){
       + '</div>';
   }).join("");
 
-  /* food log */
-  const demo = day.entries.some(e=>e.demo);
-  $("#logCount").textContent = day.entries.length;
-  $("#logKcal").textContent = Math.round(t.kcal);
-  $("#foodLog").innerHTML = (demo
-      ? '<div class="entry" style="background:var(--accent-soft)"><div class="nm" style="grid-column:1/3">'
-        + 'Example entries, so you can see it working.</div>'
-        + '<div class="acts" style="opacity:1"><button class="btn sm" data-clear-demo>Clear them</button></div></div>'
-      : "")
-    + (day.entries.length ? day.entries.map((e,i)=>
-        '<div class="entry">'
-        + '<div class="nm">'+esc(e.name)
-        + (QUALITY[e.quality] ? ' <span class="qchip '+QUALITY[e.quality].tone+'">'+esc(QUALITY[e.quality].short)+'</span>' : "")
-        + '</div>'
-        + '<div class="kcal">'+Math.round(num(e.kcal))+'</div>'
-        + '<div class="acts"><button class="btn ghost sm" data-del="'+i+'" title="Remove">✕</button></div>'
-        + '<div class="sub">'+esc(e.time||"")+(e.portion?" · "+esc(e.portion):"")
-        + ' · P '+fmt(num(e.protein),"g")+' · C '+fmt(num(e.carbs),"g")+' · F '+fmt(num(e.fat),"g")
-        + (e.source?' · '+esc(e.source):"")+'</div>'
-        + '</div>').join("")
-      : '<div class="empty">Nothing logged yet. Photograph a meal, describe one, or take one from the library.</div>');
-
-  /* session preview */
-  const sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
-  $("#sessionPreview").innerHTML = s
-    ? s.ex.slice(0,4).map((x,i)=>'<div class="row" style="justify-content:space-between;gap:10px">'
-        + '<span style="font-size:.87rem;'+(day.training.done[i]?"color:var(--ink-3);text-decoration:line-through":"")+'">'+esc(x.nm)+'</span>'
-        + '<span class="num" style="font-size:.78rem;color:var(--accent)">'+esc(x.scheme)+'</span></div>').join("")
-      + '<div class="note">+ '+(s.ex.length-4)+' more · '+deloadSets(s.sets, weekNumber(dateKey))+' working sets</div>'
-    : '<p class="note">No session scheduled. Walk, stretch, eat, sleep — the adaptation happens now, not in the gym.</p>';
-  $("#goTrain").style.display = s ? "" : "none";
-
-  /* bodyweight, water, supplements */
-  $("#bwInput").value = day.weightKg ?? "";
-  $("#waterVal").textContent = (day.waterMl/1000).toFixed(2).replace(/0$/,"") + " L";
-  $("#suppMini").innerHTML = SUPPS.core.map(s2 =>
-      '<label class="row" style="gap:9px;font-size:.85rem"><input type="checkbox" data-supp="'+s2.id+'"'
-      + (day.supps[s2.id]?" checked":"") + '><span>'+esc(s2.nm)+' <span class="dim">'+esc(s2.dose)+'</span></span></label>').join("");
-
   /* target summary */
   $("#pAge").value = profile.age; $("#pHeight").value = profile.heightCm;
   $("#pWeight").value = profile.weightKg; $("#pActivity").value = profile.activity; $("#pGoal").value = profile.goal;
@@ -1815,6 +1855,82 @@ function renderToday(){
     ["Fat", targets.fat+" g"], ["Fibre", targets.fibre+" g"], ["Water", (targets.water/1000).toFixed(1)+" L"]
   ].map(([k,v])=>'<div class="stat"><div class="v" style="font-size:1.05rem">'+v+'</div><div class="k">'+k+'</div></div>').join("");
   $("#profileNote").style.display = profile.seeded ? "none" : "";
+}
+
+/* ── The day: what has been logged, and what is still open ──────────── */
+function renderDay(){
+  const t = totals(day.entries);
+  const ents = day.training.entries;
+  const trained = ents.filter(e=>e.done).length;
+  const dn = day.deen, nn = profile.nonNegotiables || NON_NEG;
+  const kept = nn.filter(x=>dn.nn[x.id]).length;
+  const proto = PROTOCOL.filter(x=>day.protocol[x.id]).length;
+  const h = sleepHours(day.sleep);
+  const meals = SLOTS.filter(sl => day.entries.some(e=>slotOf(e)===sl.k)).length;
+
+  const rows = [
+    { on: day.entries.length>0, nm:"Meals",
+      sub: day.entries.length ? meals+" of 4 slots · "+Math.round(t.kcal)+" of "+targets.kcal+" kcal · "+Math.round(t.protein)+" g protein"
+                              : "Nothing logged yet",
+      go:["eat", "Today's meals"] },
+    { on: trained>0, nm:"Training",
+      sub: ents.length ? trained+" of "+ents.length+" exercises done" : "Rest day",
+      go:["train", "Log a workout"] },
+    { on: !!dn.pledge.made, nm:"The pledge",
+      sub: dn.pledge.made ? (dn.pledge.focus || "Made this morning") : "Not made yet",
+      go:["ihsan", "Pledge"] },
+    { on: kept===nn.length && nn.length>0, nm:"Non-negotiables",
+      sub: kept+" of "+nn.length+" kept", go:["ihsan", "Non-negotiables"] },
+    { on: !!dn.muh.done, nm:"The reckoning",
+      sub: dn.muh.done ? "Account closed" : "Open until you close it", go:["ihsan", "Muḥāsaba"] },
+    { on: h!=null, nm:"Sleep",
+      sub: h!=null ? hm(h)+" last night" : "Not logged", go:["sleep", "Last night"] },
+    { on: day.weightKg!=null, nm:"Bodyweight",
+      sub: day.weightKg!=null ? day.weightKg+" kg" : "Not weighed", go:["body", "Log today"] },
+    { on: proto>=7, nm:"Protocol",
+      sub: proto+" of "+PROTOCOL.length+" kept"+(day.zone2?" · "+day.zone2+" min zone 2":""),
+      go:["today", "Protocol"] }
+  ];
+  $("#dayScore").textContent = rows.filter(r=>r.on).length + " of " + rows.length + " done";
+  $("#dayTitle").textContent = prettyDate(dateKey);
+  $("#dayList").innerHTML = rows.map(r=>
+    '<button class="dayrow'+(r.on?" on":"")+'" data-goto="'+pageIndex(r.go[0], r.go[1])+'" data-sec="'+r.go[0]+'">'
+    + '<span class="mark">'+(r.on?"●":"○")+'</span>'
+    + '<span><span class="nm">'+esc(r.nm)+'</span><span class="sub" style="display:block">'+esc(r.sub)+'</span></span>'
+    + '<span class="go">'+(r.on?"open":"log it")+' →</span></button>').join("");
+  $("#waterVal").textContent = (day.waterMl/1000).toFixed(2).replace(/0$/,"") + " L of "
+    + (targets.water/1000).toFixed(1) + " L";
+}
+
+/* ── Today's meals, slot by slot ────────────────────────────────────── */
+function renderMealSlots(){
+  const t = totals(day.entries);
+  $("#logCount").textContent = day.entries.length;
+  $("#logKcal").textContent = Math.round(t.kcal);
+  $("#slotPick").value = addSlot;
+  $("#addingTo").textContent = "Adding to " + (SLOTS.find(x=>x.k===addSlot)||SLOTS[3]).l.toLowerCase();
+
+  const demo = day.entries.some(e=>e.demo);
+  $("#mealSlots").innerHTML = (demo
+      ? '<div class="slotempty" style="background:var(--accent-soft);color:var(--ink)">'
+        + 'Example entries, so you can see it working.'
+        + '<button class="btn sm" data-clear-demo>Clear them</button></div>' : "")
+    + SLOTS.map(sl=>{
+    const rows = day.entries.map((e,i)=>({e,i})).filter(x=>slotOf(x.e)===sl.k);
+    const kcal = rows.reduce((a,x)=>a+num(x.e.kcal), 0);
+    return '<div class="slot"><div class="slothead"><h3>'+esc(sl.l)+'</h3>'
+      + '<span class="k">'+(rows.length ? Math.round(kcal)+" kcal" : "—")+'</span></div>'
+      + (rows.length ? rows.map(x=>
+          '<div class="entry"><div class="nm">'+esc(x.e.name)
+          + (QUALITY[x.e.quality] ? ' <span class="qchip '+QUALITY[x.e.quality].tone+'">'+esc(QUALITY[x.e.quality].short)+'</span>' : "")
+          + '</div><div class="kcal">'+Math.round(num(x.e.kcal))+'</div>'
+          + '<div class="acts"><button class="btn ghost sm" data-del="'+x.i+'" title="Remove">✕</button></div>'
+          + '<div class="sub">'+esc(x.e.time||"")+' · P '+fmt(num(x.e.protein),"g")+' · C '+fmt(num(x.e.carbs),"g")
+          + ' · F '+fmt(num(x.e.fat),"g")+(x.e.source?' · '+esc(x.e.source):"")+'</div></div>').join("")
+        : '<div class="slotempty"><span>Nothing yet</span>'
+          + '<button class="btn sm" data-slotadd="'+sl.k+'">Add '+esc(sl.l.toLowerCase())+'</button></div>')
+      + '</div>';
+  }).join("");
 }
 
 /* ── Render: Train ──────────────────────────────────────────────────── */
@@ -1836,30 +1952,49 @@ function renderTrain(){
       + '<span class="t">'+(s?esc(s.short||s.title):"Rest")+'</span></button>';
   }).join("");
 
-  const sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
-  $("#exTitle").textContent = s ? s.title : "Rest day";
-  $("#exFocus").textContent = s ? s.focus : "Nothing scheduled";
-  $("#exVolume").textContent = s ? deloadSets(s.sets, w)+" working sets" : "—";
-  $("#exList").innerHTML = s ? s.ex.map((x,i)=>{
-    const n = x.n ? deloadSets(x.n, w) : 0;
-    const logged = day.training.sets[i] || [];
-    const u = x.units || ["kg","rep"];
-    const boxes = Array.from({length:n}, (_,j)=>{
-      const st = logged[j] || {};
+  const sess = day.training.dayKey && PROGRAM.days[day.training.dayKey];
+  const ents = day.training.entries;
+  const logged = ents.filter(e=>(e.sets||[]).some(st=>st && (st.w||st.r))).length;
+  $("#exTitle").textContent = sess ? sess.title : (ents.length ? "Your session" : "Rest day");
+  $("#exFocus").textContent = sess ? sess.focus
+    : (ents.length ? "Off-programme" : "Nothing scheduled — add whatever you did");
+  $("#exVolume").textContent = ents.length ? logged + " of " + ents.length + " logged" : "—";
+  $("#exList").innerHTML = ents.length ? ents.map((e,i)=>{
+    const n = e.n ? deloadSets(e.n, w) : 0;
+    const u = e.units || ["kg","rep"];
+    const sets = e.sets || [];
+    const boxes = Array.from({length:Math.max(n, sets.length)}, (_,j)=>{
+      const st = sets[j] || {};
       const filled = st.w || st.r;
       return '<div class="setbox'+(filled?" filled":"")+'"'+(u.length===1?' style="grid-template-columns:60px"':"")+'>'
         + '<input inputmode="decimal" placeholder="'+u[0]+'" data-set="'+i+'" data-si="'+j+'" data-f="w" value="'+(st.w??"")+'">'
         + (u.length>1 ? '<input inputmode="numeric" placeholder="'+u[1]+'" data-set="'+i+'" data-si="'+j+'" data-f="r" value="'+(st.r??"")+'">' : "")
         + '</div>';
     }).join("");
-    return '<div class="ex'+(day.training.done[i]?" done":"")+'">'
-      + '<div class="idx"><input type="checkbox" data-exdone="'+i+'"'+(day.training.done[i]?" checked":"")+'></div>'
-      + '<div><div class="hd"><span class="nm">'+esc(x.nm)+'</span>'
-      + '<span class="scheme">'+esc(x.scheme)+(x.rest&&x.rest!=="—"?' · '+esc(x.rest):"")+'</span></div>'
-      + '<div class="cue">'+esc(x.cue)+'</div>'
-      + (n ? '<div class="sets">'+boxes+'</div>' : "")
+    return '<div class="ex'+(e.done?" done":"")+'">'
+      + '<div class="idx"><input type="checkbox" data-exdone="'+i+'"'+(e.done?" checked":"")+'></div>'
+      + '<div><div class="hd"><span class="nm">'+esc(e.nm)+'</span>'
+      + '<span class="scheme">'+esc(e.scheme)+(e.rest&&e.rest!=="—"?' · '+esc(e.rest):"")
+      + ' <button class="btn ghost sm" data-exdel="'+i+'" title="Take off today">✕</button></span></div>'
+      + (e.cue ? '<div class="cue">'+esc(e.cue)+'</div>' : "")
+      + ((n || sets.length) ? '<div class="sets">'+boxes
+          + '<button class="btn ghost sm" data-addset="'+i+'" title="One more set">+ set</button></div>'
+        : '<div class="sets"><button class="btn ghost sm" data-addset="'+i+'">+ log a set</button></div>')
       + '</div></div>';
-  }).join("") : '<div class="empty">Rest day. The programme runs Monday, Tuesday, Thursday, Friday and Saturday.</div>';
+  }).join("")
+    : '<div class="empty">Nothing on today. Add whatever you actually did from the next page — '
+      + 'the programme runs Monday, Tuesday, Thursday, Friday and Saturday.</div>';
+
+  /* the picker: every exercise the programme knows, plus your own */
+  const onToday = new Set(ents.map(e=>e.nm));
+  const q = (exFilter||"").trim().toLowerCase();
+  const matches = EXERCISES.filter(x=> !q || x.nm.toLowerCase().includes(q) || x.from.toLowerCase().includes(q));
+  $("#exPicker").innerHTML = matches.length ? matches.map(x=>
+    '<button class="pickrow'+(onToday.has(x.nm)?" in":"")+'" data-addex="'+esc(x.nm)+'"'
+    + (onToday.has(x.nm)?" disabled":"")+'>'
+    + '<span class="nm">'+esc(x.nm)+'</span><span class="from">'+esc(x.from)+'</span>'
+    + '<span class="plus">'+(onToday.has(x.nm)?"on today":"add +")+'</span></button>').join("")
+    : '<div class="slotempty">No exercise by that name — add it as your own below.</div>';
 
   $("#warmupList").innerHTML = PROGRAM.warmup.map(x=>
     '<div><div style="font-weight:600;font-size:.88rem">'+esc(x.nm)+'</div><div class="note">'+esc(x.d)+'</div></div>').join("");
@@ -2122,21 +2257,22 @@ function commitPending(){
   clearDemo();
   const now = new Date().toTimeString().slice(0,5);
   for(const it of pending.items){
-    const e = { name:it.name, portion:it.portion, time:now, source:pending.source,
+    const e = { name:it.name, portion:it.portion, time:now, source:pending.source, slot:addSlot,
                 quality:it.quality || "mixed", id:Math.random().toString(36).slice(2) };
     for(const k of ALL_KEYS) e[k] = round(num(it[k]) * num(it.qty||1), 2);
     day.entries.push(e);
   }
   pending = null; $("#reviewSlot").innerHTML = "";
   profile.seeded = true; saveProfile();
-  saveDay(true); render(); show("today", "Log"); toast("Added to today's log.");
+  saveDay(true); render(); show("eat", "Today's meals"); toast("Added.");
 }
 
 function clearDemo(){ if(day.entries.some(e=>e.demo)) day.entries = day.entries.filter(e=>!e.demo); }
 
-function entryFromMeal(m, qty, time, demo){
+function entryFromMeal(m, qty, time, demo, slot){
   const e = { name:m.nm, portion:m.ing, time:time || new Date().toTimeString().slice(0,5),
-              source:"library", quality:m.q || "whole", demo:!!demo, id:Math.random().toString(36).slice(2) };
+              source:"library", quality:m.q || "whole", slot:(slot || addSlot),
+              demo:!!demo, id:Math.random().toString(36).slice(2) };
   for(const k of ALL_KEYS) e[k] = round(m.n[k]*(qty||1), 2);
   return e;
 }
@@ -2164,11 +2300,11 @@ function saveManual(){
   const name = (get("name").value||"").trim();
   if(!name){ toast("Give it a name first."); return; }
   clearDemo();
-  const e = { name, portion:"", time:new Date().toTimeString().slice(0,5), source:"manual",
+  const e = { name, portion:"", time:new Date().toTimeString().slice(0,5), source:"manual", slot:addSlot,
               quality:(get("quality")||{}).value || "mixed", id:Math.random().toString(36).slice(2) };
   for(const k of ALL_KEYS) e[k] = round(num(get(k)?.value), 2);
   day.entries.push(e); $("#reviewSlot").innerHTML = "";
-  profile.seeded = true; saveProfile(); saveDay(true); render(); show("today", "Log"); toast("Added to today's log.");
+  profile.seeded = true; saveProfile(); saveDay(true); render(); show("eat", "Today's meals"); toast("Added.");
 }
 
 /* ── Meal suggestion ────────────────────────────────────────────────── */
@@ -2301,17 +2437,15 @@ function renderIhsan(){
 
   $("#standingPledge").value = profile.standingPledge || "";
   $("#pledgeFocus").value = dn.pledge.focus || "";
-  $("#pledgeTick").checked = $("#pledgeTick2").checked = !!dn.pledge.made;
-  $("#pledgeEcho").textContent = dn.pledge.focus || profile.standingPledge || "Set a standing pledge in the Ihsan tab.";
+  $("#pledgeTick2").checked = !!dn.pledge.made;
   $("#muraqAm").value = dn.muraq.am || "";
   $("#muraqPm").value = dn.muraq.pm || "";
   $("#muraqabaTotal").textContent = mins ? mins + " minutes today" : "Not sat today";
-  $("#muhTick").checked = $("#muhTick2").checked = !!dn.muh.done;
+  $("#muhTick2").checked = !!dn.muh.done;
   $("#muhNote").value = dn.muh.note || "";
   $("#muhFix").value = dn.muh.fix || "";
   $$("#muhRating button").forEach(b=> b.setAttribute("aria-pressed", String(Number(b.dataset.r)===dn.muh.rating)));
   $("#nnScore").textContent = kept + " of " + nnList.length + " kept";
-  $("#deenState").textContent = (dn.pledge.made?1:0) + (mins?1:0) + (dn.muh.done?1:0) + " of 3 · " + kept + "/" + nnList.length;
 
   const loop = streak(r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done; });
   $("#loopStreak").textContent = loop ? loop + (loop===1?" day closed":" days closed in a row") : "Close the loop today";
@@ -2324,9 +2458,6 @@ function renderIhsan(){
       + '<span class="streak">'+(st?st+"d":"—")+(x.custom?' <button class="btn ghost sm" data-nndel="'+esc(x.id)+'">✕</button>':"")+'</span></div>';
   };
   $("#nnList").innerHTML = nnList.map(rowFor).join("");
-  $("#nnMini").innerHTML = nnList.map(x=>
-    '<label class="row" style="gap:9px;font-size:.85rem"><input type="checkbox" data-nn="'+esc(x.id)+'"'
-    + (dn.nn[x.id]?" checked":"")+'><span>'+esc(x.label)+'</span></label>').join("");
 
   /* thirty-day board */
   const days = [];
@@ -2362,15 +2493,11 @@ function allDays(){
 function exerciseHistory(){
   const map = new Map();
   for(const rec of allDays()){
-    const dk = rec.training && rec.training.dayKey;
-    const sess = PROGRAM.days[dk];
-    if(!sess || !rec.training.sets) continue;
-    for(const [idx, raw] of Object.entries(rec.training.sets)){
-      const ex = sess.ex[Number(idx)];
-      if(!ex || !ex.n) continue;
+    if(rec.training) migrateTraining(rec.training);
+    for(const ex of (rec.training && rec.training.entries) || []){
       const units = ex.units || ["kg","rep"];
       const kind = units.length===1 ? "time" : units[1]==="m" ? "carry" : "load";
-      const sets = (raw||[]).map(st=>({ w:num(st&&st.w), r:num(st&&st.r) }))
+      const sets = (ex.sets||[]).map(st=>({ w:num(st&&st.w), r:num(st&&st.r) }))
                             .filter(st=> kind==="time" ? st.w>0 : (st.w>0 && st.r>0));
       if(!sets.length) continue;
       let top = 0, volume = 0, best = sets[0];
@@ -2387,7 +2514,7 @@ function exerciseHistory(){
           if(st.w > top){ top = st.w; best = st; }
         }
       }
-      const e = map.get(ex.nm) || { name:ex.nm, dayKey:dk, units, kind, scheme:ex.scheme, sessions:[] };
+      const e = map.get(ex.nm) || { name:ex.nm, dayKey:ex.dayKey, units, kind, scheme:ex.scheme, sessions:[] };
       e.sessions.push({ date:rec.date, top:round(top,1), volume:round(volume,1), sets:sets.length, best });
       map.set(ex.nm, e);
     }
@@ -2447,8 +2574,13 @@ function renderOverload(){
     + '<div class="k dim" style="font-size:.71rem">'+esc(sub)+'</div></div>').join("");
 
   /* one group per session; every exercise listed, logged or not */
-  $("#ovList").innerHTML = Object.entries(PROGRAM.days).map(([dk, sess])=>{
-    const rows = sess.ex.filter(x=>x.n).map(x=>{
+  const grouped = Object.entries(PROGRAM.days).map(([dk,sess])=>[dk, sess.title, sess.focus, sess.ex.filter(x=>x.n)]);
+  const known = new Set(EXERCISES.map(x=>x.nm));
+  const extra = Array.from(hist.values()).filter(e=>!known.has(e.name))
+                     .map(e=>({ nm:e.name, scheme:e.scheme||"", n:1, units:e.units }));
+  if(extra.length) grouped.push(["own","Your own","Logged outside the programme", extra]);
+  $("#ovList").innerHTML = grouped.map(([dk, title, focus, list])=>{
+    const rows = list.map(x=>{
       const e = hist.get(x.nm);
       const units = x.units || ["kg","rep"];
       const kind = units.length===1 ? "time" : units[1]==="m" ? "carry" : "load";
@@ -2472,8 +2604,8 @@ function renderOverload(){
         + (e.sessions.length<2 ? "first" : (pct>=0?"+":"")+round(pct,0)+"%") + '</div></button>'
         + (ovOpen===e.name ? ovDetail(e, kind) : "");
     }).join("");
-    return '<div class="ovgroup"><div class="ovhead"><h3>'+esc(sess.title)+'</h3>'
-      + '<span class="eyebrow">'+esc(sess.focus)+'</span>'
+    return '<div class="ovgroup"><div class="ovhead"><h3>'+esc(title)+'</h3>'
+      + '<span class="eyebrow">'+esc(focus)+'</span>'
       + '<span class="n">'+esc(dk.toUpperCase())+'</span></div>'+rows+'</div>';
   }).join("");
 
@@ -2549,10 +2681,11 @@ function renderConsistency(){
   const days = [];
   for(let i=27;i>=0;i--){ const d=parseKey(dateKey); d.setDate(d.getDate()-i); days.push(keyOf(d)); }
   const rows = [
-    { l:"Trained", f:r=>{ const sess = PROGRAM.days[r.training && r.training.dayKey];
-        if(!sess) return "rest";
-        const done = Object.values(r.training.done||{}).filter(Boolean).length;
-        return done >= sess.ex.length-1 ? "on" : done>0 ? "part" : ""; } },
+    { l:"Trained", f:r=>{ if(r.training) migrateTraining(r.training);
+        const ents = (r.training && r.training.entries) || [];
+        if(!ents.length) return PROGRAM.days[r.training && r.training.dayKey] ? "" : "rest";
+        const done = ents.filter(e=>e.done).length;
+        return done >= ents.length-1 ? "on" : done>0 ? "part" : ""; } },
     { l:"Protein hit", f:r=>{ const t=totals(r.entries); return !t.kcal ? "" : t.protein>=targets.protein ? "on" : "part"; } },
     { l:"Slept enough", f:r=>{ const h=sleepHours(r.sleep); return h==null?"":h>=(num(profile.sleepTarget)||8)?"on":"part"; } },
     { l:"Account closed", f:r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done ? "on" : (d.pledge.made||d.muh.done)?"part":""; } },
@@ -2828,7 +2961,7 @@ function buildSubnavs(){
       '<button data-goto="'+i+'" data-sec="'+view+'"><span class="i">'+String(i+1).padStart(2,"0")+'</span>'
       + esc(p.dataset.page)+'</button>').join("");
   });
-  try{ Object.assign(pageAt, local.get("nav") || {}); }catch(e){}
+
 }
 
 function show(view, page){
@@ -2839,7 +2972,6 @@ function show(view, page){
         : (pageAt[view] || 0);
   i = clamp(i, 0, Math.max(0, pages.length-1));
   pageAt[view] = i;
-  local.set("nav", pageAt);
 
   $$(".view").forEach(v=> v.classList.toggle("on", v.id === "v-"+view));
   $$(".nav button").forEach(b=> b.setAttribute("aria-current", String(b.dataset.view===view)));
@@ -2870,7 +3002,8 @@ function show(view, page){
 function bindStatic(){
   buildSubnavs();
   $$(".nav button").forEach(b=> b.onclick = ()=> show(b.dataset.view));
-  $("#goTrain").onclick = ()=> show("train", "Session");
+  $("#slotPick").onchange = e => { addSlot = e.target.value; renderMealSlots(); };
+  $("#fromLibrary").onclick = ()=> show("eat", "Library");
 
   $("#datePick").onchange = e => switchDay(e.target.value);
   $("#dayPrev").onclick = ()=>{ const d=parseKey(dateKey); d.setDate(d.getDate()-1); switchDay(keyOf(d)); };
@@ -2891,12 +3024,10 @@ function bindStatic(){
   $("#manualGo").onclick = showManual;
   $("#suggestGo").onclick = suggestMeal;
 
-  $("#waterPlus").onclick  = ()=>{ day.waterMl = Math.min(6000, day.waterMl+250); saveDay(); renderToday(); };
-  $("#waterMinus").onclick = ()=>{ day.waterMl = Math.max(0, day.waterMl-250); saveDay(); renderToday(); };
-  $("#bwInput").onchange = e => { const v=parseFloat(e.target.value);
-    day.weightKg = Number.isFinite(v) ? v : null; saveDay(true); renderBody(); };
+  $("#waterPlus").onclick  = ()=>{ day.waterMl = Math.min(6000, day.waterMl+250); saveDay(); renderDay(); };
+  $("#waterMinus").onclick = ()=>{ day.waterMl = Math.max(0, day.waterMl-250); saveDay(); renderDay(); };
 
-  $("#zone2In").oninput = e => { day.zone2 = clamp(num(e.target.value),0,300); saveDay(); renderProtocol(); renderFitness(); };
+  $("#zone2In").oninput = e => { day.zone2 = clamp(num(e.target.value),0,300); saveDay(); renderProtocol(); renderFitness(); renderDay(); };
 
   ["pAge","pHeight","pWeight","pActivity","pGoal","pCarb"].forEach(id => $("#"+id).onchange = ()=>{
     profile.age = clamp(num($("#pAge").value)||21, 14, 90);
@@ -2911,21 +3042,16 @@ function bindStatic(){
   });
 
   /* ── sleep ── */
-  const setSleep = (k,v)=>{ day.sleep[k]=v; saveDay(true); renderSleep(); renderOverload(); };
+  const setSleep = (k,v)=>{ day.sleep[k]=v; saveDay(true); renderSleep(); renderDay(); renderOverload(); };
   $("#bedIn").onchange  = e => setSleep("bed", e.target.value);
   $("#wakeIn").onchange = e => setSleep("wake", e.target.value);
   $("#sleepTarget").onchange = e => { profile.sleepTarget = num(e.target.value)||8; saveProfile(); renderSleep(); renderOverload(); };
 
   /* ── the account ── */
   const dn = ()=> day.deen;
-  const tickPledge = v => { dn().pledge.made = v; saveDay(true); renderIhsan(); renderToday(); };
-  $("#pledgeTick").onchange  = e => tickPledge(e.target.checked);
-  $("#pledgeTick2").onchange = e => tickPledge(e.target.checked);
-  const tickMuh = v => { dn().muh.done = v; saveDay(true); renderIhsan(); renderToday(); };
-  $("#muhTick").onchange  = e => tickMuh(e.target.checked);
-  $("#muhTick2").onchange = e => tickMuh(e.target.checked);
-  $("#pledgeFocus").oninput = e => { dn().pledge.focus = e.target.value; saveDay();
-                                     $("#pledgeEcho").textContent = e.target.value || profile.standingPledge || "—"; };
+  $("#pledgeTick2").onchange = e => { dn().pledge.made = e.target.checked; saveDay(true); renderIhsan(); renderDay(); };
+  $("#muhTick2").onchange    = e => { dn().muh.done  = e.target.checked; saveDay(true); renderIhsan(); renderDay(); };
+  $("#pledgeFocus").oninput = e => { dn().pledge.focus = e.target.value; saveDay(); };
   $("#muhNote").oninput = e => { dn().muh.note = e.target.value; saveDay(); };
   $("#muhFix").oninput  = e => { dn().muh.fix  = e.target.value; saveDay(); };
   $("#muraqAm").oninput = e => { dn().muraq.am = clamp(num(e.target.value),0,180); saveDay();
@@ -2934,13 +3060,12 @@ function bindStatic(){
                                  $("#muraqabaTotal").textContent = (num(dn().muraq.am)+num(dn().muraq.pm) || 0) + " minutes today"; };
   $("#savePledge").onclick = ()=>{ profile.standingPledge = $("#standingPledge").value.trim();
                                    saveProfile(); renderIhsan(); toast("Pledge saved."); };
-  $("#goIhsan").onclick = ()=> show("ihsan", "Pledge");
   $("#nnAdd").onclick = ()=>{
     const label = $("#nnNew").value.trim();
     if(!label){ toast("Write it first."); return; }
     profile.nonNegotiables = (profile.nonNegotiables||NON_NEG.slice()).concat(
       [{ id:"c"+Math.random().toString(36).slice(2,8), label, custom:true }]);
-    $("#nnNew").value = ""; saveProfile(); renderIhsan(); renderToday();
+    $("#nnNew").value = ""; saveProfile(); renderIhsan(); renderDay();
   };
 
   /* ── overload ── */
@@ -2948,19 +3073,30 @@ function bindStatic(){
 
   /* ── body ── */
   $("#bWeight").onchange = e => { const v = parseFloat(e.target.value);
-    day.weightKg = Number.isFinite(v) ? v : null; saveDay(true); renderBody(); renderToday(); };
+    day.weightKg = Number.isFinite(v) ? v : null; saveDay(true); renderBody(); renderDay(); };
   $("#bFat").onchange = e => { const v = parseFloat(e.target.value);
     day.body.bf = Number.isFinite(v) ? clamp(v,3,60) : null; saveDay(true); renderBody(); };
   $("#bRhr").onchange = e => { const v = parseFloat(e.target.value);
     day.body.rhr = Number.isFinite(v) ? clamp(v,30,140) : null; saveDay(true); renderBody(); };
 
-  $("#clearSets").onclick = ()=>{ day.training.sets = {}; day.training.done = {}; saveDay(true); render(); };
+  $("#clearSets").onclick = ()=>{
+    day.training.entries.forEach(e=>{ e.sets = []; e.done = false; });
+    saveDay(true); render();
+  };
+  $("#exSearch").oninput = e => { exFilter = e.target.value; renderTrain(); };
+  $("#exCustomAdd").onclick = ()=>{
+    const nm = $("#exCustom").value.trim();
+    if(!nm){ toast("Name it first."); return; }
+    if(day.training.entries.some(e=>e.nm===nm)){ toast("Already on today."); return; }
+    day.training.entries.push(blankEntry({ nm, scheme:"your own", n:3, custom:true }));
+    $("#exCustom").value = ""; saveDay(true); renderTrain(); renderDay();
+  };
 
   /* delegated clicks */
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
       + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
-      + "[data-goto]");
+      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-slotadd]");
     if(!t) return;
     if(t.dataset.del !== undefined){
       day.entries.splice(Number(t.dataset.del), 1); saveDay(true); render(); return;
@@ -2972,13 +3108,32 @@ function bindStatic(){
     if(t.dataset.addmeal){
       const m = MEALS.find(x=>x.nm===t.dataset.addmeal); if(!m) return;
       clearDemo(); day.entries.push(entryFromMeal(m,1)); profile.seeded=true; saveProfile();
-      saveDay(true); render(); show("today", "Log"); toast(m.nm+" added."); return;
+      saveDay(true); render(); show("eat", "Today's meals"); toast(m.nm+" added."); return;
     }
     if(t.dataset.slot){ mealSlot = t.dataset.slot; renderEat(); return; }
     if(t.dataset.goday){ switchDay(t.dataset.goday); return; }
     if(t.hasAttribute("data-commit")){ commitPending(); return; }
     if(t.hasAttribute("data-discard")){ pending=null; $("#reviewSlot").innerHTML=""; return; }
     if(t.hasAttribute("data-manualsave")){ saveManual(); return; }
+    if(t.dataset.addex){
+      if(!day.training.entries.some(e=>e.nm===t.dataset.addex)){
+        const ex = exByName(t.dataset.addex);
+        if(ex) day.training.entries.push(blankEntry(ex));
+        saveDay(true); renderTrain(); renderDay(); toast(t.dataset.addex+" added.");
+      }
+      return;
+    }
+    if(t.dataset.exdel !== undefined){
+      day.training.entries.splice(Number(t.dataset.exdel), 1);
+      saveDay(true); renderTrain(); renderDay(); renderOverload(); return;
+    }
+    if(t.dataset.addset !== undefined){
+      const en = day.training.entries[Number(t.dataset.addset)];
+      if(en){ en.sets.push({}); saveDay(); renderTrain(); }
+      return;
+    }
+    if(t.dataset.slotadd){ addSlot = t.dataset.slotadd; renderMealSlots();
+      $("#descInput").focus(); return; }
     if(t.dataset.goto !== undefined){
       if(!t.disabled) show(t.dataset.sec, Number(t.dataset.goto));
       return;
@@ -2999,7 +3154,7 @@ function bindStatic(){
     }
     if(t.dataset.nndel){
       profile.nonNegotiables = (profile.nonNegotiables||[]).filter(x=>x.id!==t.dataset.nndel);
-      saveProfile(); renderIhsan(); renderToday(); return;
+      saveProfile(); renderIhsan(); renderDay(); return;
     }
     if(t.dataset.rung !== undefined){
       const l = PROGRAM.ladders[Number(t.dataset.rung)], i = Number(t.dataset.ri);
@@ -3012,10 +3167,10 @@ function bindStatic(){
       let r; try{ r = JSON.parse($("#suggestOut").dataset.payload||"{}"); }catch(_){ return; }
       const e2 = { name:r.name||"Suggested meal", portion:(r.ingredients||[]).join(" · "),
                    time:new Date().toTimeString().slice(0,5), source:"suggested",
-                   quality:QUALITY[r.quality] ? r.quality : "whole", id:Math.random().toString(36).slice(2) };
+                   quality:QUALITY[r.quality] ? r.quality : "whole", slot:addSlot, id:Math.random().toString(36).slice(2) };
       for(const k of ALL_KEYS) e2[k] = round(num(r[k]), 2);
       clearDemo(); day.entries.push(e2); profile.seeded=true; saveProfile(); saveDay(true); render();
-      show("today", "Log"); toast("Added to today's log.");
+      show("eat", "Today's meals"); toast("Added.");
     }
   });
 
@@ -3026,13 +3181,14 @@ function bindStatic(){
       day.supps[el.dataset.supp] = el.checked; saveDay(); renderToday(); renderStack(); return;
     }
     if(el.dataset.exdone !== undefined){
-      day.training.done[el.dataset.exdone] = el.checked; saveDay(); renderTrain(); renderToday(); renderOverload(); return;
+      const en = day.training.entries[Number(el.dataset.exdone)];
+      if(en){ en.done = el.checked; saveDay(); renderTrain(); renderDay(); renderOverload(); } return;
     }
     if(el.dataset.proto !== undefined){
-      day.protocol[el.dataset.proto] = el.checked; saveDay(true); renderProtocol(); renderOverload(); return;
+      day.protocol[el.dataset.proto] = el.checked; saveDay(true); renderProtocol(); renderDay(); renderOverload(); return;
     }
     if(el.dataset.nn !== undefined){
-      day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderToday(); return;
+      day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderDay(); return;
     }
     if(el.dataset.tape !== undefined){
       const v = num(el.value); day.measure[el.dataset.tape] = v>0 ? v : null; saveDay(true); renderBody(); return;
@@ -3041,11 +3197,12 @@ function bindStatic(){
   document.addEventListener("input", e => {
     const el = e.target;
     if(el.dataset.set !== undefined){
-      const i = el.dataset.set, j = Number(el.dataset.si);
-      const arr = day.training.sets[i] = day.training.sets[i] || [];
-      arr[j] = arr[j] || {};
-      arr[j][el.dataset.f] = el.value;
-      el.closest(".setbox").classList.toggle("filled", !!(arr[j].w || arr[j].r));
+      const en = day.training.entries[Number(el.dataset.set)];
+      if(!en) return;
+      const j = Number(el.dataset.si);
+      en.sets[j] = en.sets[j] || {};
+      en.sets[j][el.dataset.f] = el.value;
+      el.closest(".setbox").classList.toggle("filled", !!(en.sets[j].w || en.sets[j].r));
       saveDay(); clearTimeout(bindStatic._ov);
       bindStatic._ov = setTimeout(renderOverload, 600); return;
     }
