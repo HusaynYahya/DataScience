@@ -19,7 +19,7 @@ Two documents hold the plan in readable form:
 
 Two levels of navigation, and never more than one subject on screen. The rail
 picks a **section**; a strip under the heading picks a **page** within it. Every
-panel is its own page — 39 across eight sections — with a pager at the foot to
+panel is its own page — 40 across eight sections — with a pager at the foot to
 step through them in order. Every section opens on the day's entry.
 
 | Section | Pages |
@@ -28,7 +28,7 @@ step through them in order. Every section opens on the day's entry.
 | Train | **Log a workout** · Add an exercise · This week · Warm-up · Ladders · The block |
 | Overload | At a glance · Movements · Ladders · Turning up |
 | Eat | **Today's meals** · Fill the gap · Library · How you've eaten · The record · Food quality |
-| Body | **Log today** · Where you are · Composition · Bodyweight · Tape |
+| Body | **Log today** · **Bloods** · Where you are · Composition · Bodyweight · Tape |
 | Sleep | **Last night** · At a glance · When you slept |
 | Ihsan | **Pledge** · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
 | Stack | **Core** · Situational · Skip · Safety · Sources |
@@ -78,6 +78,20 @@ The data that drives the app lives in plain objects at the top of the script in
 `app.html` — `PROGRAM`, `MEALS`, `SUPPS`, `RDA`, `GOALS`. Change a rep range or add
 a meal there and both surfaces follow. Keep `PROGRAM.md` and `NUTRITION.md` in step
 by hand.
+
+## Bloods and the NHS App
+
+There is no connection to the NHS App, and there cannot be one from a page like
+this: the NHS App is first-party, and programmatic access to GP record data goes
+through NHS England's onboarding (NHS Login, GP Connect) which requires an
+approved organisation with clinical safety and information-governance sign-off.
+The Bloods page is a manual and screenshot-driven log — you read the results in
+the NHS App, and either type them in or upload the screenshot.
+
+**Reference intervals vary between laboratories.** The ranges built in are typical
+UK adult-male intervals; the range is printed beside every value so you can see
+what the flag is being judged against. Where your report's own range differs,
+trust the report.
 
 ## Privacy
 

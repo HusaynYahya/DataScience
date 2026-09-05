@@ -303,6 +303,25 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 .rung:hover{box-shadow:inset 0 0 0 1px var(--accent)}
 .rungname{font-size:.78rem;color:var(--ink-2);font-family:var(--mono)}
 
+/* ── Bloods ─────────────────────────────────────────────────────────── */
+.bpanel{border-top:1px solid var(--line)}
+.bhead{display:flex;align-items:baseline;gap:10px;padding:10px 18px;background:var(--sunk)}
+.bhead h3{font-size:.84rem}
+.brow{display:grid;grid-template-columns:minmax(0,1fr) 88px 72px 78px 58px 56px;gap:12px;align-items:center;
+      padding:8px 18px;border-top:1px solid var(--line)}
+.brow .nm{font-size:.87rem;font-weight:550;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.brow input{text-align:right;padding:5px 8px;font-family:var(--mono);font-size:.82rem}
+.brow .unit{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);white-space:nowrap}
+.brow .ref{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);text-align:right;white-space:nowrap}
+.brow .prev{font-family:var(--mono);font-size:.72rem;color:var(--ink-3);text-align:right;white-space:nowrap}
+.bflag{font-family:var(--mono);font-size:.62rem;letter-spacing:.06em;text-transform:uppercase;padding:1px 6px;
+       border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.bflag.low{color:var(--warn)} .bflag.high{color:var(--over)} .bflag.ok{color:var(--good)}
+@media (max-width:720px){
+  .brow{grid-template-columns:minmax(0,1fr) 78px 62px 52px;gap:8px;padding:8px 14px}
+  .brow .ref,.brow .prev{display:none}
+}
+
 /* ── Exercise picker ────────────────────────────────────────────────── */
 .pickrow{display:grid;grid-template-columns:minmax(0,1fr) auto 52px;gap:12px;align-items:center;width:100%;
          padding:9px 18px;border:0;border-top:1px solid var(--line);background:none;cursor:pointer;
@@ -981,6 +1000,35 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
           </div>
         </div>
       </section>
+      <section class="panel" data-page="Bloods">
+        <header>
+          <h2>Bloods</h2>
+          <div class="row">
+            <select id="drawPick" style="width:auto"></select>
+            <input type="date" id="drawDate" style="width:auto">
+            <button class="btn ghost sm" id="drawNew">New</button>
+          </div>
+        </header>
+        <div class="body" style="display:flex;flex-direction:column;gap:12px">
+          <div class="capture">
+            <label class="drop" id="dropBlood">
+              <span class="big">▤</span>
+              <strong>Upload results</strong>
+              <span class="note" id="bloodHint"></span>
+              <input type="file" id="bloodInput" accept="image/*" class="sr">
+            </label>
+            <div class="grid" style="gap:8px">
+              <label class="field">Or paste
+                <textarea id="bloodText"></textarea>
+              </label>
+              <div class="row"><button class="btn primary" id="bloodGo">Read</button></div>
+            </div>
+          </div>
+          <div id="bloodStatus"></div>
+        </div>
+        <div id="bloodPanels"></div>
+      </section>
+
       <section class="panel" data-page="Where you are">
         <header><h2>Where you are</h2><span class="eyebrow" id="bodyAsOf">—</span></header>
         <div class="stats" id="bodyStats" style="border-radius:0 0 var(--r) var(--r)"></div>
@@ -1367,6 +1415,74 @@ const SOURCES = [
 const MAIN_LIFTS = ["Barbell bench press","Weighted pull-up","Back squat","Trap-bar deadlift","Standing overhead press",
                     "Barbell row","Romanian deadlift","Weighted dip","Weighted chin-up"];
 const ADDED_WEIGHT = ["Weighted pull-up","Weighted dip","Weighted chin-up"];
+/* Blood markers, grouped as a UK lab reports them. Ranges are typical
+   adult-male reference intervals and vary between laboratories.        */
+const BLOODS = [
+  { panel:"Full blood count", rows:[
+    { k:"hb",       nm:"Haemoglobin",        unit:"g/L",        lo:130, hi:170 },
+    { k:"hct",      nm:"Haematocrit",        unit:"L/L",        lo:0.40, hi:0.50 },
+    { k:"mcv",      nm:"MCV",                unit:"fL",         lo:80,  hi:100 },
+    { k:"wcc",      nm:"White cell count",   unit:"×10⁹/L",     lo:4.0, hi:11.0 },
+    { k:"plt",      nm:"Platelets",          unit:"×10⁹/L",     lo:150, hi:400 }
+  ]},
+  { panel:"Urea and electrolytes", rows:[
+    { k:"na",       nm:"Sodium",             unit:"mmol/L",     lo:133, hi:146 },
+    { k:"k",        nm:"Potassium",          unit:"mmol/L",     lo:3.5, hi:5.3 },
+    { k:"urea",     nm:"Urea",               unit:"mmol/L",     lo:2.5, hi:7.8 },
+    { k:"creat",    nm:"Creatinine",         unit:"µmol/L",     lo:59,  hi:104 },
+    { k:"egfr",     nm:"eGFR",               unit:"mL/min",     lo:90,  hi:null }
+  ]},
+  { panel:"Liver", rows:[
+    { k:"alt",      nm:"ALT",                unit:"U/L",        lo:null, hi:41 },
+    { k:"ast",      nm:"AST",                unit:"U/L",        lo:null, hi:40 },
+    { k:"alp",      nm:"ALP",                unit:"U/L",        lo:30,  hi:130 },
+    { k:"bili",     nm:"Bilirubin",          unit:"µmol/L",     lo:null, hi:21 },
+    { k:"alb",      nm:"Albumin",            unit:"g/L",        lo:35,  hi:50 }
+  ]},
+  { panel:"Lipids", rows:[
+    { k:"chol",     nm:"Total cholesterol",  unit:"mmol/L",     lo:null, hi:5.0 },
+    { k:"ldl",      nm:"LDL",                unit:"mmol/L",     lo:null, hi:3.0 },
+    { k:"hdl",      nm:"HDL",                unit:"mmol/L",     lo:1.0, hi:null },
+    { k:"nonhdl",   nm:"Non-HDL",            unit:"mmol/L",     lo:null, hi:4.0 },
+    { k:"trig",     nm:"Triglycerides",      unit:"mmol/L",     lo:null, hi:1.7 }
+  ]},
+  { panel:"Metabolic", rows:[
+    { k:"hba1c",    nm:"HbA1c",              unit:"mmol/mol",   lo:20,  hi:41 },
+    { k:"glucose",  nm:"Fasting glucose",    unit:"mmol/L",     lo:3.9, hi:5.5 }
+  ]},
+  { panel:"Hormones", rows:[
+    { k:"testo",    nm:"Total testosterone", unit:"nmol/L",     lo:8.6, hi:29.0 },
+    { k:"tsh",      nm:"TSH",                unit:"mIU/L",      lo:0.27, hi:4.2 },
+    { k:"ft4",      nm:"Free T4",            unit:"pmol/L",     lo:12,  hi:22 }
+  ]},
+  { panel:"Vitamins and minerals", rows:[
+    { k:"ferritin", nm:"Ferritin",           unit:"µg/L",       lo:30,  hi:400 },
+    { k:"b12",      nm:"Vitamin B12",        unit:"ng/L",       lo:197, hi:771 },
+    { k:"folate",   nm:"Folate",             unit:"µg/L",       lo:3.9, hi:26.8 },
+    { k:"vitd",     nm:"Vitamin D",          unit:"nmol/L",     lo:50,  hi:125 },
+    { k:"calcium",  nm:"Calcium, adjusted",  unit:"mmol/L",     lo:2.20, hi:2.60 },
+    { k:"mg",       nm:"Magnesium",          unit:"mmol/L",     lo:0.70, hi:1.00 }
+  ]},
+  { panel:"Inflammation and muscle", rows:[
+    { k:"crp",      nm:"CRP",                unit:"mg/L",       lo:null, hi:5 },
+    { k:"ck",       nm:"Creatine kinase",    unit:"U/L",        lo:40,  hi:320 }
+  ]}
+];
+const BLOOD_KEYS = BLOODS.flatMap(p=>p.rows);
+const bloodByKey = k => BLOOD_KEYS.find(x=>x.k===k);
+function bloodFlag(row, v){
+  if(!(v>0)) return "";
+  if(row.lo!=null && v < row.lo) return "low";
+  if(row.hi!=null && v > row.hi) return "high";
+  return "ok";
+}
+function rangeText(row){
+  if(row.lo!=null && row.hi!=null) return row.lo+"–"+row.hi;
+  if(row.hi!=null) return "< "+row.hi;
+  if(row.lo!=null) return "> "+row.lo;
+  return "";
+}
+
 const TAPE = [
   { k:"neck",     l:"Neck" },      { k:"shoulder", l:"Shoulders" }, { k:"chest",   l:"Chest" },
   { k:"arm",      l:"Arm, flexed"},{ k:"forearm",  l:"Forearm" },   { k:"waist",   l:"Waist" },
@@ -1397,8 +1513,10 @@ let exFilter = "";           // the exercise picker's search box
 const local = {
   get(p){ try{ return JSON.parse(localStorage.getItem(LS+p) || "null"); }catch(e){ return null; } },
   set(p,v){ try{ localStorage.setItem(LS+p, JSON.stringify(v)); }catch(e){} },
-  days(){ const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i);
-      if(k && k.startsWith(LS+"days/")){ const v=JSON.parse(localStorage.getItem(k)); if(v) out.push(v); } } }catch(e){}
+  days(){ return local.scan("days/"); },
+  bloods(){ return local.scan("bloods/"); },
+  scan(prefix){ const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i);
+      if(k && k.startsWith(LS+prefix)){ const v=JSON.parse(localStorage.getItem(k)); if(v) out.push(v); } } }catch(e){}
     return out.sort((a,b)=> a.date<b.date?1:-1); }
 };
 async function loadDoc(path){
@@ -1442,6 +1560,7 @@ async function hydrate(){
   targets = computeTargets(profile);
   await switchDay(dateKey, true);
   await loadHistory();
+  await loadBloods();
   render();
 }
 
@@ -1503,6 +1622,7 @@ function connectRuntime(){
     else saveProfile();
     await switchDay(dateKey, true);
     await loadHistory();
+    await loadBloods();
     setStatus(); render();
   }).catch(()=>{});
   window.claude.use("sample").then(async s => {
@@ -1560,7 +1680,7 @@ function deloadSets(n, w){ return phaseOf(w)==="deload" ? Math.max(1, n-1) : n; 
 function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
                    renderSleep(); renderIhsan(); renderTrends(); renderOverload(); renderBody();
                    renderProtocol(); renderQuality(); renderSources();
-                   renderDay(); renderMealSlots(); }
+                   renderDay(); renderMealSlots(); renderBloods(); }
 
 function renderHeader(){
   const w = weekNumber(dateKey), sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
@@ -2637,6 +2757,100 @@ function renderSources(){
     + '<div class="url">'+esc(x.url)+'</div></div>').join("");
 }
 
+/* ── Bloods: one document per draw ──────────────────────────────────── */
+let bloodDate = keyOf(new Date());
+let bloodDoc  = { date:bloodDate, values:{} };
+let bloodHist = [];
+
+async function loadBloods(){
+  if(db){
+    try{
+      const snap = await db.collection("bloods").orderBy("date","desc").limit(60).get();
+      bloodHist = snap.docs.map(d=>d.data()).filter(Boolean);
+    }catch(e){ bloodHist = local.bloods(); }
+  } else bloodHist = local.bloods();
+  const doc = bloodHist.find(d=>d.date===bloodDate) || await loadDoc("bloods/"+bloodDate);
+  bloodDoc = doc ? Object.assign({ date:bloodDate, values:{} }, doc) : { date:bloodDate, values:{} };
+  bloodDoc.values = bloodDoc.values || {};
+}
+function saveBloods(){
+  saveDoc("bloods/"+bloodDoc.date, bloodDoc, true);
+  const i = bloodHist.findIndex(d=>d.date===bloodDoc.date);
+  if(i>=0) bloodHist[i] = bloodDoc; else bloodHist.push(Object.assign({}, bloodDoc));
+  bloodHist.sort((a,b)=> a.date<b.date ? 1 : -1);
+}
+/* the draw before this one, for the previous-value column */
+function priorDraw(){
+  return bloodHist.filter(d=>d.date < bloodDoc.date).sort((a,b)=> a.date<b.date?1:-1)[0] || null;
+}
+
+function renderBloods(){
+  const dates = Array.from(new Set(bloodHist.map(d=>d.date).concat([bloodDoc.date]))).sort().reverse();
+  $("#drawPick").innerHTML = dates.map(d=>
+    '<option value="'+d+'"'+(d===bloodDoc.date?" selected":"")+'>'+esc(prettyDate(d))+'</option>').join("");
+  $("#drawDate").value = bloodDoc.date;
+  $("#bloodHint").textContent = askClaude
+    ? (canSendImages ? "" : "text only") : "manual entry";
+  $("#dropBlood").style.opacity = (askClaude && canSendImages) ? "" : ".55";
+  $("#bloodGo").disabled = !askClaude;
+
+  const prev = priorDraw();
+  $("#bloodPanels").innerHTML = BLOODS.map(p=>
+    '<div class="bpanel"><div class="bhead"><h3>'+esc(p.panel)+'</h3></div>'
+    + p.rows.map(r=>{
+        const v = bloodDoc.values[r.k];
+        const flag = bloodFlag(r, num(v));
+        const pv = prev && prev.values ? prev.values[r.k] : null;
+        return '<div class="brow"><span class="nm">'+esc(r.nm)+'</span>'
+          + '<input type="number" step="any" data-blood="'+r.k+'" value="'+(v ?? "")+'" aria-label="'+esc(r.nm)+'">'
+          + '<span class="unit">'+esc(r.unit)+'</span>'
+          + '<span class="ref">'+esc(rangeText(r))+'</span>'
+          + '<span class="prev">'+(num(pv)>0 ? round(num(pv),2) : "")+'</span>'
+          + (flag ? '<span class="bflag '+flag+'">'+flag+'</span>' : '<span></span>')
+          + '</div>';
+      }).join("")
+    + '</div>').join("");
+}
+
+const BLOOD_SHAPE = () =>
+  'Reply with only a JSON object mapping marker keys to numbers, plus an optional "date" as YYYY-MM-DD.\n'
+  + 'Use only these keys, and convert to the unit given. Omit any marker that is not present.\n'
+  + BLOOD_KEYS.map(r=>r.k+" = "+r.nm+" ("+r.unit+")").join("\n")
+  + '\nExample: {"date":"2026-08-14","hb":152,"ferritin":88,"vitd":61}';
+
+async function readBloods(kind, payload){
+  if(!askClaude) return;
+  const out = $("#bloodStatus");
+  out.innerHTML = '<div class="thinking"><i class="pulse"></i><span>Reading…</span></div>';
+  try{
+    const opts = { modelTier:"default", cache:false };
+    if(kind==="photo") opts.images = payload.file;
+    const res = await askClaude.json(
+      "Extract blood test results from this " + (kind==="photo" ? "screenshot or photograph of a lab report"
+        : "pasted lab report") + ". Convert every value to the unit named for its key. "
+      + "Ignore anything not in the key list.\n\n"
+      + (kind==="text" ? payload.text + "\n\n" : "") + BLOOD_SHAPE(), opts);
+    let count = 0;
+    if(res && typeof res === "object"){
+      if(typeof res.date === "string" && /^\d{4}-\d{2}-\d{2}$/.test(res.date) && res.date !== bloodDoc.date){
+        bloodDate = res.date; bloodDoc.date = res.date;
+      }
+      for(const [k,v] of Object.entries(res)){
+        if(k === "date" || !bloodByKey(k)) continue;
+        const nv = num(v);
+        if(nv > 0){ bloodDoc.values[k] = nv; count++; }
+      }
+    }
+    saveBloods(); renderBloods();
+    out.innerHTML = '<p class="note">'+count+' read</p>';
+  }catch(e){
+    const map = { not_granted:"declined", rate_limited:"rate limited", cancelled:"stopped",
+                  invalid_json:"unreadable", images_unavailable:"images unavailable",
+                  image_rejected:"image rejected" };
+    out.innerHTML = '<p class="note">'+esc(map[e.code] || (e.code||"error"))+'</p>';
+  }
+}
+
 /* ── Events ─────────────────────────────────────────────────────────── */
 /* Two levels of navigation: a section in the rail, and one panel to a
    page inside it. Nothing shows two subjects at once.                  */
@@ -2699,6 +2913,33 @@ function bindStatic(){
   buildSubnavs();
   $$(".nav button").forEach(b=> b.onclick = ()=> show(b.dataset.view));
   $("#slotPick").onchange = e => { addSlot = e.target.value; renderMealSlots(); };
+
+  /* ── bloods ── */
+  $("#drawPick").onchange = async e => { bloodDate = e.target.value; await loadBloods(); renderBloods(); };
+  $("#drawDate").onchange = e => {
+    const d = e.target.value; if(!d) return;
+    const old = bloodDoc.date;
+    bloodDoc.date = bloodDate = d;
+    bloodHist = bloodHist.filter(x=>x.date!==old);
+    saveBloods(); renderBloods();
+  };
+  $("#drawNew").onclick = async ()=>{
+    bloodDate = keyOf(new Date());
+    bloodDoc = { date:bloodDate, values:{} };
+    renderBloods();
+  };
+  $("#bloodInput").onchange = e => {
+    const f = e.target.files && e.target.files[0];
+    if(!f) return;
+    if(!canSendImages){ toast("Images unavailable — paste the text instead."); e.target.value=""; return; }
+    readBloods("photo", { file:f }); e.target.value = "";
+  };
+  $("#dropBlood").addEventListener("click", e => { if(e.target.tagName!=="INPUT") $("#bloodInput").click(); });
+  $("#bloodGo").onclick = ()=>{
+    const text = $("#bloodText").value.trim();
+    if(!text){ toast("Paste the results first."); return; }
+    readBloods("text", { text });
+  };
   $("#fromLibrary").onclick = ()=> show("eat", "Library");
 
   $("#datePick").onchange = e => switchDay(e.target.value);
@@ -2885,6 +3126,15 @@ function bindStatic(){
     }
     if(el.dataset.nn !== undefined){
       day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderDay(); return;
+    }
+    if(el.dataset.blood !== undefined){
+      const v = num(el.value);
+      if(v>0) bloodDoc.values[el.dataset.blood] = v; else delete bloodDoc.values[el.dataset.blood];
+      saveBloods();
+      const row = el.closest(".brow"), flag = bloodFlag(bloodByKey(el.dataset.blood), v);
+      const chip = row.lastElementChild;
+      if(chip) chip.outerHTML = flag ? '<span class="bflag '+flag+'">'+flag+'</span>' : '<span></span>';
+      return;
     }
     if(el.dataset.tape !== undefined){
       const v = num(el.value); day.measure[el.dataset.tape] = v>0 ? v : null; saveDay(true); renderBody(); return;
