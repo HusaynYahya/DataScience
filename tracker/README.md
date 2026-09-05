@@ -19,76 +19,24 @@ Two documents hold the plan in readable form:
 
 Two levels of navigation, and never more than one subject on screen. The rail
 picks a **section**; a strip under the heading picks a **page** within it. Every
-panel is its own page — 46 across eight sections — with a pager at the foot to
-step through them in order.
-
-**Every section opens on the day's entry**: what you ate, what you trained, the
-pledge you gave. Reference and analysis come after.
+panel is its own page — 39 across eight sections — with a pager at the foot to
+step through them in order. Every section opens on the day's entry.
 
 | Section | Pages |
 |---------|-------|
 | Today | **The day** · Fuel · Micronutrients · Protocol · Targets |
-| Train | **Log a workout** · Add an exercise · This week · Warm-up · Ladders · The block · Wider week |
+| Train | **Log a workout** · Add an exercise · This week · Warm-up · Ladders · The block |
 | Overload | At a glance · Movements · Ladders · Turning up |
-| Eat | **Today's meals** · Fill the gap · Library · How you've eaten · The record · The rules · Food quality |
-| Body | **Log today** · Where you are · Composition · Bodyweight · Tape · Method |
-| Sleep | **Last night** · At a glance · When you slept · The toolkit · Getting it right |
-| Ihsan | **Pledge** · The three · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
-| Stack | **Core** · Situational · Skip · Safety · Judging one · Sources |
+| Eat | **Today's meals** · Fill the gap · Library · How you've eaten · The record · Food quality |
+| Body | **Log today** · Where you are · Composition · Bodyweight · Tape |
+| Sleep | **Last night** · At a glance · When you slept |
+| Ihsan | **Pledge** · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
+| Stack | **Core** · Situational · Skip · Safety · Sources |
 
-**The day** is the home page: eight rows — meals, training, pledge,
-non-negotiables, reckoning, sleep, bodyweight, protocol — each showing what has
-been logged and linking straight to where you enter the rest.
-
-## What the app does
-
-- **Today** — the day's record first: eight rows showing what is logged and what
-  is still open. Then the energy ring against your daily target, macro bars, and a
-  thirteen-nutrient board showing what's been met and what's still short.
-- **Photograph a meal** and get a per-item calorie and nutrient breakdown you can
-  adjust before it goes in the log. Or describe the meal in words. Or type the
-  numbers off a label.
-- **Train** — opens on the workout log: today's scheduled session prefilled, with
-  every set recorded as you do it (weight and reps, seconds for holds, load and
-  distance for carries). A second page lists **every exercise the programme knows**,
-  searchable, so you can add anything you actually did — plus your own movements.
-  Then this week's schedule, the warm-up, the skill ladders and the twelve-week map.
-- **Eat** — opens on today's meals, split into breakfast, lunch, dinner and snacks,
-  each slot showing what went in it and what it cost. Add to any slot by photo,
-  description, library or by hand. Then the suggestion built around whatever macros
-  you have left, the library itself, and how you've been eating.
-- **Sleep** — bedtime and waking time per night, hours computed, and a span chart
-  showing *when* you slept across the last fortnight. Tracks average duration,
-  usual lights-out, and bedtime drift — the number most people never look at.
-- **Ihsan** — the daily spiritual account, built on the classical triad:
-  *mushāraṭa* (the morning pledge), *murāqaba* (watchfulness through the day) and
-  *muḥāsaba* (the reckoning at night), plus your own editable non-negotiables. A
-  thirty-day board shows every practice as a filled square or a gap.
-- **Protocol** (on Today) — Huberman's daily blueprint as a ten-item checklist:
-  morning sunlight, delayed caffeine, NSDR, sunset light, last meal, dim light,
-  cool room, same wake time. Plus zone-2 minutes tracked against 150 a week.
-- **Food quality** (on Eat) — every logged meal carries a tier (whole / mixed /
-  ultra-processed), graded by Claude for photographed and described meals. The
-  fortnight's split sits beside the Sapien framework it came from.
-- **Stack** — the supplement list with doses, evidence grades and reasons, ticked
-  off daily, plus how to judge one and where all the advice came from.
-- **Overload** — every exercise in the programme, grouped by session, each with a
-  sparkline across the sessions you logged it in and the percentage it has moved.
-  Switch between *top set* (estimated 1RM by the Epley formula) and *total
-  volume*; tap any row for its full chart and a session-by-session table. Held
-  positions progress in seconds, carries in load and distance. Also holds the
-  skill ladders and a four-row consistency board.
-- **Body** — bodyweight with a seven-day average, body fat (entered, or estimated
-  from waist, neck and height by the US Navy formula), lean and fat mass charted
-  as change since your first reading, waist-to-height, resting heart rate, and
-  nine tape sites each showing the change since you started.
-
-Targets recalculate from your age, height, weight, training frequency and goal —
-Mifflin–St Jeor for resting rate, an activity multiplier, then a goal adjustment.
-
-Nothing is entered twice: progression lines, body composition, streaks and the
-consistency board are all derived from the sets, weigh-ins, meals, nights and
-ticks already logged.
+The app itself carries no explanatory copy — names, numbers, doses and units
+only. The reasoning behind the programme, the targets, the supplement choices
+and the sources lives in the three markdown documents above, where it can be read
+once rather than repeated on every screen.
 
 ## On the Ihsan tab
 
