@@ -530,7 +530,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <header><h2>Essentials</h2><span class="eyebrow"><span class="num" id="essCount">—</span></span></header>
         <div id="essList"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
-          <input type="text" id="essNew" placeholder="Add" style="flex:1 1 220px;width:auto">
+          <input type="text" id="essNew" placeholder="Add" style="flex:1 1 220px;width:auto" autocorrect="off" autocapitalize="none" spellcheck="false">
           <button class="btn" id="essAdd">Add</button>
         </div>
       </section>
@@ -539,7 +539,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <header><h2>Habits</h2><span class="eyebrow"><span class="num" id="habCount">—</span></span></header>
         <div id="habList"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
-          <input type="text" id="habNew" placeholder="Add" style="flex:2 1 200px;width:auto">
+          <input type="text" id="habNew" placeholder="Add" style="flex:2 1 200px;width:auto" autocorrect="off" autocapitalize="none" spellcheck="false">
           <input type="text" id="habWhen" placeholder="When" style="flex:1 1 120px;width:auto">
           <button class="btn" id="habAdd">Add</button>
         </div>
@@ -587,11 +587,11 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
 
         <div class="body" style="border-top:1px solid var(--line);padding-bottom:10px">
-          <input type="text" id="exSearch" placeholder="Or search the list">
+          <input type="text" id="exSearch" placeholder="Or search the list" autocorrect="off" autocapitalize="none" spellcheck="false">
         </div>
         <div class="picklist" id="exPicker"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
-          <input type="text" id="exCustom" placeholder="Your own" style="flex:1 1 200px;width:auto">
+          <input type="text" id="exCustom" placeholder="Your own" style="flex:1 1 200px;width:auto" autocorrect="off" autocapitalize="none" spellcheck="false">
           <button class="btn" id="exCustomAdd">Add</button>
         </div>
       </section>
@@ -903,7 +903,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <header><h2>Non-negotiables</h2><span class="eyebrow" id="nnScore">—</span></header>
         <div id="nnList"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
-          <input type="text" id="nnNew" placeholder="Add your own" style="flex:1 1 220px;width:auto">
+          <input type="text" id="nnNew" placeholder="Add your own" style="flex:1 1 220px;width:auto" autocorrect="off" autocapitalize="none" spellcheck="false">
           <button class="btn" id="nnAdd">Add</button>
         </div>
       </section>
@@ -930,7 +930,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         <header><h2>Stack</h2><span class="eyebrow"><span class="num" id="suppCount">—</span> today</span></header>
         <div id="suppList"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
-          <input type="text" id="suppNew" placeholder="Name" style="flex:2 1 180px;width:auto">
+          <input type="text" id="suppNew" placeholder="Name" style="flex:2 1 180px;width:auto" autocorrect="off" autocapitalize="none" spellcheck="false">
           <input type="text" id="suppDose" placeholder="Dose" style="flex:1 1 120px;width:auto">
           <button class="btn" id="suppAdd">Add</button>
         </div>
@@ -1175,6 +1175,18 @@ const UNIT_OVERRIDE = {
 const EXERCISES = CATALOGUE.flatMap(([group, names]) =>
   names.map(nm => ({ nm, from:group, units:UNIT_OVERRIDE[nm] || ["kg","rep"] })));
 const exByName = nm => EXERCISES.find(x => x.nm === nm);
+/* Search that survives hyphens, plurals and word order: "push up",
+   "pushup" and "up push" all find "Push-up".                         */
+const normTxt = t => String(t||"").toLowerCase().replace(/[^a-z0-9]+/g, " ").trim();
+const squash  = t => normTxt(t).replace(/ /g, "");
+function matchesEx(x, q){
+  const nq = normTxt(q);
+  if(!nq) return false;
+  const nm = normTxt(x.nm), grp = normTxt(x.from);
+  if(nm.includes(nq) || grp.includes(nq)) return true;
+  if(squash(x.nm).includes(squash(q))) return true;
+  return nq.split(" ").every(t => nm.includes(t) || grp.includes(t));
+}
 function blankEntry(ex){
   return { nm:ex.nm, group:ex.from || "Your own", units:ex.units || ["kg","rep"],
            custom:!!ex.custom, sets:[{},{},{}], done:false };
@@ -1286,7 +1298,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
-const BUILD = "2026-09-07 02:19 UTC";
+const BUILD = "2026-09-07 02:28 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -1711,15 +1723,17 @@ function renderTrain(){
   }).join("") : '<div class="empty">Nothing logged.</div>';
 
   const onToday = new Set(ents.map(e=>e.nm));
-  const q = (exFilter||"").trim().toLowerCase();
-  const matches = EXERCISES.filter(x=> !q || x.nm.toLowerCase().includes(q) || x.from.toLowerCase().includes(q));
+  const q = (exFilter||"").trim();
+  const matches = q ? EXERCISES.filter(x=> matchesEx(x, q)) : [];
   $("#exPicker").innerHTML = !q
     ? ""
     : (matches.length ? matches.slice(0,40).map(x=>
         '<button class="pickrow" data-addex="'+esc(x.nm)+'"'+(onToday.has(x.nm)?" disabled":"")+'>'
         + '<span class="nm">'+esc(x.nm)+'</span><span class="from">'+esc(x.from)+'</span>'
         + '<span class="plus">'+(onToday.has(x.nm)?"on today":"add +")+'</span></button>').join("")
-      : '<div class="slotempty">No match.</div>');
+      : '<button class="pickrow" data-addex="'+esc(q)+'">'
+        + '<span class="nm">'+esc(q)+'</span><span class="from">your own</span>'
+        + '<span class="plus">add +</span></button>');
 }
 
 /* ── Render: Eat ────────────────────────────────────────────────────── */
