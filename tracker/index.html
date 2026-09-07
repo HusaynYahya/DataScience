@@ -519,52 +519,29 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
-      <section class="panel" data-page="The day">
-        <header><h2 id="dayTitle">The day</h2><span class="eyebrow" id="dayScore">—</span></header>
-        <div class="daylist" id="dayList"></div>
-        <div class="body" style="border-top:1px solid var(--line)">
-          <div class="row" style="justify-content:space-between;gap:14px">
-            <div>
-              <div class="eyebrow">Water</div>
-              <div class="num" id="waterVal" style="font-size:1.2rem;font-weight:600">0 L</div>
-            </div>
-            <div class="row" style="gap:6px">
-              <button class="btn sm" id="waterMinus">− 250 ml</button>
-              <button class="btn sm" id="waterPlus">+ 250 ml</button>
-            </div>
-          </div>
+
+
+
+
+
+
+      <section class="panel" data-page="Essentials">
+        <header><h2>Essentials</h2><span class="eyebrow"><span class="num" id="essCount">—</span></span></header>
+        <div id="essList"></div>
+        <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
+          <input type="text" id="essNew" placeholder="Add" style="flex:1 1 220px;width:auto">
+          <button class="btn" id="essAdd">Add</button>
         </div>
       </section>
 
-      <section class="panel" data-page="Fuel">
-        <header><h2>Fuel</h2><span class="eyebrow" id="fuelState">—</span></header>
-        <div class="body gauge">
-            <div class="ring">
-              <svg viewBox="0 0 120 120" width="100%" height="100%" aria-hidden="true">
-                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--track)" stroke-width="13"></circle>
-                <circle id="ringArc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="13"
-                        stroke-linecap="round" stroke-dasharray="0 327" style="transition:stroke-dasharray .4s ease"></circle>
-              </svg>
-              <div class="mid">
-                <div class="big num" id="kcalLeft">0</div>
-                <div class="eyebrow" id="kcalLeftLbl">kcal left</div>
-              </div>
-            </div>
-          <div class="macros" id="macroBars"></div>
+      <section class="panel" data-page="Habits">
+        <header><h2>Habits</h2><span class="eyebrow"><span class="num" id="habCount">—</span></span></header>
+        <div id="habList"></div>
+        <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
+          <input type="text" id="habNew" placeholder="Add" style="flex:2 1 200px;width:auto">
+          <input type="text" id="habWhen" placeholder="When" style="flex:1 1 120px;width:auto">
+          <button class="btn" id="habAdd">Add</button>
         </div>
-      </section>
-
-      <section class="panel" data-page="Micronutrients">
-        <header><h2>Micronutrients</h2></header>
-        <div class="micros" id="microBoard"></div>
-      </section>
-
-
-
-
-      <section class="panel" data-page="Protocol">
-        <header><h2>Protocol</h2><span class="eyebrow" id="protoScore">—</span></header>
-        <div id="protoList"></div>
         <div class="body" style="border-top:1px solid var(--line)">
           <label class="field" style="max-width:230px">Zone 2 today (minutes)
             <input type="number" id="zone2In" min="0" max="300" step="5">
@@ -575,39 +552,6 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
 
 
-      <section class="panel" data-page="Targets">
-        <header><h2>Your numbers &amp; targets</h2></header>
-        <div class="body" style="display:flex;flex-direction:column;gap:16px">
-          <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
-            <label class="field">Age<input type="number" id="pAge" min="14" max="90"></label>
-            <label class="field">Height (cm)<input type="number" id="pHeight" min="120" max="230"></label>
-            <label class="field">Weight (kg)<input type="number" id="pWeight" step="0.1" min="30" max="250"></label>
-            <label class="field">Training days / week
-              <select id="pActivity">
-                <option value="light">3 or fewer</option>
-                <option value="mod">4 – 5</option>
-                <option value="high">6 – 7</option>
-              </select>
-            </label>
-            <label class="field">Carbohydrate
-              <select id="pCarb">
-                <option value="performance">Performance</option>
-                <option value="moderate">Moderate</option>
-                <option value="lower">Lower-carb (Sapien)</option>
-              </select>
-            </label>
-            <label class="field">Goal
-              <select id="pGoal">
-                <option value="gain">Lean muscle gain</option>
-                <option value="recomp">Recomp at maintenance</option>
-                <option value="cut">Fat loss</option>
-                <option value="skill">Skill &amp; strength</option>
-              </select>
-            </label>
-          </div>
-          <div id="targetSummary" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden"></div>
-        </div>
-      </section>
       <div class="pager"></div>
 
     </section>
@@ -716,6 +660,36 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </div>
       </section>
 
+      <section class="panel" data-page="Fuel">
+        <header><h2>Fuel</h2><span class="eyebrow" id="fuelState">—</span></header>
+        <div class="body gauge">
+            <div class="ring">
+              <svg viewBox="0 0 120 120" width="100%" height="100%" aria-hidden="true">
+                <circle cx="60" cy="60" r="52" fill="none" stroke="var(--track)" stroke-width="13"></circle>
+                <circle id="ringArc" cx="60" cy="60" r="52" fill="none" stroke="var(--accent)" stroke-width="13"
+                        stroke-linecap="round" stroke-dasharray="0 327" style="transition:stroke-dasharray .4s ease"></circle>
+              </svg>
+              <div class="mid">
+                <div class="big num" id="kcalLeft">0</div>
+                <div class="eyebrow" id="kcalLeftLbl">kcal left</div>
+              </div>
+            </div>
+          <div class="macros" id="macroBars"></div>
+        </div>
+        <div class="micros" id="microBoard"></div>
+        <div class="body" style="border-top:1px solid var(--line)">
+          <div class="row" style="justify-content:space-between;gap:14px">
+            <div>
+              <div class="eyebrow">Water</div>
+              <div class="num" id="waterVal" style="font-size:1.2rem;font-weight:600">0 L</div>
+            </div>
+            <div class="row" style="gap:6px">
+              <button class="btn sm" id="waterMinus">− 250 ml</button>
+              <button class="btn sm" id="waterPlus">+ 250 ml</button>
+            </div>
+          </div>
+        </div>
+      </section>
       <section class="panel" data-page="Fill the gap">
         <header><h2>Fill the gap</h2><span class="eyebrow" id="gapLine">—</span></header>
         <div class="body" style="display:flex;flex-direction:column;gap:12px">
@@ -764,6 +738,39 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
           <div class="legend" style="padding:0" id="qualityLegend"></div>
         </div>
       </section>
+      <section class="panel" data-page="Targets">
+        <header><h2>Your numbers &amp; targets</h2></header>
+        <div class="body" style="display:flex;flex-direction:column;gap:16px">
+          <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(130px,1fr))">
+            <label class="field">Age<input type="number" id="pAge" min="14" max="90"></label>
+            <label class="field">Height (cm)<input type="number" id="pHeight" min="120" max="230"></label>
+            <label class="field">Weight (kg)<input type="number" id="pWeight" step="0.1" min="30" max="250"></label>
+            <label class="field">Training days / week
+              <select id="pActivity">
+                <option value="light">3 or fewer</option>
+                <option value="mod">4 – 5</option>
+                <option value="high">6 – 7</option>
+              </select>
+            </label>
+            <label class="field">Carbohydrate
+              <select id="pCarb">
+                <option value="performance">Performance</option>
+                <option value="moderate">Moderate</option>
+                <option value="lower">Lower-carb (Sapien)</option>
+              </select>
+            </label>
+            <label class="field">Goal
+              <select id="pGoal">
+                <option value="gain">Lean muscle gain</option>
+                <option value="recomp">Recomp at maintenance</option>
+                <option value="cut">Fat loss</option>
+                <option value="skill">Skill &amp; strength</option>
+              </select>
+            </label>
+          </div>
+          <div id="targetSummary" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden"></div>
+        </div>
+      </section>
       <div class="pager"></div>
 
     </section>
@@ -804,9 +811,6 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
               </div>
             </div>
         </div>
-      </section>
-      <section class="panel" data-page="At a glance">
-        <header><h2>At a glance</h2><span class="eyebrow" id="sleepRange">Last 14 nights</span></header>
         <div class="stats" id="sleepStats" style="border-radius:0 0 var(--r) var(--r)"></div>
       </section>
 
@@ -1366,6 +1370,14 @@ const NON_NEG = [
   { id:"istigh",  label:"Istighfār before sleep" }
 ];
 /* Andrew Huberman's daily protocol, in the order the day runs.        */
+const DEFAULT_ESSENTIALS = [
+  { id:"e_train",   label:"Train or walk" },
+  { id:"e_protein", label:"Protein target" },
+  { id:"e_water",   label:"Water target" },
+  { id:"e_sleep",   label:"Seven hours or more" },
+  { id:"e_light",   label:"Morning sunlight" },
+  { id:"e_pledge",  label:"Pledge made" }
+];
 const PROTOCOL = [
   { id:"sunlight", nm:"Sunlight in the eyes", when:"Within 30–60 min of waking" },
   { id:"hydrate", nm:"Water and salt before anything", when:"On waking" },
@@ -1464,13 +1476,14 @@ const TAPE = [
 const DEFAULT_PROFILE = { age:21, sex:"male", heightCm:178, weightKg:75, activity:"mod", goal:"gain",
                           startDate:keyOf(new Date()), seeded:false, sleepTarget:8, carbApproach:"performance",
                           standingPledge:"", nonNegotiables:NON_NEG.slice(), skills:{},
-                          supps:DEFAULT_SUPPS.slice() };
+                          supps:DEFAULT_SUPPS.slice(),
+                          essentials:DEFAULT_ESSENTIALS.slice(), habits:null };
 const emptyDay = k => ({ date:k, entries:[], training:{ dayKey:null, entries:[] },
                          supps:{}, waterMl:0, weightKg:null,
                          sleep:{ bed:"", wake:"", quality:null },
                          deen:{ pledge:{made:false, focus:""}, muraq:{am:0,pm:0},
                                 muh:{done:false, rating:null, note:"", fix:""}, nn:{} },
-                         measure:{}, body:{ bf:null, rhr:null }, protocol:{}, zone2:0 });
+                         measure:{}, body:{ bf:null, rhr:null }, protocol:{}, essentials:{}, zone2:0 });
 
 let db = null, askClaude = null, canSendImages = false;
 let profile = Object.assign({}, DEFAULT_PROFILE);
@@ -1531,6 +1544,13 @@ async function hydrate(){
   if(!profile.skills) profile.skills = {};
   if(!CARB_APPROACH[profile.carbApproach]) profile.carbApproach = "performance";
   if(!Array.isArray(profile.supps)) profile.supps = DEFAULT_SUPPS.slice();
+  if(!Array.isArray(profile.essentials)) profile.essentials = DEFAULT_ESSENTIALS.slice();
+  if(!Array.isArray(profile.habits) || !profile.habits.length)
+    profile.habits = PROTOCOL.map(x=>({ id:x.id, label:x.nm, when:x.when }))
+      .concat([{ id:"h_zone2", label:"Zone 2", when:"Any time" },
+               { id:"h_mobility", label:"Stretch or mobility", when:"Any time" },
+               { id:"h_nophone", label:"No phone in bed", when:"Night" },
+               { id:"h_read", label:"Read", when:"Night" }]);
   targets = computeTargets(profile);
   await switchDay(dateKey, true);
   await loadHistory();
@@ -1559,7 +1579,8 @@ async function switchDay(k, quiet){
   day.deen.nn     = day.deen.nn || {};
   day.measure = day.measure || {};
   day.body     = Object.assign({}, blank.body, day.body);
-  day.protocol = day.protocol || {};
+  day.protocol   = day.protocol   || {};
+  day.essentials = day.essentials || {};
   day.zone2    = num(day.zone2);
   if(k===keyOf(new Date()) && !day.entries.length && !profile.seeded){ seedExample(); }
   if(!quiet) render();
@@ -1653,8 +1674,7 @@ function deloadSets(n, w){ return phaseOf(w)==="deload" ? Math.max(1, n-1) : n; 
 /* ── Render: master ─────────────────────────────────────────────────── */
 function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
                    renderSleep(); renderIhsan(); renderTrends(); renderOverload(); renderBody();
-                   renderProtocol(); renderQuality();
-                   renderDay(); renderMealSlots(); renderBloods(); }
+                   renderProtocol(); renderQuality(); renderMealSlots(); renderBloods(); }
 
 function renderHeader(){
   const w = weekNumber(dateKey), sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
@@ -1690,6 +1710,9 @@ function renderToday(){
       + '</div></div>';
   }).join("");
 
+  $("#waterVal").textContent = (day.waterMl/1000).toFixed(2).replace(/0$/,"") + " L of "
+    + (targets.water/1000).toFixed(1) + " L";
+
   /* micronutrient board */
   $("#microBoard").innerHTML = MICROS.map(m=>{
     const v = t[m.key], tg = targets[m.key] || 1, ratio = v/tg;
@@ -1711,50 +1734,6 @@ function renderToday(){
   ].map(([k,v])=>'<div class="stat"><div class="v" style="font-size:1.05rem">'+v+'</div><div class="k">'+k+'</div></div>').join("");
 }
 
-/* ── The day: what has been logged, and what is still open ──────────── */
-function renderDay(){
-  const t = totals(day.entries);
-  const ents = day.training.entries;
-  const trained = ents.filter(e=>e.done).length;
-  const dn = day.deen, nn = profile.nonNegotiables || NON_NEG;
-  const kept = nn.filter(x=>dn.nn[x.id]).length;
-  const proto = PROTOCOL.filter(x=>day.protocol[x.id]).length;
-  const h = sleepHours(day.sleep);
-  const meals = SLOTS.filter(sl => day.entries.some(e=>slotOf(e)===sl.k)).length;
-
-  const rows = [
-    { on: day.entries.length>0, nm:"Meals",
-      sub: day.entries.length ? meals+" of 4 slots · "+Math.round(t.kcal)+" of "+targets.kcal+" kcal · "+Math.round(t.protein)+" g protein"
-                              : "Nothing logged yet",
-      go:["eat", "Today's meals"] },
-    { on: trained>0, nm:"Training",
-      sub: ents.length ? trained+" of "+ents.length+" exercises done" : "Rest day",
-      go:["train", "Log a workout"] },
-    { on: !!dn.pledge.made, nm:"The pledge",
-      sub: dn.pledge.made ? (dn.pledge.focus || "Made this morning") : "Not made yet",
-      go:["ihsan", "Pledge"] },
-    { on: kept===nn.length && nn.length>0, nm:"Non-negotiables",
-      sub: kept+" of "+nn.length+" kept", go:["ihsan", "Non-negotiables"] },
-    { on: !!dn.muh.done, nm:"The reckoning",
-      sub: dn.muh.done ? "Account closed" : "Open until you close it", go:["ihsan", "Muḥāsaba"] },
-    { on: h!=null, nm:"Sleep",
-      sub: h!=null ? hm(h)+" last night" : "Not logged", go:["sleep", "Last night"] },
-    { on: day.weightKg!=null, nm:"Bodyweight",
-      sub: day.weightKg!=null ? day.weightKg+" kg" : "Not weighed", go:["body", "Log today"] },
-    { on: proto>=7, nm:"Protocol",
-      sub: proto+" of "+PROTOCOL.length+" kept"+(day.zone2?" · "+day.zone2+" min zone 2":""),
-      go:["today", "Protocol"] }
-  ];
-  $("#dayScore").textContent = rows.filter(r=>r.on).length + " of " + rows.length + " done";
-  $("#dayTitle").textContent = prettyDate(dateKey);
-  $("#dayList").innerHTML = rows.map(r=>
-    '<button class="dayrow'+(r.on?" on":"")+'" data-goto="'+pageIndex(r.go[0], r.go[1])+'" data-sec="'+r.go[0]+'">'
-    + '<span class="mark">'+(r.on?"●":"○")+'</span>'
-    + '<span><span class="nm">'+esc(r.nm)+'</span><span class="sub" style="display:block">'+esc(r.sub)+'</span></span>'
-    + '<span class="go">'+(r.on?"open":"log it")+' →</span></button>').join("");
-  $("#waterVal").textContent = (day.waterMl/1000).toFixed(2).replace(/0$/,"") + " L of "
-    + (targets.water/1000).toFixed(1) + " L";
-}
 
 /* ── Today's meals, slot by slot ────────────────────────────────────── */
 function renderMealSlots(){
@@ -2519,8 +2498,12 @@ function renderConsistency(){
     { l:"Protein hit", f:r=>{ const t=totals(r.entries); return !t.kcal ? "" : t.protein>=targets.protein ? "on" : "part"; } },
     { l:"Slept enough", f:r=>{ const h=sleepHours(r.sleep); return h==null?"":h>=(num(profile.sleepTarget)||8)?"on":"part"; } },
     { l:"Account closed", f:r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done ? "on" : (d.pledge.made||d.muh.done)?"part":""; } },
-    { l:"Protocol kept", f:r=>{ const k = Object.values(r.protocol||{}).filter(Boolean).length;
-        return k>=7 ? "on" : k>=3 ? "part" : ""; } }
+    { l:"Essentials", f:r=>{ const n = (profile.essentials||[]).length;
+        const k = Object.values(r.essentials||{}).filter(Boolean).length;
+        return !n ? "" : k>=n ? "on" : k>0 ? "part" : ""; } },
+    { l:"Habits", f:r=>{ const n = (profile.habits||[]).length;
+        const k = Object.values(r.protocol||{}).filter(Boolean).length;
+        return !n ? "" : k>=Math.ceil(n*0.7) ? "on" : k>=3 ? "part" : ""; } }
   ];
   $("#consistBoard").style.gridTemplateColumns = "minmax(96px,168px) minmax(0,1fr)";
   $("#consistBoard").innerHTML = rows.map(row=>
@@ -2679,16 +2662,35 @@ function drawWeight(S){
 
 /* ── Protocol, quality and sources ──────────────────────────────────── */
 function renderProtocol(){
-  const done = PROTOCOL.filter(x=>day.protocol[x.id]).length;
-  $("#protoScore").textContent = done + " of " + PROTOCOL.length;
-  $("#protoList").innerHTML = PROTOCOL.map(x=>
-    '<div class="protorow'+(day.protocol[x.id]?" done":"")+'">'
-    + '<input type="checkbox" data-proto="'+esc(x.id)+'"'+(day.protocol[x.id]?" checked":"")+'>'
-    + '<div class="nm">'+esc(x.nm)+'</div>'
-    + '<div class="when">'+esc(x.when)+'</div></div>').join("");
+  const ess = profile.essentials || [], hab = profile.habits || [];
+  const essDone = ess.filter(x=>day.essentials[x.id]).length;
+  const habDone = hab.filter(x=>day.protocol[x.id]).length;
+  $("#essCount").textContent = essDone + " of " + ess.length;
+  $("#habCount").textContent = habDone + " of " + hab.length;
+
+  $("#essList").innerHTML = ess.length ? ess.map(x=>{
+    const st = streak(r=>(r.essentials||{})[x.id]);
+    return '<div class="protorow'+(day.essentials[x.id]?" done":"")+'">'
+      + '<input type="checkbox" data-ess="'+esc(x.id)+'"'+(day.essentials[x.id]?" checked":"")+'>'
+      + '<div class="nm">'+esc(x.label)+'</div>'
+      + '<div class="row" style="gap:10px;justify-content:flex-end">'
+      + '<span class="when">'+(st?st+"d":"")+'</span>'
+      + '<button class="btn ghost sm" data-essdel="'+esc(x.id)+'" title="Remove">✕</button></div></div>';
+  }).join("") : '<div class="empty">Nothing on the list.</div>';
+
+  $("#habList").innerHTML = hab.length ? hab.map(x=>{
+    const st = streak(r=>(r.protocol||{})[x.id]);
+    return '<div class="protorow'+(day.protocol[x.id]?" done":"")+'">'
+      + '<input type="checkbox" data-proto="'+esc(x.id)+'"'+(day.protocol[x.id]?" checked":"")+'>'
+      + '<div class="nm">'+esc(x.label)+'</div>'
+      + '<div class="row" style="gap:10px;justify-content:flex-end">'
+      + '<span class="when">'+esc(x.when||"")+'</span>'
+      + '<span class="when" style="color:var(--ink-3)">'+(st?st+"d":"")+'</span>'
+      + '<button class="btn ghost sm" data-habdel="'+esc(x.id)+'" title="Remove">✕</button></div></div>';
+  }).join("") : '<div class="empty">Nothing on the list.</div>';
+
   $("#zone2In").value = day.zone2 || "";
-  const week = zone2Week();
-  $("#zone2Note").textContent = week + " of 150 minutes this week";
+  $("#zone2Note").textContent = zone2Week() + " of 150 minutes this week";
 }
 function zone2Week(){
   const monday = parseKey(dateKey); monday.setDate(monday.getDate() - ((monday.getDay()+6)%7));
@@ -2936,10 +2938,10 @@ function bindStatic(){
   $("#manualGo").onclick = showManual;
   $("#suggestGo").onclick = suggestMeal;
 
-  $("#waterPlus").onclick  = ()=>{ day.waterMl = Math.min(6000, day.waterMl+250); saveDay(); renderDay(); };
-  $("#waterMinus").onclick = ()=>{ day.waterMl = Math.max(0, day.waterMl-250); saveDay(); renderDay(); };
+  $("#waterPlus").onclick  = ()=>{ day.waterMl = Math.min(6000, day.waterMl+250); saveDay(); renderToday(); };
+  $("#waterMinus").onclick = ()=>{ day.waterMl = Math.max(0, day.waterMl-250); saveDay(); renderToday(); };
 
-  $("#zone2In").oninput = e => { day.zone2 = clamp(num(e.target.value),0,300); saveDay(); renderProtocol(); renderFitness(); renderDay(); };
+  $("#zone2In").oninput = e => { day.zone2 = clamp(num(e.target.value),0,300); saveDay(); renderProtocol(); };
 
   ["pAge","pHeight","pWeight","pActivity","pGoal","pCarb"].forEach(id => $("#"+id).onchange = ()=>{
     profile.age = clamp(num($("#pAge").value)||21, 14, 90);
@@ -2954,15 +2956,15 @@ function bindStatic(){
   });
 
   /* ── sleep ── */
-  const setSleep = (k,v)=>{ day.sleep[k]=v; saveDay(true); renderSleep(); renderDay(); renderOverload(); };
+  const setSleep = (k,v)=>{ day.sleep[k]=v; saveDay(true); renderSleep(); renderOverload(); };
   $("#bedIn").onchange  = e => setSleep("bed", e.target.value);
   $("#wakeIn").onchange = e => setSleep("wake", e.target.value);
   $("#sleepTarget").onchange = e => { profile.sleepTarget = num(e.target.value)||8; saveProfile(); renderSleep(); renderOverload(); };
 
   /* ── the account ── */
   const dn = ()=> day.deen;
-  $("#pledgeTick2").onchange = e => { dn().pledge.made = e.target.checked; saveDay(true); renderIhsan(); renderDay(); };
-  $("#muhTick2").onchange    = e => { dn().muh.done  = e.target.checked; saveDay(true); renderIhsan(); renderDay(); };
+  $("#pledgeTick2").onchange = e => { dn().pledge.made = e.target.checked; saveDay(true); renderIhsan(); };
+  $("#muhTick2").onchange    = e => { dn().muh.done  = e.target.checked; saveDay(true); renderIhsan(); };
   $("#pledgeFocus").oninput = e => { dn().pledge.focus = e.target.value; saveDay(); };
   $("#muhNote").oninput = e => { dn().muh.note = e.target.value; saveDay(); };
   $("#muhFix").oninput  = e => { dn().muh.fix  = e.target.value; saveDay(); };
@@ -2972,6 +2974,21 @@ function bindStatic(){
                                  $("#muraqabaTotal").textContent = (num(dn().muraq.am)+num(dn().muraq.pm) || 0) + " minutes today"; };
   $("#savePledge").onclick = ()=>{ profile.standingPledge = $("#standingPledge").value.trim();
                                    saveProfile(); renderIhsan(); toast("Pledge saved."); };
+  $("#essAdd").onclick = ()=>{
+    const label = $("#essNew").value.trim();
+    if(!label){ toast("Name it first."); return; }
+    profile.essentials = (profile.essentials||[]).concat(
+      [{ id:"e"+Math.random().toString(36).slice(2,8), label }]);
+    $("#essNew").value = ""; saveProfile(); renderProtocol();
+  };
+  $("#habAdd").onclick = ()=>{
+    const label = $("#habNew").value.trim();
+    if(!label){ toast("Name it first."); return; }
+    profile.habits = (profile.habits||[]).concat(
+      [{ id:"h"+Math.random().toString(36).slice(2,8), label, when:$("#habWhen").value.trim() }]);
+    $("#habNew").value = ""; $("#habWhen").value = ""; saveProfile(); renderProtocol();
+  };
+
   $("#suppAdd").onclick = ()=>{
     const nm = $("#suppNew").value.trim();
     if(!nm){ toast("Name it first."); return; }
@@ -2986,7 +3003,7 @@ function bindStatic(){
     if(!label){ toast("Write it first."); return; }
     profile.nonNegotiables = (profile.nonNegotiables||NON_NEG.slice()).concat(
       [{ id:"c"+Math.random().toString(36).slice(2,8), label, custom:true }]);
-    $("#nnNew").value = ""; saveProfile(); renderIhsan(); renderDay();
+    $("#nnNew").value = ""; saveProfile(); renderIhsan(); renderProtocol();
   };
 
   /* ── overload ── */
@@ -2994,7 +3011,7 @@ function bindStatic(){
 
   /* ── body ── */
   $("#bWeight").onchange = e => { const v = parseFloat(e.target.value);
-    day.weightKg = Number.isFinite(v) ? v : null; saveDay(true); renderBody(); renderDay(); };
+    day.weightKg = Number.isFinite(v) ? v : null; saveDay(true); renderBody(); };
   $("#bFat").onchange = e => { const v = parseFloat(e.target.value);
     day.body.bf = Number.isFinite(v) ? clamp(v,3,60) : null; saveDay(true); renderBody(); };
   $("#bRhr").onchange = e => { const v = parseFloat(e.target.value);
@@ -3010,14 +3027,15 @@ function bindStatic(){
     if(!nm){ toast("Name it first."); return; }
     if(day.training.entries.some(e=>e.nm===nm)){ toast("Already on today."); return; }
     day.training.entries.push(blankEntry({ nm, scheme:"your own", n:3, custom:true }));
-    $("#exCustom").value = ""; saveDay(true); renderTrain(); renderDay();
+    $("#exCustom").value = ""; saveDay(true); renderTrain(); renderProtocol();
   };
 
   /* delegated clicks */
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
       + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
-      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-slotadd],[data-suppdel]");
+      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-slotadd],[data-suppdel],"
+      + "[data-essdel],[data-habdel]");
     if(!t) return;
     if(t.dataset.del !== undefined){
       day.entries.splice(Number(t.dataset.del), 1); saveDay(true); render(); return;
@@ -3044,13 +3062,13 @@ function bindStatic(){
       if(!day.training.entries.some(e=>e.nm===t.dataset.addex)){
         const ex = exByName(t.dataset.addex);
         if(ex) day.training.entries.push(blankEntry(ex));
-        saveDay(true); renderTrain(); renderDay(); toast(t.dataset.addex+" added.");
+        saveDay(true); renderTrain(); renderProtocol(); toast(t.dataset.addex+" added.");
       }
       return;
     }
     if(t.dataset.exdel !== undefined){
       day.training.entries.splice(Number(t.dataset.exdel), 1);
-      saveDay(true); renderTrain(); renderDay(); renderOverload(); return;
+      saveDay(true); renderTrain(); renderProtocol(); renderOverload(); return;
     }
     if(t.dataset.addset !== undefined){
       const en = day.training.entries[Number(t.dataset.addset)];
@@ -3086,13 +3104,21 @@ function bindStatic(){
       day.deen.muh.rating = day.deen.muh.rating === r ? null : r;
       saveDay(true); renderIhsan(); return;
     }
+    if(t.dataset.essdel){
+      profile.essentials = (profile.essentials||[]).filter(x=>x.id!==t.dataset.essdel);
+      saveProfile(); renderProtocol(); return;
+    }
+    if(t.dataset.habdel){
+      profile.habits = (profile.habits||[]).filter(x=>x.id!==t.dataset.habdel);
+      saveProfile(); renderProtocol(); return;
+    }
     if(t.dataset.suppdel){
       profile.supps = (profile.supps||[]).filter(x=>x.id!==t.dataset.suppdel);
       saveProfile(); renderStack(); return;
     }
     if(t.dataset.nndel){
       profile.nonNegotiables = (profile.nonNegotiables||[]).filter(x=>x.id!==t.dataset.nndel);
-      saveProfile(); renderIhsan(); renderDay(); return;
+      saveProfile(); renderIhsan(); renderProtocol(); return;
     }
     if(t.dataset.rung !== undefined){
       const l = PROGRAM.ladders[Number(t.dataset.rung)], i = Number(t.dataset.ri);
@@ -3120,13 +3146,16 @@ function bindStatic(){
     }
     if(el.dataset.exdone !== undefined){
       const en = day.training.entries[Number(el.dataset.exdone)];
-      if(en){ en.done = el.checked; saveDay(); renderTrain(); renderDay(); renderOverload(); } return;
+      if(en){ en.done = el.checked; saveDay(); renderTrain(); renderProtocol(); renderOverload(); } return;
+    }
+    if(el.dataset.ess !== undefined){
+      day.essentials[el.dataset.ess] = el.checked; saveDay(true); renderProtocol(); renderOverload(); return;
     }
     if(el.dataset.proto !== undefined){
-      day.protocol[el.dataset.proto] = el.checked; saveDay(true); renderProtocol(); renderDay(); renderOverload(); return;
+      day.protocol[el.dataset.proto] = el.checked; saveDay(true); renderProtocol(); renderProtocol(); renderOverload(); return;
     }
     if(el.dataset.nn !== undefined){
-      day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderDay(); return;
+      day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderProtocol(); return;
     }
     if(el.dataset.blood !== undefined){
       const v = num(el.value);
