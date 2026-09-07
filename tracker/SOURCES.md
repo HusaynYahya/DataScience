@@ -54,8 +54,9 @@ see below.
 
 Founder (2018); UC Santa Cruz medical anthropology; Santa Cruz Paleo.
 
-**Used for:** how the Stack pages judge a supplement, and the ultra-processed
-flag on the food log.
+**Used for:** the ultra-processed flag on the food log, and the criteria below.
+The app's Stack page is now just your own editable list, so these criteria live
+here rather than on screen.
 
 - An **effective dose or nothing** — most products carry a fraction of the dose
   the study used, which makes them a cheaper way to buy nothing.

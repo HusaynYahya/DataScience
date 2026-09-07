@@ -220,7 +220,7 @@ label.field{display:flex;flex-direction:column;gap:5px;font-size:.78rem;color:va
 .card .macroline{font-family:var(--mono);font-size:.75rem;color:var(--ink-2);display:flex;gap:9px;flex-wrap:wrap}
 .card .macroline b{font-weight:600;color:var(--ink)}
 .card .ing{font-size:.81rem;color:var(--ink-2)}
-.supp{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;padding:13px 18px;border-bottom:1px solid var(--line);align-items:start}
+.supp{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line);align-items:center}
 .supp:last-child{border-bottom:0}
 .supp .why{font-size:.83rem;color:var(--ink-2);margin-top:3px;max-width:66ch}
 .supp .dose{font-family:var(--mono);font-size:.79rem;color:var(--accent);white-space:nowrap}
@@ -912,29 +912,20 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
       </div>
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
-      <section class="panel" data-page="Core">
-        <header><h2>Daily core</h2></header>
-        <div id="suppCore"></div>
-      </section>
-      <section class="panel" data-page="Situational">
-        <header><h2>Situational</h2></header>
-        <div id="suppSit"></div>
-      </section>
-      <section class="panel" data-page="Skip">
-        <header><h2>Skip these</h2></header>
-        <div class="cards" id="suppSkip"></div>
-      </section>
-      <section class="panel" data-page="Safety">
-        <div class="body" style="display:flex;flex-direction:column;gap:10px">
+      <section class="panel" data-page="Stack">
+        <header><h2>Stack</h2><span class="eyebrow"><span class="num" id="suppCount">—</span> today</span></header>
+        <div id="suppList"></div>
+        <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
+          <input type="text" id="suppNew" placeholder="Name" style="flex:2 1 180px;width:auto">
+          <input type="text" id="suppDose" placeholder="Dose" style="flex:1 1 120px;width:auto">
+          <button class="btn" id="suppAdd">Add</button>
+        </div>
+        <div class="body" style="border-top:1px solid var(--line);padding-top:12px">
           <p class="note">Not medical advice.</p>
         </div>
       </section>
 
 
-      <section class="panel" data-page="Sources">
-        <header><h2>Sources</h2></header>
-        <div id="sourceList"></div>
-      </section>
       <div class="pager"></div>
 
     </section>
@@ -1325,32 +1316,18 @@ const MEALS = [
     n:N({kcal:380,protein:42,carbs:18,fat:14,fibre:4,satfat:4,sodium:900,calcium:80,iron:2.5,potassium:800,magnesium:60,zinc:3,vitc:30,vitd:0.3,vita:400,b12:0.8,folate:80,omega3:120}) }
 ];
 
-/* ── Supplements ────────────────────────────────────────────────────── */
-const SUPPS = {
-  core: [
-    { id:"creatine", nm:"Creatine monohydrate", dose:"5 g daily", ev:"strong" },
-    { id:"vitd", nm:"Vitamin D3", dose:"1000–2000 IU with a meal", ev:"good" },
-    { id:"protein", nm:"Whey or casein powder", dose:"25–30 g, as needed", ev:"strong" }
-  ],
-  sit: [
-    { id:"omega3", nm:"Omega-3 (EPA + DHA)", dose:"1 g combined EPA+DHA", ev:"good" },
-    { id:"caffeine", nm:"Caffeine", dose:"3 mg/kg, 45 min pre-session", ev:"strong" },
-    { id:"magnesium", nm:"Magnesium glycinate or threonate", dose:"200–300 mg, evening", ev:"good" },
-    { id:"theanine", nm:"L-theanine", dose:"100–400 mg before bed", ev:"good" },
-    { id:"electrolytes", nm:"Electrolytes", dose:"On heavy-sweat days", ev:"good" },
-    { id:"multi", nm:"Multivitamin", dose:"One a day", ev:"thin" }
-  ],
-  skip: [
-    { nm:"BCAAs and EAAs" },
-    { nm:"Testosterone boosters" },
-    { nm:"Fat burners" },
-    { nm:"Mass gainers" },
-    { nm:"Glutamine" },
-    { nm:"Proprietary blend pre-workouts" },
-    { nm:"Tongkat Ali" },
-    { nm:"Fadogia agrestis" }
-  ],
-};
+/* ── Supplements: a starting list, yours to edit ────────────────────── */
+const DEFAULT_SUPPS = [
+  { id:"creatine",     nm:"Creatine monohydrate",          dose:"5 g daily" },
+  { id:"vitd",         nm:"Vitamin D3",                    dose:"1000–2000 IU with a meal" },
+  { id:"protein",      nm:"Whey or casein powder",         dose:"25–30 g" },
+  { id:"omega3",       nm:"Omega-3 (EPA + DHA)",           dose:"1 g EPA+DHA" },
+  { id:"caffeine",     nm:"Caffeine",                      dose:"3 mg/kg pre-session" },
+  { id:"magnesium",    nm:"Magnesium glycinate",           dose:"200–300 mg, evening" },
+  { id:"theanine",     nm:"L-theanine",                    dose:"100–400 mg before bed" },
+  { id:"electrolytes", nm:"Electrolytes",                  dose:"On heavy-sweat days" },
+  { id:"multi",        nm:"Multivitamin",                  dose:"One a day" }
+];
 
 
 /* ── Utilities ──────────────────────────────────────────────────────── */
@@ -1406,11 +1383,6 @@ const PROTOCOL = [
 
 
 
-const SOURCES = [
-  { nm:"Andrew Huberman", url:"hubermanlab.com" },
-  { nm:"Brian Sanders — Food Lies", url:"foodlies.org" },
-  { nm:"Brendan Ruh — Santa Cruz Medicinals", url:"santacruzmedicinals.com" }
-];
 
 const MAIN_LIFTS = ["Barbell bench press","Weighted pull-up","Back squat","Trap-bar deadlift","Standing overhead press",
                     "Barbell row","Romanian deadlift","Weighted dip","Weighted chin-up"];
@@ -1491,7 +1463,8 @@ const TAPE = [
 
 const DEFAULT_PROFILE = { age:21, sex:"male", heightCm:178, weightKg:75, activity:"mod", goal:"gain",
                           startDate:keyOf(new Date()), seeded:false, sleepTarget:8, carbApproach:"performance",
-                          standingPledge:"", nonNegotiables:NON_NEG.slice(), skills:{} };
+                          standingPledge:"", nonNegotiables:NON_NEG.slice(), skills:{},
+                          supps:DEFAULT_SUPPS.slice() };
 const emptyDay = k => ({ date:k, entries:[], training:{ dayKey:null, entries:[] },
                          supps:{}, waterMl:0, weightKg:null,
                          sleep:{ bed:"", wake:"", quality:null },
@@ -1557,6 +1530,7 @@ async function hydrate(){
   if(!Array.isArray(profile.nonNegotiables) || !profile.nonNegotiables.length) profile.nonNegotiables = NON_NEG.slice();
   if(!profile.skills) profile.skills = {};
   if(!CARB_APPROACH[profile.carbApproach]) profile.carbApproach = "performance";
+  if(!Array.isArray(profile.supps)) profile.supps = DEFAULT_SUPPS.slice();
   targets = computeTargets(profile);
   await switchDay(dateKey, true);
   await loadHistory();
@@ -1679,7 +1653,7 @@ function deloadSets(n, w){ return phaseOf(w)==="deload" ? Math.max(1, n-1) : n; 
 /* ── Render: master ─────────────────────────────────────────────────── */
 function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
                    renderSleep(); renderIhsan(); renderTrends(); renderOverload(); renderBody();
-                   renderProtocol(); renderQuality(); renderSources();
+                   renderProtocol(); renderQuality();
                    renderDay(); renderMealSlots(); renderBloods(); }
 
 function renderHeader(){
@@ -1909,16 +1883,17 @@ function renderEat(){
 
 /* ── Render: Stack ──────────────────────────────────────────────────── */
 function renderStack(){
-  const EVL = { strong:"Strong evidence", good:"Good evidence", thin:"Thin evidence" };
-  const row = (s,checkable)=>'<div class="supp">'
-    + '<div>'+(checkable?'<input type="checkbox" data-supp="'+s.id+'"'+(day.supps[s.id]?" checked":"")+'>':'<span class="dim">◇</span>')+'</div>'
-    + '<div><div class="row" style="gap:8px"><span style="font-weight:600">'+esc(s.nm)+'</span>'
-    + (s.ev ? '<span class="ev '+s.ev+'">'+esc(EVL[s.ev])+'</span>' : "")+'</div></div>'
-    + '<div class="dose">'+esc(s.dose)+'</div></div>';
-  $("#suppCore").innerHTML = SUPPS.core.map(s=>row(s,true)).join("");
-  $("#suppSit").innerHTML  = SUPPS.sit.map(s=>row(s,false)).join("");
-  $("#suppSkip").innerHTML = SUPPS.skip.map(s=>
-    '<div class="card"><div class="nm">'+esc(s.nm)+'</div></div>').join("");
+  const list = profile.supps || [];
+  const taken = list.filter(x=>day.supps[x.id]).length;
+  $("#suppCount").textContent = taken + " of " + list.length;
+  $("#suppList").innerHTML = list.length ? list.map(x=>
+    '<div class="supp">'
+    + '<input type="checkbox" data-supp="'+esc(x.id)+'"'+(day.supps[x.id]?" checked":"")+'>'
+    + '<div style="font-weight:600">'+esc(x.nm)+'</div>'
+    + '<div class="row" style="gap:10px;justify-content:flex-end">'
+    + '<span class="dose">'+esc(x.dose||"")+'</span>'
+    + '<button class="btn ghost sm" data-suppdel="'+esc(x.id)+'" title="Remove">✕</button></div>'
+    + '</div>').join("") : '<div class="empty">Nothing in the stack.</div>';
 }
 
 /* ── Render: Trends ─────────────────────────────────────────────────── */
@@ -2753,11 +2728,6 @@ function renderQuality(){
         + Math.round(pct("unknown"))+'%</span></span>' : "");
 }
 
-function renderSources(){
-  $("#sourceList").innerHTML = SOURCES.map(x=>
-    '<div class="srcrow"><div class="who">'+esc(x.nm)+'</div>'
-    + '<div class="url">'+esc(x.url)+'</div></div>').join("");
-}
 
 /* ── Bloods: one document per draw ──────────────────────────────────── */
 let bloodDate = keyOf(new Date());
@@ -2869,7 +2839,9 @@ function buildSubnavs(){
   $$(".view").forEach(v=>{
     const view = v.id.slice(2), nav = $(".subnav", v);
     if(!nav) return;
-    nav.innerHTML = pagesOf(view).map((p,i)=>
+    const list = pagesOf(view);
+    nav.hidden = list.length < 2;
+    nav.innerHTML = list.map((p,i)=>
       '<button data-goto="'+i+'" data-sec="'+view+'"><span class="i">'+String(i+1).padStart(2,"0")+'</span>'
       + esc(p.dataset.page)+'</button>').join("");
   });
@@ -2897,7 +2869,8 @@ function show(view, page){
     if(view==="today" && cur.dataset.page==="Fuel") lede.textContent += " " + GOALS[profile.goal].cue;
   }
   const pager = $(".pager", v);
-  if(pager){
+  if(pager) pager.hidden = pages.length < 2;
+  if(pager && pages.length > 1){
     const prev = pages[i-1], next = pages[i+1];
     pager.innerHTML =
       '<button class="prev" data-goto="'+(i-1)+'" data-sec="'+view+'"'+(prev?"":" disabled")+'>'
@@ -2999,6 +2972,15 @@ function bindStatic(){
                                  $("#muraqabaTotal").textContent = (num(dn().muraq.am)+num(dn().muraq.pm) || 0) + " minutes today"; };
   $("#savePledge").onclick = ()=>{ profile.standingPledge = $("#standingPledge").value.trim();
                                    saveProfile(); renderIhsan(); toast("Pledge saved."); };
+  $("#suppAdd").onclick = ()=>{
+    const nm = $("#suppNew").value.trim();
+    if(!nm){ toast("Name it first."); return; }
+    profile.supps = (profile.supps||[]).concat(
+      [{ id:"s"+Math.random().toString(36).slice(2,8), nm, dose:$("#suppDose").value.trim() }]);
+    $("#suppNew").value = ""; $("#suppDose").value = "";
+    saveProfile(); renderStack();
+  };
+
   $("#nnAdd").onclick = ()=>{
     const label = $("#nnNew").value.trim();
     if(!label){ toast("Write it first."); return; }
@@ -3035,7 +3017,7 @@ function bindStatic(){
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
       + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
-      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-slotadd]");
+      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-slotadd],[data-suppdel]");
     if(!t) return;
     if(t.dataset.del !== undefined){
       day.entries.splice(Number(t.dataset.del), 1); saveDay(true); render(); return;
@@ -3104,6 +3086,10 @@ function bindStatic(){
       day.deen.muh.rating = day.deen.muh.rating === r ? null : r;
       saveDay(true); renderIhsan(); return;
     }
+    if(t.dataset.suppdel){
+      profile.supps = (profile.supps||[]).filter(x=>x.id!==t.dataset.suppdel);
+      saveProfile(); renderStack(); return;
+    }
     if(t.dataset.nndel){
       profile.nonNegotiables = (profile.nonNegotiables||[]).filter(x=>x.id!==t.dataset.nndel);
       saveProfile(); renderIhsan(); renderDay(); return;
@@ -3130,7 +3116,7 @@ function bindStatic(){
   document.addEventListener("change", e => {
     const el = e.target;
     if(el.dataset.supp !== undefined){
-      day.supps[el.dataset.supp] = el.checked; saveDay(); renderToday(); renderStack(); return;
+      day.supps[el.dataset.supp] = el.checked; saveDay(); renderStack(); return;
     }
     if(el.dataset.exdone !== undefined){
       const en = day.training.entries[Number(el.dataset.exdone)];

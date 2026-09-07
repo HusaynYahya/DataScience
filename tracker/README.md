@@ -19,7 +19,7 @@ Two documents hold the plan in readable form:
 
 Two levels of navigation, and never more than one subject on screen. The rail
 picks a **section**; a strip under the heading picks a **page** within it. Every
-panel is its own page — 40 across eight sections — with a pager at the foot to
+panel is its own page — 36 across eight sections — with a pager at the foot to
 step through them in order. Every section opens on the day's entry.
 
 | Section | Pages |
@@ -31,7 +31,7 @@ step through them in order. Every section opens on the day's entry.
 | Body | **Log today** · **Bloods** · Where you are · Composition · Bodyweight · Tape |
 | Sleep | **Last night** · At a glance · When you slept |
 | Ihsan | **Pledge** · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
-| Stack | **Core** · Situational · Skip · Safety · Sources |
+| Stack | **Stack** — one page, add and remove your own |
 
 The app itself carries no explanatory copy — names, numbers, doses and units
 only. The reasoning behind the programme, the targets, the supplement choices
