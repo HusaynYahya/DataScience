@@ -1287,7 +1287,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
-const BUILD = "2026-09-07 02:28 UTC";
+const BUILD = "2026-09-07 03:20 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -1441,10 +1441,15 @@ const saveTimers = {};
 function saveDoc(path, data, immediate){
   local.set(path, data);
   if(!db) return;
-  clearTimeout(saveTimers[path]);
-  const go = ()=> db.doc(path).set(JSON.parse(JSON.stringify(data)))
-                    .catch(e => { if(e && e.code!=="revoked") toast("Couldn't sync ("+(e.code||"error")+") — saved on this device."); });
-  if(immediate) go(); else saveTimers[path] = setTimeout(go, 700);
+  /* a store that throws must never stop the screen it was called from */
+  const warn = e => { if(e && e.code==="revoked") return;
+    toast("Couldn't sync ("+((e&&e.code)||"error")+") — saved on this device."); };
+  const go = ()=> { try{ db.doc(path).set(JSON.parse(JSON.stringify(data))).catch(warn); }
+                    catch(e){ warn(e); } };
+  try{
+    clearTimeout(saveTimers[path]);
+    if(immediate) go(); else saveTimers[path] = setTimeout(go, 700);
+  }catch(e){ warn(e); }
 }
 let touched = false;                     /* the user has edited since load */
 const saveProfile = ()=> { touched = true; saveDoc("profile/main", profile); };
@@ -2082,8 +2087,10 @@ function paintWorkoutReview(){
 }
 
 function commitWorkout(){
-  if(!wkPending) return;
-  let added = 0;
+  if(!wkPending || !wkPending.length){ toast("Nothing to add — read the session first."); return; }
+  if(!day.training) day.training = { entries:[] };
+  if(!Array.isArray(day.training.entries)) day.training.entries = [];
+  let added = 0, sets = 0;
   for(const x of wkPending){
     const known = exByName(x.nm);
     let e = day.training.entries.find(en=>en.nm===x.nm);
@@ -2096,13 +2103,16 @@ function commitWorkout(){
     for(const st of x.sets){
       e.sets.push(x.unit === "sec" || x.unit === "min" ? { w:String(st.w||"") }
                                                       : { w:st.w ? String(st.w) : "", r:String(st.r||"") });
+      sets++;
     }
     added++;
   }
   wkPending = null;
   $("#wkReview").innerHTML = ""; $("#wkDesc").value = "";
-  saveDay(true); renderTrain(); renderOverload();
-  toast(added + (added===1?" exercise added":" exercises added"));
+  toast(added + (added===1?" exercise · ":" exercises · ") + sets + (sets===1?" set added":" sets added"));
+  saveDay(true);
+  renderTrain();
+  try{ renderOverload(); }catch(err){}
   const list = $("#exList");
   if(list && list.scrollIntoView) list.scrollIntoView({ block:"start", behavior:"smooth" });
 }
@@ -3123,8 +3133,11 @@ function bindStatic(){
     if(list && list.scrollIntoView) list.scrollIntoView({ block:"start", behavior:"smooth" });
   };
 
-  /* delegated clicks */
-  document.addEventListener("click", e => {
+  /* delegated clicks — a throw shows itself rather than killing the button */
+  const guard = fn => e => { try{ fn(e); }
+    catch(err){ toast("Error: " + ((err && err.message) || err)); } };
+
+  document.addEventListener("click", guard(e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
       + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
       + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-suppdel],[data-wkcommit],"
@@ -3225,10 +3238,10 @@ function bindStatic(){
       clearDemo(); day.entries.push(e2); profile.seeded=true; saveProfile(); saveDay(true); render();
       show("eat", "Today's meals"); toast("Added.");
     }
-  });
+  }));
 
   /* delegated inputs: supplements, set logging, item edits */
-  document.addEventListener("change", e => {
+  document.addEventListener("change", guard(e => {
     const el = e.target;
     if(el.dataset.supp !== undefined){
       day.supps[el.dataset.supp] = el.checked; saveDay(); renderStack(); return;
@@ -3259,8 +3272,8 @@ function bindStatic(){
     if(el.dataset.tape !== undefined){
       const v = num(el.value); day.measure[el.dataset.tape] = v>0 ? v : null; saveDay(true); renderBody(); return;
     }
-  });
-  document.addEventListener("input", e => {
+  }));
+  document.addEventListener("input", guard(e => {
     const el = e.target;
     if(el.dataset.set !== undefined){
       const en = day.training.entries[Number(el.dataset.set)];
@@ -3282,7 +3295,7 @@ function bindStatic(){
     if(el.dataset.iname !== undefined && pending){ pending.items[Number(el.dataset.iname)].name = el.value; }
     if(el.dataset.wkname !== undefined && wkPending){ wkPending[Number(el.dataset.wkname)].nm = el.value; }
     if(el.dataset.iq !== undefined && pending){ pending.items[Number(el.dataset.iq)].quality = el.value; }
-  });
+  }));
 
   /* whole-card click opens the photo picker */
   $("#dropPhoto").addEventListener("click", e => { if(e.target.tagName!=="INPUT") $("#photoInput").click(); });
