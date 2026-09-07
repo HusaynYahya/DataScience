@@ -483,7 +483,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
   <nav class="rail" aria-label="Sections">
     <div class="brand">
       <div class="mark">Fuel<span>&amp;</span>Frame</div>
-      <div class="eyebrow">Base 12 · Week <span id="brandWeek">1</span></div>
+
     </div>
     <div class="nav" role="tablist">
       <button role="tab" data-view="today" aria-current="true"><span class="glyph">◉</span>Today</button>
@@ -560,56 +560,53 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
     <!-- ══ TRAIN ══════════════════════════════════════════════════════ -->
     <section class="view" id="v-train">
       <div class="pagehead">
-        <div>
-          <h1>The programme</h1>
+        <div><h1>Train</h1></div>
+        <div class="row">
+          <button class="btn ghost sm" id="repeatLast">Repeat last</button>
+          <button class="btn ghost sm" id="clearSets">Clear</button>
         </div>
       </div>
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
       <section class="panel" data-page="Log a workout">
-        <header>
-          <div><h2 id="exTitle">Session</h2><div class="eyebrow" id="exFocus">—</div></div>
-          <div class="row">
-            <span class="tag" id="exVolume">—</span>
-            <button class="btn ghost sm" id="clearSets">Clear logged sets</button>
-          </div>
-        </header>
+        <header><h2 id="exTitle">Today</h2><span class="eyebrow" id="exVolume">—</span></header>
         <div class="session" id="exList"></div>
-      </section>
 
-      <section class="panel" data-page="Add an exercise">
-        <header><h2>Add an exercise</h2></header>
-        <div class="body" style="padding-bottom:12px">
-          <input type="text" id="exSearch" placeholder="Search">
+        <div class="body" style="border-top:1px solid var(--line);padding-bottom:10px">
+          <input type="text" id="exSearch" placeholder="Add an exercise">
         </div>
         <div class="picklist" id="exPicker"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
-          <input type="text" id="exCustom" placeholder="Your own" style="flex:1 1 220px;width:auto">
+          <input type="text" id="exCustom" placeholder="Your own" style="flex:1 1 200px;width:auto">
           <button class="btn" id="exCustomAdd">Add</button>
         </div>
-      </section>
-      <section class="panel" data-page="This week">
-        <header><h2>This week</h2><span class="eyebrow" id="weekLabel">Week 1 · build</span></header>
-        <div class="body" style="display:flex;flex-direction:column;gap:14px">
-          <div class="weekstrip" id="weekStrip"></div>
+
+        <div class="body" style="border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px">
+          <div class="row">
+            <select id="wkFocus" style="width:auto">
+              <option value="anything">Anything</option>
+              <option value="push">Push</option>
+              <option value="pull">Pull</option>
+              <option value="legs">Legs</option>
+              <option value="upper body">Upper</option>
+              <option value="full body">Full body</option>
+              <option value="core">Core</option>
+              <option value="conditioning">Conditioning</option>
+            </select>
+            <select id="wkMins" style="width:auto">
+              <option value="30">30 min</option><option value="45" selected>45 min</option>
+              <option value="60">60 min</option><option value="90">90 min</option>
+            </select>
+            <select id="wkWhere" style="width:auto">
+              <option value="a full gym">Gym</option>
+              <option value="a pull-up bar, rings and dumbbells at home">Home</option>
+              <option value="outdoor calisthenics bars">Park</option>
+            </select>
+            <button class="btn primary" id="wkGo">Suggest</button>
+          </div>
+          <div id="wkOut"></div>
         </div>
-      </section>
-
-
-      <section class="panel" data-page="Warm-up">
-        <header><h2>Warm-up</h2></header>
-        <div class="body"><div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(190px,1fr))" id="warmupList"></div></div>
-      </section>
-
-      <section class="panel" data-page="Ladders">
-        <header><h2>Skill ladders</h2></header>
-        <div class="ladder" id="ladders"></div>
-      </section>
-
-      <section class="panel" data-page="The block">
-        <header><h2>The twelve weeks</h2></header>
-        <div class="body" id="phases"></div>
       </section>
 
       <div class="pager"></div>
@@ -932,9 +929,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
     <!-- ══ OVERLOAD ═══════════════════════════════════════════════════ -->
     <section class="view" id="v-overload">
       <div class="pagehead">
-        <div>
-          <h1>Overload</h1>
-        </div>
+        <div><h1>Overload</h1></div>
         <div class="modeswitch" id="ovMode">
           <button data-mode="top" aria-pressed="true">Top set</button>
           <button data-mode="volume">Total volume</button>
@@ -943,29 +938,15 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
-      <section class="panel" data-page="At a glance">
-        <header><h2>At a glance</h2><span class="eyebrow" id="ovNote">—</span></header>
-        <div class="stats" id="ovStats" style="border-radius:0 0 var(--r) var(--r)"></div>
-      </section>
-
       <section class="panel" data-page="Movements">
-        <header><h2>Movement by movement</h2></header>
-        <div id="ovList"></div>
-      </section>
-
-      <section class="panel" data-page="Ladders">
-        <header><h2>Skill ladders</h2></header>
-        <div id="skillProgress"></div>
-      </section>
-
-      <section class="panel" data-page="Turning up">
-        <header><h2>Turning up</h2></header>
-        <div class="gridboard"><div class="gboard" id="consistBoard"></div></div>
+        <div class="stats" id="ovStats" style="border-radius:var(--r) var(--r) 0 0"></div>
+        <div id="ovList" style="border-top:1px solid var(--line)"></div>
+        <div class="gridboard" style="border-top:1px solid var(--line)"><div class="gboard" id="consistBoard"></div></div>
         <div class="legend"><span><i class="swatch" style="background:var(--accent)"></i>Done</span>
           <span><i class="swatch" style="background:var(--accent);opacity:.42"></i>Partly</span>
-          <span><i class="swatch" style="background:var(--track)"></i>Missed or not logged</span>
-          <span><i class="swatch" style="background:transparent;box-shadow:inset 0 0 0 1px var(--line-2)"></i>Rest day</span></div>
+          <span><i class="swatch" style="background:var(--track)"></i>Missed</span></div>
       </section>
+
       <div class="pager"></div>
 
     </section>
@@ -1140,100 +1121,45 @@ function computeTargets(p){
   }, RDA);
 }
 
-/* ── The programme ──────────────────────────────────────────────────── */
-const PROGRAM = {
-  name: "Base 12",
-  /* Mon…Sun. null = rest */
-  week: ["d1","d2",null,"d3","d4","d5",null],
-  days: {
-    d1: { title:"Push", short:"Push", focus:"Chest · shoulders · triceps", tag:"Heavy", sets:22, ex:[
-      { nm:"Barbell bench press", scheme:"4 × 5–7", n:4, rest:"3 min" },
-      { nm:"Weighted dip", scheme:"3 × 6–8", n:3, rest:"2–3 min" },
-      { nm:"Standing overhead press", scheme:"3 × 6–8", n:3, rest:"2 min" },
-      { nm:"Incline dumbbell press", scheme:"3 × 8–12", n:3, rest:"90 s" },
-      { nm:"Cable lateral raise", scheme:"3 × 12–15", n:3, rest:"60 s" },
-      { nm:"Overhead cable triceps extension", scheme:"3 × 10–12", n:3, rest:"60 s" },
-      { nm:"Pseudo-planche push-up", scheme:"2 × AMRAP−2", n:2, rest:"90 s" }
-    ]},
-    d2: { title:"Pull", short:"Pull", focus:"Back · rear delts · biceps", tag:"Heavy", sets:23, ex:[
-      { nm:"Weighted pull-up", scheme:"4 × 4–6", n:4, rest:"3 min" },
-      { nm:"Barbell row", scheme:"4 × 6–8", n:4, rest:"2–3 min" },
-      { nm:"Lat pulldown or chin-up", scheme:"3 × 8–12", n:3, rest:"90 s" },
-      { nm:"Chest-supported dumbbell row", scheme:"3 × 10–12", n:3, rest:"90 s" },
-      { nm:"Face pull", scheme:"3 × 15–20", n:3, rest:"60 s" },
-      { nm:"Incline dumbbell curl", scheme:"3 × 8–12", n:3, rest:"60 s" },
-      { nm:"Dead hang", scheme:"3 × max", n:3, rest:"60 s", units:["sec"] }
-    ]},
-    d3: { title:"Legs & core", short:"Legs", focus:"Quads · hamstrings · trunk", tag:"Heavy", sets:23, ex:[
-      { nm:"Back squat", scheme:"4 × 5–7", n:4, rest:"3 min" },
-      { nm:"Romanian deadlift", scheme:"3 × 6–8", n:3, rest:"2–3 min" },
-      { nm:"Bulgarian split squat", scheme:"3 × 8–10 each", n:3, rest:"90 s" },
-      { nm:"Seated leg curl", scheme:"3 × 10–12", n:3, rest:"75 s" },
-      { nm:"Standing calf raise", scheme:"4 × 8–12", n:4, rest:"60 s" },
-      { nm:"Hanging leg raise", scheme:"3 × 8–12", n:3, rest:"75 s" },
-      { nm:"Ab wheel rollout", scheme:"3 × 8–10", n:3, rest:"75 s" }
-    ]},
-    d4: { title:"Skill & upper volume", short:"Skill", focus:"Handstand · lever · muscle-up", tag:"Calisthenics", sets:21, ex:[
-      { nm:"Handstand practice", scheme:"10 min", n:0, rest:"as needed" },
-      { nm:"Front lever progression", scheme:"5 × 10–20 s", n:5, rest:"90 s", units:["sec"] },
-      { nm:"Muscle-up progression", scheme:"5 × 2–3", n:5, rest:"2–3 min" },
-      { nm:"Ring dip", scheme:"4 × 6–10", n:4, rest:"2 min" },
-      { nm:"Feet-elevated ring row", scheme:"4 × 8–12", n:4, rest:"90 s" },
-      { nm:"Pike push-up (deficit)", scheme:"3 × 6–10", n:3, rest:"90 s" },
-      { nm:"Hollow rock + arch hold", scheme:"3 × 30 s each", n:3, rest:"60 s", units:["sec"] }
-    ]},
-    d5: { title:"Full body & carries", short:"Full body", focus:"Posterior chain · grip · engine", tag:"Mixed", sets:20, ex:[
-      { nm:"Trap-bar deadlift", scheme:"3 × 4–6", n:3, rest:"3 min" },
-      { nm:"Weighted chin-up", scheme:"3 × 5–7", n:3, rest:"2–3 min" },
-      { nm:"Incline dumbbell bench", scheme:"3 × 8–12", n:3, rest:"90 s" },
-      { nm:"Walking lunge", scheme:"3 × 10 each", n:3, rest:"90 s" },
-      { nm:"Farmer's carry", scheme:"4 × 30–40 m", n:4, rest:"90 s", units:["kg","m"] },
-      { nm:"Nordic curl or back extension", scheme:"3 × 6–10", n:3, rest:"90 s" },
-      { nm:"Zone 2", scheme:"15–20 min", n:0, rest:"—" }
-    ]}
-  },
-  warmup: [
-    { nm:"Easy cardio" },
-    { nm:"Band pull-apart" },
-    { nm:"Scapular pull-up" },
-    { nm:"Dead bug" },
-    { nm:"Wrist prep" },
-    { nm:"Ramp-up sets" }
-  ],
-  ladders: [
-    { nm:"Front lever", steps:["Tuck hold, 15 s","Advanced tuck (hips open to 90°)","One leg extended","Straddle","Full lever, 8 s"] },
-    { nm:"Muscle-up", steps:["Pull-up to sternum","Explosive pull to lower ribs","Transition negative from support","Kipping muscle-up","Strict muscle-up"] },
-    { nm:"Handstand", steps:["Wall plank, 60 s","Chest-to-wall hold, 60 s","Kick-up to balance","Freestanding 10 s","Freestanding 30 s"] },
-    { nm:"Handstand push-up", steps:["Pike push-up","Feet-elevated pike","Deficit pike on parallettes","Wall HSPU, partial","Wall HSPU, full range"] },
-    { nm:"Pistol squat", steps:["Box squat to a bench","Assisted with a rack upright","Heel-elevated pistol","Full pistol","Weighted pistol"] }
-  ],
-  phases: [
-    { wk:"1–3",  nm:"Wave one — build" },
-    { wk:"4",    nm:"Deload" },
-    { wk:"5–7",  nm:"Wave two — load" },
-    { wk:"8",    nm:"Deload" },
-    { wk:"9–11", nm:"Wave three — express" },
-    { wk:"12",   nm:"Test & reset" }
-  ]
+/* ── Exercise catalogue ─────────────────────────────────────────────── */
+const CATALOGUE = [
+  ["Push", [
+    "Barbell bench press", "Incline barbell press", "Incline dumbbell press", "Dumbbell bench press",
+    "Weighted dip", "Ring dip", "Standing overhead press", "Seated dumbbell press", "Machine chest press",
+    "Cable fly", "Cable lateral raise", "Dumbbell lateral raise", "Overhead cable triceps extension",
+    "Skull crusher", "Triceps pushdown", "Push-up", "Pseudo-planche push-up", "Pike push-up"]],
+  ["Pull", [
+    "Weighted pull-up", "Pull-up", "Weighted chin-up", "Chin-up", "Lat pulldown", "Barbell row",
+    "Chest-supported dumbbell row", "Seated cable row", "Feet-elevated ring row", "Inverted row",
+    "Face pull", "Rear delt fly", "Shrug", "Incline dumbbell curl", "Barbell curl", "Hammer curl"]],
+  ["Legs", [
+    "Back squat", "Front squat", "Leg press", "Bulgarian split squat", "Walking lunge", "Hack squat",
+    "Romanian deadlift", "Conventional deadlift", "Trap-bar deadlift", "Seated leg curl", "Lying leg curl",
+    "Leg extension", "Hip thrust", "Nordic curl", "Back extension", "Standing calf raise", "Seated calf raise",
+    "Pistol squat"]],
+  ["Core", [
+    "Hanging leg raise", "Ab wheel rollout", "Cable crunch", "Plank", "Russian twist"]],
+  ["Skill", [
+    "Handstand practice", "Front lever progression", "Muscle-up progression", "Hollow rock", "Dead hang",
+    "L-sit"]],
+  ["Carry & conditioning", [
+    "Farmer's carry", "Sled push", "Sandbag carry", "Zone 2", "Assault bike intervals", "Hill sprints",
+    "Rowing intervals", "Skipping"]]
+];
+/* Movements measured in something other than kilograms and reps. */
+const UNIT_OVERRIDE = {
+  "Dead hang":["sec"], "Front lever progression":["sec"], "Hollow rock":["sec"], "L-sit":["sec"],
+  "Plank":["sec"], "Handstand practice":["sec"],
+  "Farmer's carry":["kg","m"], "Sled push":["kg","m"], "Sandbag carry":["kg","m"],
+  "Zone 2":["min"], "Assault bike intervals":["min"], "Rowing intervals":["min"],
+  "Hill sprints":["reps"], "Skipping":["min"]
 };
-
-/* Every exercise the programme knows about, flattened and deduped, so a
-   session can be built out of any of them rather than only today's.    */
-const EXERCISES = (()=>{
-  const seen = new Map();
-  for(const [dk, sess] of Object.entries(PROGRAM.days))
-    for(const ex of sess.ex){
-      if(seen.has(ex.nm)) continue;
-      seen.set(ex.nm, { nm:ex.nm, from:sess.title, dayKey:dk, scheme:ex.scheme,
-                        n:ex.n, units:ex.units || ["kg","rep"], cue:ex.cue, rest:ex.rest });
-    }
-  return Array.from(seen.values());
-})();
-const exByName = nm => EXERCISES.find(x=>x.nm===nm);
+const EXERCISES = CATALOGUE.flatMap(([group, names]) =>
+  names.map(nm => ({ nm, from:group, units:UNIT_OVERRIDE[nm] || ["kg","rep"] })));
+const exByName = nm => EXERCISES.find(x => x.nm === nm);
 function blankEntry(ex){
-  return { nm:ex.nm, dayKey:ex.dayKey || null, scheme:ex.scheme || "", n:(ex.n === 0 ? 0 : (ex.n || 3)),
-           units:ex.units || ["kg","rep"], cue:ex.cue || "", rest:ex.rest || "",
-           custom:!!ex.custom, sets:[], done:false };
+  return { nm:ex.nm, group:ex.from || "Your own", units:ex.units || ["kg","rep"],
+           custom:!!ex.custom, sets:[{},{},{}], done:false };
 }
 
 /* ── Halal meal library. Figures are cooked-portion estimates. ───────── */
@@ -1342,7 +1268,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
-const BUILD = "2026-09-07 01:58 UTC";
+const BUILD = "2026-09-07 02:08 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -1461,7 +1387,7 @@ const DEFAULT_PROFILE = { age:21, sex:"male", heightCm:178, weightKg:75, activit
                           standingPledge:"", nonNegotiables:NON_NEG.slice(), skills:{},
                           supps:DEFAULT_SUPPS.slice(),
                           essentials:DEFAULT_ESSENTIALS.slice(), habits:null };
-const emptyDay = k => ({ date:k, entries:[], training:{ dayKey:null, entries:[] },
+const emptyDay = k => ({ date:k, entries:[], training:{ entries:[] },
                          supps:{}, waterMl:0, weightKg:null,
                          sleep:{ bed:"", wake:"", quality:null },
                          deen:{ pledge:{made:false, focus:""}, muraq:{am:0,pm:0},
@@ -1553,13 +1479,8 @@ async function switchDay(k, quiet){
   dateKey = k;
   const d = await loadDoc("days/"+k);
   day = d ? Object.assign(emptyDay(k), d) : emptyDay(k);
-  if(!day.training) day.training = { dayKey:null, entries:[] };
-  if(!day.training.dayKey) day.training.dayKey = scheduledDayKey(k);
+  if(!day.training) day.training = { entries:[] };
   migrateTraining(day.training);
-  if(!day.training.entries.length){
-    const sess = PROGRAM.days[day.training.dayKey];
-    if(sess) day.training.entries = sess.ex.map(ex=>blankEntry(Object.assign({dayKey:day.training.dayKey}, ex)));
-  }
   if(!day.entries) day.entries = [];
   const blank = emptyDay(k);
   day.sleep   = Object.assign({}, blank.sleep, day.sleep);
@@ -1640,31 +1561,19 @@ function setStatus(){
 }
 
 /* ── Schedule helpers ───────────────────────────────────────────────── */
-/* Days logged before exercises were name-keyed stored sets under the
-   session index. Convert them once, on load.                          */
+/* Days recorded under earlier shapes: sets keyed by session index, and
+   entries carrying a programme day. Normalise both on read.            */
+const OLD_SESSIONS = { d1:"Push", d2:"Pull", d3:"Legs", d4:"Skill", d5:"Full body" };
 function migrateTraining(t){
-  if(Array.isArray(t.entries)) return;
-  const sess = PROGRAM.days[t.dayKey];
-  t.entries = [];
-  if(!sess){ delete t.sets; delete t.done; return; }
-  sess.ex.forEach((ex,i)=>{
-    const e = blankEntry(Object.assign({dayKey:t.dayKey}, ex));
-    e.sets = ((t.sets||{})[i] || []).map(st=>({ w:(st&&st.w)??"", r:(st&&st.r)??"" }));
-    e.done = !!(t.done||{})[i];
-    t.entries.push(e);
-  });
-  delete t.sets; delete t.done;
+  if(!t) return;
+  if(!Array.isArray(t.entries)) t.entries = [];
+  for(const e of t.entries){
+    if(!e.group) e.group = OLD_SESSIONS[e.dayKey] || (exByName(e.nm) || {}).from || "Your own";
+    if(!Array.isArray(e.sets)) e.sets = [];
+    delete e.dayKey; delete e.scheme; delete e.n; delete e.rest; delete e.cue;
+  }
+  delete t.sets; delete t.done; delete t.dayKey;
 }
-
-function scheduledDayKey(k){ const dow = parseKey(k).getDay(); return PROGRAM.week[(dow+6)%7]; }
-function weekNumber(k){
-  const start = parseKey(profile.startDate || k), here = parseKey(k);
-  const startMon = new Date(start); startMon.setDate(start.getDate() - ((start.getDay()+6)%7));
-  const w = Math.floor((here - startMon)/(7*864e5));
-  return ((w % 12) + 12) % 12 + 1;
-}
-function phaseOf(w){ return (w%4===0) ? "deload" : (w===12 ? "test" : "build"); }
-function deloadSets(n, w){ return phaseOf(w)==="deload" ? Math.max(1, n-1) : n; }
 
 /* ── Render: master ─────────────────────────────────────────────────── */
 function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
@@ -1672,11 +1581,9 @@ function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); re
                    renderProtocol(); renderQuality(); renderMealSlots(); renderBloods(); }
 
 function renderHeader(){
-  const w = weekNumber(dateKey), sk = day.training.dayKey, s = sk && PROGRAM.days[sk];
-  $("#brandWeek").textContent = w;
   $("#datePick").value = dateKey;
   $("#todayTitle").textContent = prettyDate(dateKey);
-  $("#todayEyebrow").textContent = DAYNAMES[parseKey(dateKey).getDay()] + " · " + (s ? s.title + " day" : "Rest day");
+  $("#todayEyebrow").textContent = DAYNAMES[parseKey(dateKey).getDay()];
 
 }
 
@@ -1755,70 +1662,43 @@ function renderMealSlots(){
 
 /* ── Render: Train ──────────────────────────────────────────────────── */
 function renderTrain(){
-  const w = weekNumber(dateKey), ph = phaseOf(w);
-  $("#weekLabel").textContent = "Week " + w + " · " + (ph==="deload" ? "deload" : ph==="test" ? "test week" : "build");
-
-
-  const monday = parseKey(dateKey); monday.setDate(monday.getDate() - ((monday.getDay()+6)%7));
-  $("#weekStrip").innerHTML = PROGRAM.week.map((k,i)=>{
-    const d = new Date(monday); d.setDate(monday.getDate()+i);
-    const dk = keyOf(d), s = k && PROGRAM.days[k];
-    return '<button class="wday'+(s?"":" rest")+'" data-goday="'+dk+'"'+(dk===dateKey?' aria-current="true"':"")+'>'
-      + '<span class="d">'+["Mon","Tue","Wed","Thu","Fri","Sat","Sun"][i]+'</span>'
-      + '<span class="t">'+(s?esc(s.short||s.title):"Rest")+'</span></button>';
-  }).join("");
-
-  const sess = day.training.dayKey && PROGRAM.days[day.training.dayKey];
   const ents = day.training.entries;
-  const logged = ents.filter(e=>(e.sets||[]).some(st=>st && (st.w||st.r))).length;
-  $("#exTitle").textContent = sess ? sess.title : (ents.length ? "Your session" : "Rest day");
-  $("#exFocus").textContent = sess ? sess.focus : "";
-  $("#exVolume").textContent = ents.length ? logged + " of " + ents.length + " logged" : "—";
+  const setCount = ents.reduce((a,e)=>a + (e.sets||[]).filter(st=>st && (st.w||st.r)).length, 0);
+  $("#exTitle").textContent = prettyDate(dateKey);
+  $("#exVolume").textContent = ents.length
+    ? ents.length + (ents.length===1?" exercise · ":" exercises · ") + setCount + (setCount===1?" set":" sets")
+    : "Nothing logged";
+
   $("#exList").innerHTML = ents.length ? ents.map((e,i)=>{
-    const n = e.n ? deloadSets(e.n, w) : 0;
     const u = e.units || ["kg","rep"];
     const sets = e.sets || [];
-    const boxes = Array.from({length:Math.max(n, sets.length)}, (_,j)=>{
-      const st = sets[j] || {};
-      const filled = st.w || st.r;
+    const boxes = sets.map((st,j)=>{
+      const filled = st && (st.w || st.r);
       return '<div class="setbox'+(filled?" filled":"")+'"'+(u.length===1?' style="grid-template-columns:60px"':"")+'>'
-        + '<input inputmode="decimal" placeholder="'+u[0]+'" data-set="'+i+'" data-si="'+j+'" data-f="w" value="'+(st.w??"")+'">'
-        + (u.length>1 ? '<input inputmode="numeric" placeholder="'+u[1]+'" data-set="'+i+'" data-si="'+j+'" data-f="r" value="'+(st.r??"")+'">' : "")
+        + '<input inputmode="decimal" placeholder="'+esc(u[0])+'" data-set="'+i+'" data-si="'+j+'" data-f="w" value="'+((st&&st.w)??"")+'">'
+        + (u.length>1 ? '<input inputmode="numeric" placeholder="'+esc(u[1])+'" data-set="'+i+'" data-si="'+j+'" data-f="r" value="'+((st&&st.r)??"")+'">' : "")
         + '</div>';
     }).join("");
     return '<div class="ex'+(e.done?" done":"")+'">'
       + '<div class="idx"><input type="checkbox" data-exdone="'+i+'"'+(e.done?" checked":"")+'></div>'
       + '<div><div class="hd"><span class="nm">'+esc(e.nm)+'</span>'
-      + '<span class="scheme">'+esc(e.scheme)+(e.rest&&e.rest!=="—"?' · '+esc(e.rest):"")
-      + ' <button class="btn ghost sm" data-exdel="'+i+'" title="Take off today">✕</button></span></div>'
-      + (e.cue ? '<div class="cue">'+esc(e.cue)+'</div>' : "")
-      + ((n || sets.length) ? '<div class="sets">'+boxes
-          + '<button class="btn ghost sm" data-addset="'+i+'" title="One more set">+ set</button></div>'
-        : '<div class="sets"><button class="btn ghost sm" data-addset="'+i+'">+ log a set</button></div>')
+      + '<span class="scheme">'+esc(e.group||"")
+      + ' <button class="btn ghost sm" data-exdel="'+i+'" title="Remove">✕</button></span></div>'
+      + '<div class="sets">'+boxes
+      + '<button class="btn ghost sm" data-addset="'+i+'">+ set</button></div>'
       + '</div></div>';
-  }).join("")
-    : '<div class="empty">Nothing logged.</div>';
+  }).join("") : '<div class="empty">Nothing logged.</div>';
 
-  /* the picker: every exercise the programme knows, plus your own */
   const onToday = new Set(ents.map(e=>e.nm));
   const q = (exFilter||"").trim().toLowerCase();
   const matches = EXERCISES.filter(x=> !q || x.nm.toLowerCase().includes(q) || x.from.toLowerCase().includes(q));
-  $("#exPicker").innerHTML = matches.length ? matches.map(x=>
-    '<button class="pickrow'+(onToday.has(x.nm)?" in":"")+'" data-addex="'+esc(x.nm)+'"'
-    + (onToday.has(x.nm)?" disabled":"")+'>'
-    + '<span class="nm">'+esc(x.nm)+'</span><span class="from">'+esc(x.from)+'</span>'
-    + '<span class="plus">'+(onToday.has(x.nm)?"on today":"add +")+'</span></button>').join("")
-    : '<div class="slotempty">No match.</div>';
-
-  $("#warmupList").innerHTML = PROGRAM.warmup.map(x=>
-    '<div style="font-weight:600;font-size:.88rem">'+esc(x.nm)+'</div>').join("");
-  $("#ladders").innerHTML = PROGRAM.ladders.map(l=>
-    '<div class="lad"><h3>'+esc(l.nm)+'</h3><ol>'+l.steps.map((st,i)=>
-      '<li>'+(i===l.steps.length-1?'<strong>'+esc(st)+'</strong>':esc(st))+'</li>').join("")
-    + '</ol></div>').join("");
-  $("#phases").innerHTML = PROGRAM.phases.map(p=>
-    '<div class="phase"><div class="wk">WK '+esc(p.wk)+'</div>'
-    + '<div style="font-weight:600">'+esc(p.nm)+'</div></div>').join("");
+  $("#exPicker").innerHTML = !q
+    ? ""
+    : (matches.length ? matches.slice(0,40).map(x=>
+        '<button class="pickrow" data-addex="'+esc(x.nm)+'"'+(onToday.has(x.nm)?" disabled":"")+'>'
+        + '<span class="nm">'+esc(x.nm)+'</span><span class="from">'+esc(x.from)+'</span>'
+        + '<span class="plus">'+(onToday.has(x.nm)?"on today":"add +")+'</span></button>').join("")
+      : '<div class="slotempty">No match.</div>');
 }
 
 /* ── Render: Eat ────────────────────────────────────────────────────── */
@@ -2114,6 +1994,50 @@ function saveManual(){
   profile.seeded = true; saveProfile(); saveDay(true); render(); show("eat", "Today's meals"); toast("Added.");
 }
 
+/* ── Workout suggestion ─────────────────────────────────────────────── */
+async function suggestWorkout(){
+  if(!askClaude){ toast("Claude isn't available in this view."); return; }
+  const out = $("#wkOut");
+  out.innerHTML = '<div class="thinking"><i class="pulse"></i><span>Working…</span></div>';
+  const hist = exerciseHistory();
+  const recent = allDays().slice(-7).flatMap(r => ((r.training&&r.training.entries)||[])
+    .filter(e=>(e.sets||[]).some(st=>st&&(st.w||st.r))).map(e=>e.nm));
+  const bests = Array.from(hist.values()).slice(0,14).map(e=>{
+    const last = e.sessions[e.sessions.length-1];
+    return e.name + " " + (last.best.w||0) + (e.kind==="time"?" s":" kg")
+      + (e.kind==="load" ? " × "+last.best.r : "");
+  });
+  try{
+    const res = await askClaude.json(
+      "Write one training session for a 21-year-old man who trains four or five times a week, mixing barbell work "
+      + "and calisthenics.\n\nFocus: " + $("#wkFocus").value
+      + "\nTime available: " + $("#wkMins").value + " minutes"
+      + "\nEquipment: " + $("#wkWhere").value
+      + (recent.length ? "\nTrained in the last seven days: " + Array.from(new Set(recent)).join(", ") : "")
+      + (bests.length ? "\nRecent working weights: " + bests.join("; ") : "")
+      + "\n\nPick exercises that fit the time and do not repeat what was trained in the last two days. "
+      + "Where a working weight is known, suggest a load that is a small step up from it.\n\n"
+      + 'Reply with only a JSON object: {"name":"Push — 45 min","exercises":[{"nm":"Barbell bench press",'
+      + '"sets":4,"reps":"5–7","kg":82.5}]}. Use "kg" only where a load makes sense; omit it otherwise. '
+      + '"reps" may be a range, a number, or a duration like "30 s".',
+      { modelTier:"default", cache:false });
+    const list = Array.isArray(res && res.exercises) ? res.exercises : [];
+    if(!list.length){ out.innerHTML = '<p class="note">Nothing came back.</p>'; return; }
+    out.dataset.payload = JSON.stringify(list);
+    out.innerHTML = '<div class="card" style="border:1px solid var(--line);border-radius:8px">'
+      + '<div class="nm">'+esc(res.name || "Session")+'</div>'
+      + list.map(x=>'<div class="row" style="justify-content:space-between;gap:10px">'
+          + '<span style="font-size:.87rem">'+esc(x.nm)+'</span>'
+          + '<span class="num" style="font-size:.78rem;color:var(--accent)">'
+          + esc(String(x.sets||3)) + ' × ' + esc(String(x.reps||"")) + (x.kg?' · '+esc(String(x.kg))+' kg':"")
+          + '</span></div>').join("")
+      + '<div class="row"><button class="btn sm" data-addwk>Add to today</button></div></div>';
+  }catch(e){
+    const map = { not_granted:"declined", rate_limited:"rate limited", invalid_json:"unreadable" };
+    out.innerHTML = '<p class="note">'+esc(map[e.code] || (e.code||"error"))+'</p>';
+  }
+}
+
 /* ── Meal suggestion ────────────────────────────────────────────────── */
 async function suggestMeal(){
   if(!askClaude) return;
@@ -2315,7 +2239,7 @@ function exerciseHistory(){
           if(st.w > top){ top = st.w; best = st; }
         }
       }
-      const e = map.get(ex.nm) || { name:ex.nm, dayKey:ex.dayKey, units, kind, scheme:ex.scheme, sessions:[] };
+      const e = map.get(ex.nm) || { name:ex.nm, units, kind, sessions:[] };
       e.sessions.push({ date:rec.date, top:round(top,1), volume:round(volume,1), sets:sets.length, best });
       map.set(ex.nm, e);
     }
@@ -2362,7 +2286,6 @@ function renderOverload(){
     return { nm:e.name, pct: v[0] ? (v[v.length-1]-v[0])/v[0]*100 : 0 };
   }).sort((a,b)=>b.pct-a.pct);
   const dates = new Set(); for(const e of hist.values()) for(const sn of e.sessions) dates.add(sn.date);
-  $("#ovNote").textContent = ovMode==="volume" ? "Total volume" : "Top set";
   $("#ovStats").innerHTML = [
     ["Sessions logged", String(dates.size), ""],
     ["Moving up", tracked.length ? rising+"/"+tracked.length : "—", ""],
@@ -2373,12 +2296,16 @@ function renderOverload(){
     + '<div class="k dim" style="font-size:.71rem">'+esc(sub)+'</div></div>').join("");
 
   /* one group per session; every exercise listed, logged or not */
-  const grouped = Object.entries(PROGRAM.days).map(([dk,sess])=>[dk, sess.title, sess.focus, sess.ex.filter(x=>x.n)]);
-  const known = new Set(EXERCISES.map(x=>x.nm));
-  const extra = Array.from(hist.values()).filter(e=>!known.has(e.name))
-                     .map(e=>({ nm:e.name, scheme:e.scheme||"", n:1, units:e.units }));
-  if(extra.length) grouped.push(["own","Your own","Logged outside the programme", extra]);
-  $("#ovList").innerHTML = grouped.map(([dk, title, focus, list])=>{
+  /* only movements you have actually logged, grouped as the catalogue groups them */
+  const byGroup = new Map();
+  for(const e of hist.values()){
+    const g = (exByName(e.name) || {}).from || "Your own";
+    if(!byGroup.has(g)) byGroup.set(g, []);
+    byGroup.get(g).push({ nm:e.name, units:e.units });
+  }
+  const order = CATALOGUE.map(c=>c[0]).concat(["Your own"]);
+  const grouped = order.filter(g=>byGroup.has(g)).map(g=>[g, g, "", byGroup.get(g)]);
+  $("#ovList").innerHTML = grouped.length ? grouped.map(([dk, title, focus, list])=>{
     const rows = list.map(x=>{
       const e = hist.get(x.nm);
       const units = x.units || ["kg","rep"];
@@ -2404,26 +2331,14 @@ function renderOverload(){
         + (ovOpen===e.name ? ovDetail(e, kind) : "");
     }).join("");
     return '<div class="ovgroup"><div class="ovhead"><h3>'+esc(title)+'</h3>'
-      + '<span class="eyebrow">'+esc(focus)+'</span>'
-      + '<span class="n">'+esc(dk.toUpperCase())+'</span></div>'+rows+'</div>';
-  }).join("");
+      + '<span class="n">'+list.length+'</span></div>'+rows+'</div>';
+  }).join("") : '<div class="empty">Log a set and it appears here.</div>';
 
   if(ovOpen){
     const e = hist.get(ovOpen);
     if(e) drawSeries($("#ovDetailChart"), e.sessions.map(sn=>({ date:sn.date, v:metricVal(sn, ovMode) })),
                      metricUnit(e.kind, ovMode));
   }
-
-  $("#skillProgress").innerHTML = PROGRAM.ladders.map((l,li)=>{
-    const cur = profile.skills[l.nm], at = cur ? cur.rung : -1;
-    return '<div class="skillrow"><div><strong>'+esc(l.nm)+'</strong>'
-      + '<div class="rungname">'+(at>=0 ? esc(l.steps[at]) : "not started")+'</div></div>'
-      + '<div class="num dim" style="font-size:.76rem;text-align:right">'+(at>=0?(at+1)+" of "+l.steps.length:"—")
-      + (cur && cur.since ? '<br>since '+esc(parseKey(cur.since).toLocaleDateString(undefined,{day:"numeric",month:"short"})) : "")
-      + '</div><div class="rungs">'+l.steps.map((st,i)=>
-          '<button class="rung'+(i<=at?" on":"")+'" data-rung="'+li+'" data-ri="'+i+'" title="'+esc(st)+'"'
-          + ' aria-label="'+esc(l.nm+": "+st)+'"></button>').join("")+'</div></div>';
-  }).join("");
 
   renderConsistency();
 }
@@ -2479,9 +2394,9 @@ function renderConsistency(){
   const rows = [
     { l:"Trained", f:r=>{ if(r.training) migrateTraining(r.training);
         const ents = (r.training && r.training.entries) || [];
-        if(!ents.length) return PROGRAM.days[r.training && r.training.dayKey] ? "" : "rest";
-        const done = ents.filter(e=>e.done).length;
-        return done >= ents.length-1 ? "on" : done>0 ? "part" : ""; } },
+        if(!ents.length) return "";
+        const logged = ents.filter(e=>(e.sets||[]).some(st=>st&&(st.w||st.r))).length;
+        return logged >= ents.length ? "on" : logged>0 ? "part" : ""; } },
     { l:"Protein hit", f:r=>{ const t=totals(r.entries); return !t.kcal ? "" : t.protein>=targets.protein ? "on" : "part"; } },
     { l:"Slept enough", f:r=>{ const h=sleepHours(r.sleep); return h==null?"":h>=(num(profile.sleepTarget)||8)?"on":"part"; } },
     { l:"Account closed", f:r=>{ const d=deenOf(r); return d.pledge.made && d.muh.done ? "on" : (d.pledge.made||d.muh.done)?"part":""; } },
@@ -3005,10 +2920,27 @@ function bindStatic(){
     day.body.rhr = Number.isFinite(v) ? clamp(v,30,140) : null; saveDay(true); renderBody(); };
 
   $("#clearSets").onclick = ()=>{
-    day.training.entries.forEach(e=>{ e.sets = []; e.done = false; });
+    day.training.entries = [];
     saveDay(true); render();
   };
   $("#exSearch").oninput = e => { exFilter = e.target.value; renderTrain(); };
+  $("#wkGo").onclick = suggestWorkout;
+  $("#repeatLast").onclick = ()=>{
+    const prev = allDays().filter(d=>d.date < day.date)
+      .reverse().find(d=>((d.training&&d.training.entries)||[]).some(e=>(e.sets||[]).some(st=>st&&(st.w||st.r))));
+    if(!prev){ toast("Nothing to repeat yet."); return; }
+    migrateTraining(prev.training);
+    const have = new Set(day.training.entries.map(e=>e.nm));
+    let added = 0;
+    for(const e of prev.training.entries){
+      if(have.has(e.nm)) continue;
+      day.training.entries.push({ nm:e.nm, group:e.group, units:e.units, custom:!!e.custom,
+                                  sets:(e.sets||[]).map(st=>({ w:(st&&st.w)??"", r:"" })), done:false });
+      added++;
+    }
+    if(!added){ toast("Already on today."); return; }
+    saveDay(true); renderTrain(); toast(prettyDate(prev.date) + " · " + added + " added");
+  };
   $("#exCustomAdd").onclick = ()=>{
     const nm = $("#exCustom").value.trim();
     if(!nm){ toast("Name it first."); return; }
@@ -3021,7 +2953,7 @@ function bindStatic(){
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
       + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
-      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-suppdel],"
+      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-suppdel],[data-addwk],"
       + "[data-essdel],[data-habdel]");
     if(!t) return;
     if(t.dataset.del !== undefined){
@@ -3049,6 +2981,23 @@ function bindStatic(){
         if(ex) day.training.entries.push(blankEntry(ex));
         saveDay(true); renderTrain(); renderProtocol(); toast(t.dataset.addex+" added.");
       }
+      return;
+    }
+    if(t.hasAttribute("data-addwk")){
+      let list; try{ list = JSON.parse($("#wkOut").dataset.payload||"[]"); }catch(_){ return; }
+      const have = new Set(day.training.entries.map(e=>e.nm));
+      let added = 0;
+      for(const x of list){
+        const nm = String(x.nm||"").trim();
+        if(!nm || have.has(nm)) continue;
+        const known = exByName(nm);
+        const e = blankEntry(known || { nm, from:"Your own", custom:true });
+        const count = clamp(Math.round(num(x.sets)) || 3, 1, 10);
+        e.sets = Array.from({length:count}, ()=> (x.kg ? { w:String(x.kg), r:"" } : {}));
+        day.training.entries.push(e); added++;
+      }
+      saveDay(true); renderTrain(); renderOverload();
+      toast(added ? added + " added" : "Already on today.");
       return;
     }
     if(t.dataset.exdel !== undefined){
@@ -3094,13 +3043,6 @@ function bindStatic(){
       profile.nonNegotiables = (profile.nonNegotiables||[]).filter(x=>x.id!==t.dataset.nndel);
       saveProfile(); renderIhsan(); renderProtocol(); return;
     }
-    if(t.dataset.rung !== undefined){
-      const l = PROGRAM.ladders[Number(t.dataset.rung)], i = Number(t.dataset.ri);
-      const cur = profile.skills[l.nm];
-      profile.skills[l.nm] = (cur && cur.rung === i) ? undefined : { rung:i, since:dateKey };
-      if(!profile.skills[l.nm]) delete profile.skills[l.nm];
-      saveProfile(); renderOverload(); return;
-    }
     if(t.hasAttribute("data-addsug")){
       let r; try{ r = JSON.parse($("#suggestOut").dataset.payload||"{}"); }catch(_){ return; }
       const e2 = { name:r.name||"Suggested meal", portion:(r.ingredients||[]).join(" · "),
@@ -3131,6 +3073,7 @@ function bindStatic(){
     if(el.dataset.nn !== undefined){
       day.deen.nn[el.dataset.nn] = el.checked; saveDay(true); renderIhsan(); renderProtocol(); return;
     }
+    if(el.dataset.set !== undefined){ renderTrain(); renderOverload(); return; }
     if(el.dataset.blood !== undefined){
       const v = num(el.value);
       if(v>0) bloodDoc.values[el.dataset.blood] = v; else delete bloodDoc.values[el.dataset.blood];
