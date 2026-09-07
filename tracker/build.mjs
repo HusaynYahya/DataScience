@@ -1,8 +1,8 @@
 /* Wraps app.html (the Artifact-ready fragment) into a standalone index.html.
    The <head> here mirrors the reset the Claude artifact viewer injects, so the
    hosted page and the published Artifact render identically — plus the bits an
-   Artifact can't carry: the manifest, the icons and the service worker that
-   make the hosted copy installable and usable offline.
+   Artifact can't carry: the manifest and the icons, so a phone that saves the
+   page to its home screen gets a proper name and icon.
    Run: node tracker/build.mjs                                              */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, join } from "node:path";
@@ -34,11 +34,6 @@ img{max-width:100%}[hidden]{display:none!important}</style>
 </head>
 <body>
 ${body}
-<script>
-/* offline shell — only where a service worker is allowed to run */
-if("serviceWorker" in navigator && location.protocol !== "file:")
-  addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
-</script>
 </body>
 </html>
 `);

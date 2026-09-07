@@ -3341,10 +3341,5 @@ function bindStatic(){
 boot();
 </script>
 
-<script>
-/* offline shell — only where a service worker is allowed to run */
-if("serviceWorker" in navigator && location.protocol !== "file:")
-  addEventListener("load", () => navigator.serviceWorker.register("sw.js").catch(()=>{}));
-</script>
 </body>
 </html>

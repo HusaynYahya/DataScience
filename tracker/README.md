@@ -95,39 +95,33 @@ UK adult-male intervals; the range is printed beside every value so you can see
 what the flag is being judged against. Where your report's own range differs,
 trust the report.
 
-## Installing it as an app
+## Hosting it
 
-`index.html` is the whole app — one self-contained file — and beside it are the
-three things that make it installable: `manifest.webmanifest`, `sw.js` (the
-offline shell) and `icons/`. Serve that folder over HTTPS and the browser will
-offer to install it; on iOS, Share → **Add to Home Screen**. It then opens
-full-screen with its own icon, and works with no signal.
-
-Run it locally first if you want to see it:
+`index.html` is the whole app — one self-contained file. Beside it sit
+`manifest.webmanifest` and `icons/`, which give it a proper name and icon if a
+phone saves it to its home screen. There is no build step and no server side:
+copy the folder onto any static host and it runs.
 
 ```
 node build.mjs                 # regenerate index.html from app.html
-python3 -m http.server 8099    # a service worker needs http, not file://
+python3 -m http.server 8099    # to see it locally
 ```
-
-Then open `http://localhost:8099/`.
 
 ### Where to host it
 
-Any static host: GitHub Pages, Netlify, Cloudflare Pages, Vercel — the folder
-has no build step and no server side. **Not this repository's Pages site**,
-which serves falak1259.com: put the tracker in a repository of its own so the
-URL isn't attached to the product site.
+GitHub Pages, Netlify, Cloudflare Pages, Vercel — all work. **Not this
+repository's Pages site**, which serves falak1259.com: put the tracker in a
+repository of its own so the URL isn't attached to the product site.
 
 ```
 # in a new, empty repository
-cp -r tracker/* .              # index.html, manifest, sw.js, icons/
+cp -r tracker/* .              # index.html, manifest, icons/
 git add . && git commit -m "Fuel & Frame" && git push
 # then: Settings → Pages → Deploy from a branch → main / (root)
 ```
 
-`start_url`, `scope` and every asset path are relative, so it works at a
-domain root or in a subdirectory without changes.
+`start_url`, `scope` and every asset path are relative, so it works at a domain
+root or in a subdirectory without changes.
 
 ### What the hosted copy can't do
 
@@ -145,7 +139,3 @@ in the browser's own `localStorage`, on that device only. Published as an Artifa
 with the `db` capability, the same data syncs across your devices in a store only
 your organisation's signed-in members can read. Nothing is sent anywhere else, and
 photographs are sent only to Claude, only when you pick one, and are not stored.
-
-The service worker caches the page and its icons so it opens without a
-connection. It never caches your entries — those are in `localStorage`, which it
-does not touch.
