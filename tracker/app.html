@@ -550,16 +550,18 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
     <section class="view" id="v-train">
       <div class="pagehead">
         <div><h1>Train</h1></div>
-        <div class="row">
-          <button class="btn ghost sm" id="repeatLast">Repeat last</button>
-          <button class="btn ghost sm" id="clearSets">Clear</button>
-        </div>
       </div>
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
       <section class="panel" data-page="Today&#39;s workout">
-        <header><h2 id="exTitle">Today</h2><span class="eyebrow" id="exVolume">—</span></header>
+        <header><h2 id="exTitle">Today</h2>
+          <div class="row" style="margin-left:auto">
+            <span class="eyebrow" id="exVolume">—</span>
+            <button class="btn ghost sm" id="repeatLast">Repeat last</button>
+            <button class="btn ghost sm" id="clearSets">Remove all</button>
+          </div>
+        </header>
         <div class="session" id="exList"></div>
 
         <div id="progToday"></div>
@@ -1287,7 +1289,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
-const BUILD = "2026-09-07 03:20 UTC";
+const BUILD = "2026-09-07 03:55 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -1597,6 +1599,9 @@ function migrateTraining(t){
   for(const e of t.entries){
     if(!e.group) e.group = OLD_SESSIONS[e.dayKey] || (exByName(e.nm) || {}).from || "Your own";
     if(!Array.isArray(e.sets)) e.sets = [];
+    /* an entry from the old programme design carried a scheme and no sets:
+       give it boxes to type into, as many as the scheme asked for          */
+    if(!e.sets.length) e.sets = Array.from({length: clamp(Math.round(num(e.n)) || 3, 1, 10)}, ()=>({}));
     delete e.dayKey; delete e.scheme; delete e.n; delete e.rest; delete e.cue;
   }
   delete t.sets; delete t.done; delete t.dayKey;
@@ -1695,6 +1700,8 @@ function renderTrain(){
   $("#exVolume").textContent = ents.length
     ? ents.length + (ents.length===1?" exercise · ":" exercises · ") + setCount + (setCount===1?" set":" sets")
     : "Nothing logged";
+
+  $("#clearSets").textContent = (!ents.length && cleared) ? "Put back" : "Remove all";
 
   $("#exList").innerHTML = ents.length ? ents.map((e,i)=>{
     const u = e.units || ["kg","rep"];
@@ -2062,6 +2069,7 @@ async function readWorkout(){
 }
 
 let wkPending = null;
+let cleared = null;                      /* the last "Remove all", to undo */
 const UNIT_FOR = { kg:["kg","rep"], bodyweight:["kg","rep"], sec:["sec"], m:["kg","m"], min:["min"] };
 
 function paintWorkoutReview(){
@@ -3093,8 +3101,14 @@ function bindStatic(){
     day.body.rhr = Number.isFinite(v) ? clamp(v,30,140) : null; saveDay(true); renderBody(); };
 
   $("#clearSets").onclick = ()=>{
+    const n = day.training.entries.length;
+    if(!n && !cleared){ toast("Nothing to remove."); return; }
+    if(cleared && !n){ day.training.entries = cleared; cleared = null;
+      saveDay(true); render(); toast("Put back."); return; }
+    cleared = day.training.entries;
     day.training.entries = [];
     saveDay(true); render();
+    toast(n + (n===1?" exercise removed":" exercises removed") + " — tap again to undo.");
   };
   $("#exSearch").oninput = e => { exFilter = e.target.value; renderTrain(); };
   $("#exSearch").onkeydown = e => {
