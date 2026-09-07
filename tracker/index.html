@@ -631,13 +631,6 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
         </header>
         <div id="mealSlots"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;flex-direction:column;gap:14px">
-          <div class="row" style="justify-content:space-between">
-            <strong id="addingTo" style="font-size:.9rem">Adding to snacks</strong>
-            <select id="slotPick" style="width:auto">
-              <option value="breakfast">Breakfast</option><option value="lunch">Lunch</option>
-              <option value="dinner">Dinner</option><option value="snack">Snacks</option>
-            </select>
-          </div>
           <div class="capture">
             <label class="drop" id="dropPhoto">
               <span class="big">▣</span>
@@ -1095,19 +1088,6 @@ const MICROS = [
 ];
 const ALL_KEYS = ["kcal", ...MACROS.map(m=>m.key), ...MICROS.map(m=>m.key)];
 
-const SLOTS = [ { k:"breakfast", l:"Breakfast" }, { k:"lunch", l:"Lunch" },
-                { k:"dinner", l:"Dinner" }, { k:"snack", l:"Snacks" } ];
-/* An entry logged before slots existed is placed by the clock. */
-function slotOf(e){
-  if(e.slot && SLOTS.some(x=>x.k===e.slot)) return e.slot;
-  const h = parseInt((e.time||"12:00").slice(0,2), 10);
-  return h < 11 ? "breakfast" : h < 16 ? "lunch" : h < 21 ? "dinner" : "snack";
-}
-function currentSlot(){
-  const h = new Date().getHours();
-  return h < 11 ? "breakfast" : h < 16 ? "lunch" : h < 21 ? "dinner" : "snack";
-}
-let addSlot = currentSlot();
 
 /* Food quality, after the Sapien framework and Santa Cruz Medicinals'
    line on ultra-processed food. Tracked alongside the macros, never
@@ -1589,8 +1569,8 @@ async function switchDay(k, quiet){
 function seedExample(){
   const oats = MEALS[1], shawarma = MEALS[3];
   day.entries = [
-    entryFromMeal(oats, 1, "08:10", true, "breakfast"),
-    entryFromMeal(shawarma, 1, "13:25", true, "lunch")
+    entryFromMeal(oats, 1, "08:10", true),
+    entryFromMeal(shawarma, 1, "13:25", true)
   ];
   day.waterMl = 1250;
   day.weightKg = profile.weightKg;
@@ -1635,10 +1615,7 @@ function setStatus(){
   $("#lblSync").textContent = db ? "Synced" : "This device only";
   $("#dotAi").classList.toggle("on", !!askClaude);
   $("#lblAi").textContent = askClaude ? (canSendImages ? "Photo scan on" : "Text scan on") : "Manual entry";
-  $("#photoHint").textContent = !askClaude
-    ? "Photo reading needs the Claude runtime — type the meal in instead."
-    : (canSendImages ? "Claude reads the plate and estimates the breakdown."
-                     : "This view can't send images — describe the meal instead.");
+  $("#photoHint").textContent = !askClaude ? "manual entry" : (canSendImages ? "" : "text only");
   $("#dropPhoto").style.opacity = (askClaude && canSendImages) ? "" : ".55";
   $("#descGo").disabled = !askClaude;
   $("#suggestGo").disabled = !askClaude;
@@ -1735,35 +1712,27 @@ function renderToday(){
 }
 
 
-/* ── Today's meals, slot by slot ────────────────────────────────────── */
+/* ── Today's meals ──────────────────────────────────────────────────── */
 function renderMealSlots(){
   const t = totals(day.entries);
   $("#logCount").textContent = day.entries.length;
   $("#logKcal").textContent = Math.round(t.kcal);
-  $("#slotPick").value = addSlot;
-  $("#addingTo").textContent = "Adding to " + (SLOTS.find(x=>x.k===addSlot)||SLOTS[3]).l.toLowerCase();
 
+  const rows = day.entries.map((e,i)=>({e,i}))
+    .sort((a,b)=> (a.e.time||"") < (b.e.time||"") ? -1 : (a.e.time||"") > (b.e.time||"") ? 1 : a.i-b.i);
   const demo = day.entries.some(e=>e.demo);
   $("#mealSlots").innerHTML = (demo
       ? '<div class="slotempty" style="background:var(--accent-soft);color:var(--ink)">'
         + '<span>Example entries</span>'
         + '<button class="btn sm" data-clear-demo>Clear</button></div>' : "")
-    + SLOTS.map(sl=>{
-    const rows = day.entries.map((e,i)=>({e,i})).filter(x=>slotOf(x.e)===sl.k);
-    const kcal = rows.reduce((a,x)=>a+num(x.e.kcal), 0);
-    return '<div class="slot"><div class="slothead"><h3>'+esc(sl.l)+'</h3>'
-      + '<span class="k">'+(rows.length ? Math.round(kcal)+" kcal" : "—")+'</span></div>'
-      + (rows.length ? rows.map(x=>
-          '<div class="entry"><div class="nm">'+esc(x.e.name)
-          + (QUALITY[x.e.quality] ? ' <span class="qchip '+QUALITY[x.e.quality].tone+'">'+esc(QUALITY[x.e.quality].short)+'</span>' : "")
-          + '</div><div class="kcal">'+Math.round(num(x.e.kcal))+'</div>'
-          + '<div class="acts"><button class="btn ghost sm" data-del="'+x.i+'" title="Remove">✕</button></div>'
-          + '<div class="sub">'+esc(x.e.time||"")+' · P '+fmt(num(x.e.protein),"g")+' · C '+fmt(num(x.e.carbs),"g")
-          + ' · F '+fmt(num(x.e.fat),"g")+(x.e.source?' · '+esc(x.e.source):"")+'</div></div>').join("")
-        : '<div class="slotempty"><span>Nothing yet</span>'
-          + '<button class="btn sm" data-slotadd="'+sl.k+'">Add '+esc(sl.l.toLowerCase())+'</button></div>')
-      + '</div>';
-  }).join("");
+    + (rows.length ? rows.map(x=>
+        '<div class="entry"><div class="nm">'+esc(x.e.name)
+        + (QUALITY[x.e.quality] ? ' <span class="qchip '+QUALITY[x.e.quality].tone+'">'+esc(QUALITY[x.e.quality].short)+'</span>' : "")
+        + '</div><div class="kcal">'+Math.round(num(x.e.kcal))+'</div>'
+        + '<div class="acts"><button class="btn ghost sm" data-del="'+x.i+'" title="Remove">✕</button></div>'
+        + '<div class="sub">'+esc(x.e.time||"")+' · P '+fmt(num(x.e.protein),"g")+' · C '+fmt(num(x.e.carbs),"g")
+        + ' · F '+fmt(num(x.e.fat),"g")+(x.e.source?' · '+esc(x.e.source):"")+'</div></div>').join("")
+      : '<div class="empty">Nothing logged.</div>');
 }
 
 /* ── Render: Train ──────────────────────────────────────────────────── */
@@ -1854,9 +1823,7 @@ function renderEat(){
     + '<div class="ing">'+esc(m.ing)+'</div>'
     + '<div class="macroline"><span><b>'+m.n.kcal+'</b> kcal</span><span>P <b>'+m.n.protein+'</b></span>'
     + '<span>C <b>'+m.n.carbs+'</b></span><span>F <b>'+m.n.fat+'</b></span></div>'
-    + '<div class="row"><button class="btn sm" data-addmeal="'+esc(m.nm)+'">Add to '
-    + esc((SLOTS.find(x=>x.k===((mealSlot!=="all" && SLOTS.some(y=>y.k===mealSlot)) ? mealSlot : m.slot))||SLOTS[3]).l.toLowerCase())
-    + '</button></div></div>').join("");
+    + '<div class="row"><button class="btn sm" data-addmeal="'+esc(m.nm)+'">Add to today</button></div></div>').join("");
 
 }
 
@@ -2079,7 +2046,7 @@ function commitPending(){
   clearDemo();
   const now = new Date().toTimeString().slice(0,5);
   for(const it of pending.items){
-    const e = { name:it.name, portion:it.portion, time:now, source:pending.source, slot:addSlot,
+    const e = { name:it.name, portion:it.portion, time:now, source:pending.source,
                 quality:it.quality || "mixed", id:Math.random().toString(36).slice(2) };
     for(const k of ALL_KEYS) e[k] = round(num(it[k]) * num(it.qty||1), 2);
     day.entries.push(e);
@@ -2091,9 +2058,9 @@ function commitPending(){
 
 function clearDemo(){ if(day.entries.some(e=>e.demo)) day.entries = day.entries.filter(e=>!e.demo); }
 
-function entryFromMeal(m, qty, time, demo, slot){
+function entryFromMeal(m, qty, time, demo){
   const e = { name:m.nm, portion:m.ing, time:time || new Date().toTimeString().slice(0,5),
-              source:"library", quality:m.q || "whole", slot:(slot || addSlot),
+              source:"library", quality:m.q || "whole",
               demo:!!demo, id:Math.random().toString(36).slice(2) };
   for(const k of ALL_KEYS) e[k] = round(m.n[k]*(qty||1), 2);
   return e;
@@ -2122,7 +2089,7 @@ function saveManual(){
   const name = (get("name").value||"").trim();
   if(!name){ toast("Give it a name first."); return; }
   clearDemo();
-  const e = { name, portion:"", time:new Date().toTimeString().slice(0,5), source:"manual", slot:addSlot,
+  const e = { name, portion:"", time:new Date().toTimeString().slice(0,5), source:"manual",
               quality:(get("quality")||{}).value || "mixed", id:Math.random().toString(36).slice(2) };
   for(const k of ALL_KEYS) e[k] = round(num(get(k)?.value), 2);
   day.entries.push(e); $("#reviewSlot").innerHTML = "";
@@ -2891,7 +2858,6 @@ function show(view, page){
 function bindStatic(){
   buildSubnavs();
   $$(".nav button").forEach(b=> b.onclick = ()=> show(b.dataset.view));
-  $("#slotPick").onchange = e => { addSlot = e.target.value; renderMealSlots(); };
 
   /* ── bloods ── */
   $("#drawPick").onchange = async e => { bloodDate = e.target.value; await loadBloods(); renderBloods(); };
@@ -3036,7 +3002,7 @@ function bindStatic(){
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
       + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
-      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-slotadd],[data-suppdel],"
+      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-suppdel],"
       + "[data-essdel],[data-habdel]");
     if(!t) return;
     if(t.dataset.del !== undefined){
@@ -3048,12 +3014,10 @@ function bindStatic(){
     }
     if(t.dataset.addmeal){
       const m = MEALS.find(x=>x.nm===t.dataset.addmeal); if(!m) return;
-      const slot = (mealSlot !== "all" && SLOTS.some(x=>x.k===mealSlot)) ? mealSlot : (m.slot || addSlot);
-      addSlot = slot;
-      clearDemo(); day.entries.push(entryFromMeal(m, 1, null, false, slot));
+      clearDemo(); day.entries.push(entryFromMeal(m, 1));
       profile.seeded = true; saveProfile();
       saveDay(true); render(); show("eat", "Today's meals");
-      toast(m.nm + " → " + (SLOTS.find(x=>x.k===slot)||SLOTS[3]).l.toLowerCase()); return;
+      toast(m.nm + " added."); return;
     }
     if(t.dataset.slot){ mealSlot = t.dataset.slot; renderEat(); return; }
     if(t.dataset.goday){ switchDay(t.dataset.goday); return; }
@@ -3075,17 +3039,6 @@ function bindStatic(){
     if(t.dataset.addset !== undefined){
       const en = day.training.entries[Number(t.dataset.addset)];
       if(en){ en.sets.push({}); saveDay(); renderTrain(); }
-      return;
-    }
-    if(t.dataset.slotadd){
-      addSlot = t.dataset.slotadd;
-      renderMealSlots();
-      if(askClaude){
-        const cap = $("#descInput");
-        if(cap){ cap.scrollIntoView({ block:"center", behavior:"smooth" }); cap.focus(); }
-      } else {
-        mealSlot = addSlot; renderEat(); show("eat", "Library");
-      }
       return;
     }
     if(t.dataset.goto !== undefined){
@@ -3133,7 +3086,7 @@ function bindStatic(){
       let r; try{ r = JSON.parse($("#suggestOut").dataset.payload||"{}"); }catch(_){ return; }
       const e2 = { name:r.name||"Suggested meal", portion:(r.ingredients||[]).join(" · "),
                    time:new Date().toTimeString().slice(0,5), source:"suggested",
-                   quality:QUALITY[r.quality] ? r.quality : "whole", slot:addSlot, id:Math.random().toString(36).slice(2) };
+                   quality:QUALITY[r.quality] ? r.quality : "whole", id:Math.random().toString(36).slice(2) };
       for(const k of ALL_KEYS) e2[k] = round(num(r[k]), 2);
       clearDemo(); day.entries.push(e2); profile.seeded=true; saveProfile(); saveDay(true); render();
       show("eat", "Today's meals"); toast("Added.");
