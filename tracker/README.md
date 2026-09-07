@@ -19,7 +19,7 @@ Two documents hold the plan in readable form:
 
 Two levels of navigation, and never more than one subject on screen. The rail
 picks a **section**; a strip under the heading picks a **page** within it. Every
-34 pages across eight sections — with a pager at the foot to
+32 pages across eight sections — with a pager at the foot to
 step through them in order. Every section opens on the day's entry.
 
 | Section | Pages |
@@ -30,7 +30,7 @@ step through them in order. Every section opens on the day's entry.
 | Eat | **Today's meals** · Fuel · Fill the gap · Library · How you've eaten · The record · Food quality · Targets |
 | Body | **Log today** · Bloods · Where you are · Composition · Bodyweight · Tape |
 | Sleep | **Last night** · When you slept |
-| Ihsan | **Pledge** · Murāqaba · Non-negotiables · Muḥāsaba · Thirty days |
+| Ihsan | **The account** · Non-negotiables · Thirty days |
 | Stack | **Stack** — one page, add and remove your own |
 
 The app itself carries no explanatory copy — names, numbers, doses and units
