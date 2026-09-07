@@ -558,43 +558,61 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
 
       <nav class="subnav" aria-label="Pages in this section"></nav>
 
-      <section class="panel" data-page="Log a workout">
+      <section class="panel" data-page="Today&#39;s workout">
         <header><h2 id="exTitle">Today</h2><span class="eyebrow" id="exVolume">—</span></header>
         <div class="session" id="exList"></div>
 
+        <div id="progToday"></div>
+
+        <div class="body" style="border-top:1px solid var(--line);display:flex;flex-direction:column;gap:14px">
+          <label class="field">Describe the session
+            <textarea id="wkDesc" placeholder="bench 80kg 5,5,4 · weighted pull-ups +20kg 3x6 · farmers carry 40kg 4x40m"></textarea>
+          </label>
+          <div class="row">
+            <button class="btn primary" id="wkRead">Read</button>
+            <span class="note" id="wkHint"></span>
+          </div>
+          <div id="wkReview"></div>
+        </div>
+
         <div class="body" style="border-top:1px solid var(--line);padding-bottom:10px">
-          <input type="text" id="exSearch" placeholder="Add an exercise">
+          <input type="text" id="exSearch" placeholder="Or search the list">
         </div>
         <div class="picklist" id="exPicker"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;gap:9px;flex-wrap:wrap">
           <input type="text" id="exCustom" placeholder="Your own" style="flex:1 1 200px;width:auto">
           <button class="btn" id="exCustomAdd">Add</button>
         </div>
+      </section>
 
+      <section class="panel" data-page="Programme">
+        <header><h2>Programme</h2><span class="eyebrow" id="progName">—</span></header>
+        <div id="progView"></div>
         <div class="body" style="border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px">
           <div class="row">
-            <select id="wkFocus" style="width:auto">
-              <option value="anything">Anything</option>
-              <option value="push">Push</option>
-              <option value="pull">Pull</option>
-              <option value="legs">Legs</option>
-              <option value="upper body">Upper</option>
-              <option value="full body">Full body</option>
-              <option value="core">Core</option>
-              <option value="conditioning">Conditioning</option>
+            <select id="pgDays" style="width:auto">
+              <option value="3">3 days</option><option value="4">4 days</option>
+              <option value="5" selected>5 days</option><option value="6">6 days</option>
             </select>
-            <select id="wkMins" style="width:auto">
-              <option value="30">30 min</option><option value="45" selected>45 min</option>
-              <option value="60">60 min</option><option value="90">90 min</option>
+            <select id="pgStyle" style="width:auto">
+              <option value="barbell strength with calisthenics">Barbell + calisthenics</option>
+              <option value="hypertrophy">Hypertrophy</option>
+              <option value="strength">Strength</option>
+              <option value="calisthenics and bodyweight skill">Calisthenics</option>
+              <option value="strength with conditioning">Strength + conditioning</option>
             </select>
-            <select id="wkWhere" style="width:auto">
-              <option value="a full gym">Gym</option>
+            <select id="pgWhere" style="width:auto">
+              <option value="a full gym plus pull-up and dip bars">Gym</option>
               <option value="a pull-up bar, rings and dumbbells at home">Home</option>
               <option value="outdoor calisthenics bars">Park</option>
             </select>
-            <button class="btn primary" id="wkGo">Suggest</button>
+            <select id="pgMins" style="width:auto">
+              <option value="45">45 min</option><option value="60" selected>60 min</option>
+              <option value="75">75 min</option><option value="90">90 min</option>
+            </select>
+            <button class="btn primary" id="pgGo">Suggest</button>
           </div>
-          <div id="wkOut"></div>
+          <div id="pgOut"></div>
         </div>
       </section>
 
@@ -1257,7 +1275,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
-const BUILD = "2026-09-07 02:12 UTC";
+const BUILD = "2026-09-07 02:19 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -1544,6 +1562,9 @@ function setStatus(){
   $("#dotAi").classList.toggle("on", !!askClaude);
   $("#lblAi").textContent = askClaude ? (canSendImages ? "Photo scan on" : "Text scan on") : "Manual entry";
   $("#photoHint").textContent = !askClaude ? "manual entry" : (canSendImages ? "" : "text only");
+  if($("#wkRead")) $("#wkRead").disabled = !askClaude;
+  if($("#pgGo"))   $("#pgGo").disabled   = !askClaude;
+  if($("#wkHint")) $("#wkHint").textContent = askClaude ? "" : "needs the Claude runtime";
   $("#dropPhoto").style.opacity = (askClaude && canSendImages) ? "" : ".55";
   $("#descGo").disabled = !askClaude;
   $("#suggestGo").disabled = !askClaude;
@@ -1565,7 +1586,7 @@ function migrateTraining(t){
 }
 
 /* ── Render: master ─────────────────────────────────────────────────── */
-function render(){ renderHeader(); renderToday(); renderTrain(); renderEat(); renderStack();
+function render(){ renderHeader(); renderToday(); renderTrain(); renderProgramme(); renderEat(); renderStack();
                    renderSleep(); renderIhsan(); renderTrends(); renderOverload(); renderBody();
                    renderProtocol(); renderQuality(); renderMealSlots(); renderBloods(); }
 
@@ -1983,49 +2004,188 @@ function saveManual(){
   profile.seeded = true; saveProfile(); saveDay(true); render(); show("eat", "Today's meals"); toast("Added.");
 }
 
-/* ── Workout suggestion ─────────────────────────────────────────────── */
-async function suggestWorkout(){
+/* ── Reading a session from a description ───────────────────────────── */
+const WK_SHAPE =
+  'Reply with only a JSON object:\n'
+  + '{"exercises":[{"nm":"Barbell bench press","group":"Push","unit":"kg",'
+  + '"sets":[{"w":80,"r":5},{"w":80,"r":5},{"w":80,"r":4}]}]}\n'
+  + 'One object per exercise, in the order they were done. "sets" lists every set '
+  + 'separately — expand "3x8" into three sets. "w" is the load and "r" the reps. '
+  + '"unit" is "kg" for loaded work, "bodyweight" for unloaded reps (leave w at 0), '
+  + '"sec" for held positions (put the seconds in w and omit r), "m" for carries '
+  + '(w is the load, r the distance in metres), or "min" for conditioning (minutes in w). '
+  + '"group" is one of Push, Pull, Legs, Core, Skill, Carry & conditioning.';
+
+async function readWorkout(){
   if(!askClaude){ toast("Claude isn't available in this view."); return; }
-  const out = $("#wkOut");
-  out.innerHTML = '<div class="thinking"><i class="pulse"></i><span>Working…</span></div>';
+  const text = $("#wkDesc").value.trim();
+  if(!text){ toast("Describe it first."); return; }
+  const out = $("#wkReview");
+  out.innerHTML = '<div class="thinking"><i class="pulse"></i><span>Reading…</span></div>';
+  try{
+    const res = await askClaude.json(
+      "Read this training session and turn it into structured sets. Keep the exercise names as the "
+      + "person wrote them unless there is a standard name, in which case use that.\n\n"
+      + text + "\n\n" + WK_SHAPE, { modelTier:"default", cache:false });
+    const list = (res && Array.isArray(res.exercises) ? res.exercises : []).filter(x=>x && x.nm);
+    if(!list.length){ out.innerHTML = '<p class="note">Nothing recognisable.</p>'; return; }
+    wkPending = list.map(x=>({
+      nm: String(x.nm).trim(),
+      group: x.group || (exByName(String(x.nm).trim())||{}).from || "Your own",
+      unit: ["kg","bodyweight","sec","m","min"].includes(x.unit) ? x.unit : "kg",
+      sets: (Array.isArray(x.sets) ? x.sets : []).map(st=>({ w:num(st&&st.w), r:num(st&&st.r) }))
+    })).filter(x=>x.sets.length);
+    paintWorkoutReview();
+  }catch(e){
+    const map = { not_granted:"declined", rate_limited:"rate limited", invalid_json:"unreadable" };
+    out.innerHTML = '<p class="note">'+esc(map[e.code] || (e.code||"error"))+'</p>';
+  }
+}
+
+let wkPending = null;
+const UNIT_FOR = { kg:["kg","rep"], bodyweight:["kg","rep"], sec:["sec"], m:["kg","m"], min:["min"] };
+
+function paintWorkoutReview(){
+  if(!wkPending || !wkPending.length){ $("#wkReview").innerHTML = ""; return; }
+  const total = wkPending.reduce((a,x)=>a+x.sets.length, 0);
+  $("#wkReview").innerHTML = '<div class="panel" style="box-shadow:none">'
+    + '<header><h3>Read back</h3><span class="eyebrow">'+wkPending.length+' exercises · '+total+' sets</span></header>'
+    + '<div class="body">'
+    + wkPending.map((x,i)=>
+        '<div class="itemrow" style="grid-template-columns:minmax(0,1fr) auto 32px">'
+        + '<input type="text" data-wkname="'+i+'" value="'+esc(x.nm)+'">'
+        + '<span class="num dim" style="font-size:.74rem">'
+        + x.sets.map(st=> x.unit==="sec" ? (st.w+"s")
+              : x.unit==="min" ? (st.w+"m")
+              : x.unit==="m" ? (st.w+"×"+st.r+"m")
+              : (st.w ? st.w+"×"+st.r : st.r)).join("  ")
+        + '</span>'
+        + '<button class="btn ghost sm" data-wkdel="'+i+'">✕</button></div>').join("")
+    + '<div class="row" style="margin-top:14px;justify-content:flex-end">'
+    + '<button class="btn ghost" data-wkdiscard>Discard</button>'
+    + '<button class="btn primary" data-wkcommit>Add to today</button></div>'
+    + '</div></div>';
+}
+
+function commitWorkout(){
+  if(!wkPending) return;
+  let added = 0;
+  for(const x of wkPending){
+    const known = exByName(x.nm);
+    let e = day.training.entries.find(en=>en.nm===x.nm);
+    if(!e){
+      e = blankEntry(known || { nm:x.nm, from:x.group, custom:true });
+      e.units = known ? known.units : (UNIT_FOR[x.unit] || ["kg","rep"]);
+      e.sets = [];
+      day.training.entries.push(e);
+    }
+    for(const st of x.sets){
+      e.sets.push(x.unit === "sec" || x.unit === "min" ? { w:String(st.w||"") }
+                                                      : { w:st.w ? String(st.w) : "", r:String(st.r||"") });
+    }
+    added++;
+  }
+  wkPending = null;
+  $("#wkReview").innerHTML = ""; $("#wkDesc").value = "";
+  saveDay(true); renderTrain(); renderOverload();
+  toast(added + (added===1?" exercise added":" exercises added"));
+  const list = $("#exList");
+  if(list && list.scrollIntoView) list.scrollIntoView({ block:"start", behavior:"smooth" });
+}
+
+/* ── A weekly programme ─────────────────────────────────────────────── */
+function renderProgramme(){
+  const pg = profile.programme;
+  $("#progName").textContent = pg ? esc(pg.name || "Saved") : "None saved";
+  $("#progView").innerHTML = pg && Array.isArray(pg.days) && pg.days.length
+    ? pg.days.map((d,i)=>
+        '<div class="ovgroup"><div class="ovhead"><h3>'+esc(d.day||"")+'</h3>'
+        + '<span class="eyebrow">'+esc(d.title||"")+'</span>'
+        + '<span class="n">'+((d.exercises||[]).length)+'</span></div>'
+        + (d.exercises||[]).map(x=>'<div class="pickrow" style="cursor:default">'
+            + '<span class="nm">'+esc(x.nm)+'</span>'
+            + '<span class="from">'+esc(String(x.sets||3))+' × '+esc(String(x.reps||""))+'</span>'
+            + '<span class="plus"></span></div>').join("")
+        + '<div class="body" style="padding:10px 18px"><button class="btn sm" data-pgday="'+i+'">Log this today</button></div>'
+        + '</div>').join("")
+    : '<div class="empty">No programme saved.</div>';
+
+  /* if the saved week covers today, offer it on the workout page */
+  const host = $("#progToday");
+  if(!host) return;
+  const today = DAYNAMES[parseKey(dateKey).getDay()];
+  const match = pg && (pg.days||[]).findIndex(d => (d.day||"").toLowerCase().startsWith(today.slice(0,3).toLowerCase()));
+  host.innerHTML = (match != null && match >= 0 && !day.training.entries.length)
+    ? '<div class="slotempty" style="background:var(--accent-soft);color:var(--ink)">'
+      + '<span>'+esc(pg.days[match].title || today)+'</span>'
+      + '<button class="btn sm" data-pgday="'+match+'">Load</button></div>'
+    : "";
+}
+
+function applyProgrammeDay(i){
+  const d = (profile.programme && profile.programme.days || [])[i];
+  if(!d) return;
+  const have = new Set(day.training.entries.map(e=>e.nm));
+  let added = 0;
+  for(const x of (d.exercises||[])){
+    const nm = String(x.nm||"").trim();
+    if(!nm || have.has(nm)) continue;
+    const known = exByName(nm);
+    const e = blankEntry(known || { nm, from:"Your own", custom:true });
+    const count = clamp(Math.round(num(x.sets)) || 3, 1, 10);
+    e.sets = Array.from({length:count}, ()=> (x.kg ? { w:String(x.kg), r:"" } : {}));
+    day.training.entries.push(e); added++;
+  }
+  saveDay(true); renderTrain(); renderOverload();
+  toast(added ? added + " added" : "Already on today.");
+  show("train", "Today's workout");
+}
+
+async function suggestProgramme(){
+  if(!askClaude){ toast("Claude isn't available in this view."); return; }
+  const out = $("#pgOut");
+  out.innerHTML = '<div class="thinking"><i class="pulse"></i><span>Writing the week…</span></div>';
   const hist = exerciseHistory();
-  const recent = allDays().slice(-7).flatMap(r => ((r.training&&r.training.entries)||[])
-    .filter(e=>(e.sets||[]).some(st=>st&&(st.w||st.r))).map(e=>e.nm));
-  const bests = Array.from(hist.values()).slice(0,14).map(e=>{
+  const bests = Array.from(hist.values()).slice(0,16).map(e=>{
     const last = e.sessions[e.sessions.length-1];
     return e.name + " " + (last.best.w||0) + (e.kind==="time"?" s":" kg")
       + (e.kind==="load" ? " × "+last.best.r : "");
   });
   try{
     const res = await askClaude.json(
-      "Write one training session for a 21-year-old man who trains four or five times a week, mixing barbell work "
-      + "and calisthenics.\n\nFocus: " + $("#wkFocus").value
-      + "\nTime available: " + $("#wkMins").value + " minutes"
-      + "\nEquipment: " + $("#wkWhere").value
-      + (recent.length ? "\nTrained in the last seven days: " + Array.from(new Set(recent)).join(", ") : "")
+      "Write a weekly training programme for a 21-year-old man.\n\n"
+      + "Days a week: " + $("#pgDays").value
+      + "\nStyle: " + $("#pgStyle").value
+      + "\nEquipment: " + $("#pgWhere").value
+      + "\nSession length: " + $("#pgMins").value + " minutes"
       + (bests.length ? "\nRecent working weights: " + bests.join("; ") : "")
-      + "\n\nPick exercises that fit the time and do not repeat what was trained in the last two days. "
-      + "Where a working weight is known, suggest a load that is a small step up from it.\n\n"
-      + 'Reply with only a JSON object: {"name":"Push — 45 min","exercises":[{"nm":"Barbell bench press",'
-      + '"sets":4,"reps":"5–7","kg":82.5}]}. Use "kg" only where a load makes sense; omit it otherwise. '
-      + '"reps" may be a range, a number, or a duration like "30 s".',
-      { modelTier:"default", cache:false });
-    const list = Array.isArray(res && res.exercises) ? res.exercises : [];
-    if(!list.length){ out.innerHTML = '<p class="note">Nothing came back.</p>'; return; }
-    out.dataset.payload = JSON.stringify(list);
-    out.innerHTML = '<div class="card" style="border:1px solid var(--line);border-radius:8px">'
-      + '<div class="nm">'+esc(res.name || "Session")+'</div>'
-      + list.map(x=>'<div class="row" style="justify-content:space-between;gap:10px">'
-          + '<span style="font-size:.87rem">'+esc(x.nm)+'</span>'
-          + '<span class="num" style="font-size:.78rem;color:var(--accent)">'
-          + esc(String(x.sets||3)) + ' × ' + esc(String(x.reps||"")) + (x.kg?' · '+esc(String(x.kg))+' kg':"")
-          + '</span></div>').join("")
-      + '<div class="row"><button class="btn sm" data-addwk>Add to today</button></div></div>';
+      + "\n\nName each day of the week it falls on, leave the rest days out, and keep each session "
+      + "inside the time available. Where a working weight is known, start from a small step up.\n\n"
+      + 'Reply with only a JSON object: {"name":"Upper/lower, 5 days","days":[{"day":"Monday",'
+      + '"title":"Push","exercises":[{"nm":"Barbell bench press","sets":4,"reps":"5–7","kg":82.5}]}]}. '
+      + 'Use "kg" only where a load makes sense; omit it otherwise.',
+      { modelTier:"complex", cache:false });
+    const days = Array.isArray(res && res.days) ? res.days.filter(d=>d && d.day) : [];
+    if(!days.length){ out.innerHTML = '<p class="note">Nothing came back.</p>'; return; }
+    pgPending = { name:res.name || "Programme", days };
+    out.innerHTML = '<div class="panel" style="box-shadow:none">'
+      + '<header><h3>'+esc(pgPending.name)+'</h3><span class="eyebrow">'+days.length+' days</span></header>'
+      + days.map(d=>'<div class="ovgroup"><div class="ovhead"><h3>'+esc(d.day)+'</h3>'
+          + '<span class="eyebrow">'+esc(d.title||"")+'</span></div>'
+          + (d.exercises||[]).map(x=>'<div class="pickrow" style="cursor:default">'
+              + '<span class="nm">'+esc(x.nm)+'</span>'
+              + '<span class="from">'+esc(String(x.sets||3))+' × '+esc(String(x.reps||""))
+              + (x.kg?' · '+esc(String(x.kg))+' kg':"")+'</span><span class="plus"></span></div>').join("")
+          + '</div>').join("")
+      + '<div class="body" style="display:flex;gap:9px;justify-content:flex-end">'
+      + '<button class="btn ghost" data-pgdiscard>Discard</button>'
+      + '<button class="btn primary" data-pgsave>Save as my week</button></div></div>';
   }catch(e){
     const map = { not_granted:"declined", rate_limited:"rate limited", invalid_json:"unreadable" };
     out.innerHTML = '<p class="note">'+esc(map[e.code] || (e.code||"error"))+'</p>';
   }
 }
+let pgPending = null;
 
 /* ── Meal suggestion ────────────────────────────────────────────────── */
 async function suggestMeal(){
@@ -2920,7 +3080,8 @@ function bindStatic(){
     if(first) first.click();
   };
   $("#exCustom").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); $("#exCustomAdd").click(); } };
-  $("#wkGo").onclick = suggestWorkout;
+  $("#wkRead").onclick = readWorkout;
+  $("#pgGo").onclick = suggestProgramme;
   $("#repeatLast").onclick = ()=>{
     const prev = allDays().filter(d=>d.date < day.date)
       .reverse().find(d=>((d.training&&d.training.entries)||[]).some(e=>(e.sets||[]).some(st=>st&&(st.w||st.r))));
@@ -2952,7 +3113,8 @@ function bindStatic(){
   document.addEventListener("click", e => {
     const t = e.target.closest("[data-del],[data-clear-demo],[data-addmeal],[data-slot],[data-goday],[data-commit],"
       + "[data-discard],[data-manualsave],[data-addsug],[data-q],[data-r],[data-nndel],[data-rung],[data-ex],"
-      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-suppdel],[data-addwk],"
+      + "[data-goto],[data-addex],[data-exdel],[data-addset],[data-suppdel],[data-wkcommit],"
+      + "[data-wkdiscard],[data-wkdel],[data-pgday],[data-pgsave],[data-pgdiscard],"
       + "[data-essdel],[data-habdel]");
     if(!t) return;
     if(t.dataset.del !== undefined){
@@ -2986,23 +3148,17 @@ function bindStatic(){
       if(list && list.scrollIntoView) list.scrollIntoView({ block:"start", behavior:"smooth" });
       return;
     }
-    if(t.hasAttribute("data-addwk")){
-      let list; try{ list = JSON.parse($("#wkOut").dataset.payload||"[]"); }catch(_){ return; }
-      const have = new Set(day.training.entries.map(e=>e.nm));
-      let added = 0;
-      for(const x of list){
-        const nm = String(x.nm||"").trim();
-        if(!nm || have.has(nm)) continue;
-        const known = exByName(nm);
-        const e = blankEntry(known || { nm, from:"Your own", custom:true });
-        const count = clamp(Math.round(num(x.sets)) || 3, 1, 10);
-        e.sets = Array.from({length:count}, ()=> (x.kg ? { w:String(x.kg), r:"" } : {}));
-        day.training.entries.push(e); added++;
-      }
-      saveDay(true); renderTrain(); renderOverload();
-      toast(added ? added + " added" : "Already on today.");
-      return;
+    if(t.hasAttribute("data-wkcommit")){ commitWorkout(); return; }
+    if(t.hasAttribute("data-wkdiscard")){ wkPending = null; $("#wkReview").innerHTML = ""; return; }
+    if(t.dataset.wkdel !== undefined){
+      wkPending.splice(Number(t.dataset.wkdel), 1); paintWorkoutReview(); return;
     }
+    if(t.dataset.pgday !== undefined){ applyProgrammeDay(Number(t.dataset.pgday)); return; }
+    if(t.hasAttribute("data-pgsave")){
+      profile.programme = pgPending; pgPending = null;
+      $("#pgOut").innerHTML = ""; saveProfile(); renderProgramme(); toast("Saved."); return;
+    }
+    if(t.hasAttribute("data-pgdiscard")){ pgPending = null; $("#pgOut").innerHTML = ""; return; }
     if(t.dataset.exdel !== undefined){
       day.training.entries.splice(Number(t.dataset.exdel), 1);
       saveDay(true); renderTrain(); renderProtocol(); renderOverload(); return;
@@ -3110,6 +3266,7 @@ function bindStatic(){
       return;
     }
     if(el.dataset.iname !== undefined && pending){ pending.items[Number(el.dataset.iname)].name = el.value; }
+    if(el.dataset.wkname !== undefined && wkPending){ wkPending[Number(el.dataset.wkname)].nm = el.value; }
     if(el.dataset.iq !== undefined && pending){ pending.items[Number(el.dataset.iq)].quality = el.value; }
   });
 

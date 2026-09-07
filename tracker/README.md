@@ -21,13 +21,13 @@ Two documents hold the plan in readable form:
 
 Two levels of navigation, and never more than one subject on screen. The rail
 picks a **section**; a strip under the heading picks a **page** within it. Every
-24 pages across eight sections — with a pager at the foot to
+25 pages across eight sections — with a pager at the foot to
 step through them in order. Every section opens on the day's entry.
 
 | Section | Pages |
 |---------|-------|
 | Today | **Essentials** · Habits |
-| Train | **Log a workout** — one page: the day's sets, an exercise search, and a suggestion |
+| Train | **Today's workout** · Programme |
 | Overload | **Movements** — one page: headline figures, every movement's progression, and the board |
 | Eat | **Today's meals** · Fuel · Fill the gap · Library · How you've eaten · The record · Food quality · Targets |
 | Body | **Log today** · Bloods · Where you are · Composition · Bodyweight · Tape |
