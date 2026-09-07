@@ -498,6 +498,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
     <div class="railfoot">
       <span class="chip-status"><i class="dot" id="dotSync"></i><span id="lblSync">Local only</span></span>
       <span class="chip-status"><i class="dot" id="dotAi"></i><span id="lblAi">Photo scan off</span></span>
+      <span class="chip-status"><i class="dot"></i><span class="buildStamp"></span></span>
     </div>
   </nav>
 
@@ -761,6 +762,7 @@ input[type=checkbox]:checked::after{content:"";width:5px;height:9px;border:solid
               </select>
             </label>
           </div>
+          <p class="note">Build <span class="buildStamp"></span></p>
           <div id="targetSummary" class="grid" style="grid-template-columns:repeat(auto-fit,minmax(118px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:8px;overflow:hidden"></div>
         </div>
       </section>
@@ -1340,6 +1342,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
+const BUILD = "2026-09-07 01:58 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -1498,8 +1501,9 @@ function saveDoc(path, data, immediate){
                     .catch(e => { if(e && e.code!=="revoked") toast("Couldn't sync ("+(e.code||"error")+") — saved on this device."); });
   if(immediate) go(); else saveTimers[path] = setTimeout(go, 700);
 }
-const saveProfile = ()=> saveDoc("profile/main", profile);
-const saveDay = imm => saveDoc("days/"+day.date, day, imm);
+let touched = false;                     /* the user has edited since load */
+const saveProfile = ()=> { touched = true; saveDoc("profile/main", profile); };
+const saveDay = imm => { touched = true; saveDoc("days/"+day.date, day, imm); };
 
 /* ── Totals ─────────────────────────────────────────────────────────── */
 function totals(entries){
@@ -1510,6 +1514,7 @@ function totals(entries){
 
 /* ── Boot ───────────────────────────────────────────────────────────── */
 async function boot(){
+  $$(".buildStamp").forEach(el => el.textContent = BUILD);
   bindStatic();
   show(section);
   render();                                   // paint immediately from defaults
@@ -1520,11 +1525,21 @@ async function boot(){
 async function hydrate(){
   const p = await loadDoc("profile/main");
   if(p) profile = Object.assign({}, DEFAULT_PROFILE, p);
+  normaliseProfile();
+  await switchDay(dateKey, true);
+  await loadHistory();
+  await loadBloods();
+  render();
+}
+
+/* A stored profile predating a feature has no key for it; fill the gaps
+   every time one is adopted, not only on the first load.               */
+function normaliseProfile(){
   if(!Array.isArray(profile.nonNegotiables) || !profile.nonNegotiables.length) profile.nonNegotiables = NON_NEG.slice();
   if(!profile.skills) profile.skills = {};
   if(!CARB_APPROACH[profile.carbApproach]) profile.carbApproach = "performance";
-  if(!Array.isArray(profile.supps)) profile.supps = DEFAULT_SUPPS.slice();
-  if(!Array.isArray(profile.essentials)) profile.essentials = DEFAULT_ESSENTIALS.slice();
+  if(!Array.isArray(profile.supps) || !profile.supps.length) profile.supps = DEFAULT_SUPPS.slice();
+  if(!Array.isArray(profile.essentials) || !profile.essentials.length) profile.essentials = DEFAULT_ESSENTIALS.slice();
   if(!Array.isArray(profile.habits) || !profile.habits.length)
     profile.habits = PROTOCOL.map(x=>({ id:x.id, label:x.nm, when:x.when }))
       .concat([{ id:"h_zone2", label:"Zone 2", when:"Any time" },
@@ -1532,10 +1547,6 @@ async function hydrate(){
                { id:"h_nophone", label:"No phone in bed", when:"Night" },
                { id:"h_read", label:"Read", when:"Night" }]);
   targets = computeTargets(profile);
-  await switchDay(dateKey, true);
-  await loadHistory();
-  await loadBloods();
-  render();
 }
 
 async function switchDay(k, quiet){
@@ -1593,11 +1604,18 @@ function connectRuntime(){
     if(!d) return;
     db = d;
     const remote = await loadDoc("profile/main");
-    if(remote){ profile = Object.assign({}, DEFAULT_PROFILE, remote); targets = computeTargets(profile); }
-    else saveProfile();
-    await switchDay(dateKey, true);
-    await loadHistory();
-    await loadBloods();
+    if(remote && !touched){ profile = Object.assign({}, DEFAULT_PROFILE, remote); normaliseProfile(); }
+    if(touched){
+      /* the user got here before the store did — push, never pull */
+      saveDoc("profile/main", profile, true);
+      saveDoc("days/"+day.date, day, true);
+      if(bloodDoc && Object.keys(bloodDoc.values||{}).length) saveDoc("bloods/"+bloodDoc.date, bloodDoc, true);
+      await loadHistory();
+    } else {
+      await switchDay(dateKey, true);
+      await loadHistory();
+      await loadBloods();
+    }
     setStatus(); render();
   }).catch(()=>{});
   window.claude.use("sample").then(async s => {
@@ -2717,6 +2735,7 @@ async function loadBloods(){
   bloodDoc.values = bloodDoc.values || {};
 }
 function saveBloods(){
+  touched = true;
   saveDoc("bloods/"+bloodDoc.date, bloodDoc, true);
   const i = bloodHist.findIndex(d=>d.date===bloodDoc.date);
   if(i>=0) bloodHist[i] = bloodDoc; else bloodHist.push(Object.assign({}, bloodDoc));
