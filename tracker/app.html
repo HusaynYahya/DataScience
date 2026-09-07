@@ -1257,7 +1257,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
-const BUILD = "2026-09-07 02:08 UTC";
+const BUILD = "2026-09-07 02:12 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -2913,6 +2913,13 @@ function bindStatic(){
     saveDay(true); render();
   };
   $("#exSearch").oninput = e => { exFilter = e.target.value; renderTrain(); };
+  $("#exSearch").onkeydown = e => {
+    if(e.key !== "Enter") return;
+    e.preventDefault();
+    const first = $("#exPicker .pickrow:not([disabled])");
+    if(first) first.click();
+  };
+  $("#exCustom").onkeydown = e => { if(e.key === "Enter"){ e.preventDefault(); $("#exCustomAdd").click(); } };
   $("#wkGo").onclick = suggestWorkout;
   $("#repeatLast").onclick = ()=>{
     const prev = allDays().filter(d=>d.date < day.date)
@@ -2933,9 +2940,12 @@ function bindStatic(){
   $("#exCustomAdd").onclick = ()=>{
     const nm = $("#exCustom").value.trim();
     if(!nm){ toast("Name it first."); return; }
-    if(day.training.entries.some(e=>e.nm===nm)){ toast("Already on today."); return; }
-    day.training.entries.push(blankEntry({ nm, scheme:"your own", n:3, custom:true }));
-    $("#exCustom").value = ""; saveDay(true); renderTrain(); renderProtocol();
+    if(day.training.entries.some(e=>e.nm===nm)){ toast(nm+" is already on today."); return; }
+    day.training.entries.push(blankEntry(exByName(nm) || { nm, from:"Your own", custom:true }));
+    $("#exCustom").value = "";
+    saveDay(true); renderTrain(); renderOverload(); toast(nm + " added.");
+    const list = $("#exList");
+    if(list && list.scrollIntoView) list.scrollIntoView({ block:"start", behavior:"smooth" });
   };
 
   /* delegated clicks */
@@ -2965,11 +2975,15 @@ function bindStatic(){
     if(t.hasAttribute("data-discard")){ pending=null; $("#reviewSlot").innerHTML=""; return; }
     if(t.hasAttribute("data-manualsave")){ saveManual(); return; }
     if(t.dataset.addex){
-      if(!day.training.entries.some(e=>e.nm===t.dataset.addex)){
-        const ex = exByName(t.dataset.addex);
-        if(ex) day.training.entries.push(blankEntry(ex));
-        saveDay(true); renderTrain(); renderProtocol(); toast(t.dataset.addex+" added.");
-      }
+      const nm = t.dataset.addex;
+      if(day.training.entries.some(e=>e.nm===nm)){ toast(nm+" is already on today."); return; }
+      /* an unknown name still gets logged, as your own */
+      day.training.entries.push(blankEntry(exByName(nm) || { nm, from:"Your own", custom:true }));
+      exFilter = ""; if($("#exSearch")) $("#exSearch").value = "";
+      saveDay(true); renderTrain(); renderOverload();
+      toast(nm + " added.");
+      const list = $("#exList");
+      if(list && list.scrollIntoView) list.scrollIntoView({ block:"start", behavior:"smooth" });
       return;
     }
     if(t.hasAttribute("data-addwk")){
