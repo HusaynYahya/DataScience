@@ -1300,7 +1300,7 @@ function toast(msg){ const t=$("#toast"); t.textContent=msg; t.classList.add("on
   toast._t=setTimeout(()=>t.classList.remove("on"), 2600); }
 
 /* ── State ──────────────────────────────────────────────────────────── */
-const BUILD = "2026-09-07 03:55 UTC";
+const BUILD = "2026-09-07 04:20 UTC";
 const LS = "fuelframe.v1:";
 const NON_NEG = [
   { id:"fajr",    label:"Fajr in its time" },
@@ -1446,8 +1446,10 @@ const local = {
       if(k && k.startsWith(LS+prefix)){ const v=JSON.parse(localStorage.getItem(k)); if(v) out.push(v); } } }catch(e){}
     return out.sort((a,b)=> a.date<b.date?1:-1); }
 };
+const mine = v => { try{ return v == null ? v : JSON.parse(JSON.stringify(v)); }catch(e){ return v; } };
+
 async function loadDoc(path){
-  if(db){ try{ const s = await db.doc(path).get(); if(s.exists) return s.data(); }catch(e){} }
+  if(db){ try{ const s = await db.doc(path).get(); if(s.exists) return mine(s.data()); }catch(e){} }
   return local.get(path);
 }
 const saveTimers = {};
@@ -1549,7 +1551,7 @@ async function loadHistory(){
   if(db){
     try{
       const snap = await db.collection("days").orderBy("date","desc").limit(60).get();
-      history = snap.docs.map(d=>d.data()).filter(Boolean);
+      history = snap.docs.map(d=>mine(d.data())).filter(Boolean);
       return;
     }catch(e){}
   }
@@ -2834,7 +2836,7 @@ async function loadBloods(){
   if(db){
     try{
       const snap = await db.collection("bloods").orderBy("date","desc").limit(60).get();
-      bloodHist = snap.docs.map(d=>d.data()).filter(Boolean);
+      bloodHist = snap.docs.map(d=>mine(d.data())).filter(Boolean);
     }catch(e){ bloodHist = local.bloods(); }
   } else bloodHist = local.bloods();
   const doc = bloodHist.find(d=>d.date===bloodDate) || await loadDoc("bloods/"+bloodDate);
