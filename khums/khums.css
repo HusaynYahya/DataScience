@@ -309,6 +309,9 @@ input[type="date"] { color-scheme: dark; }
 /* ---- footer ----------------------------------------------------------- */
 .foot { border-top: 1px solid var(--hair); padding: 1.75rem 0; background: var(--bg-sink); }
 .foot p { margin: 0; font-family: var(--font-label); font-size: .78rem; color: var(--ink-faint); }
+.foot__back { margin-top: .75rem !important; }
+.foot__back a { color: var(--ink-mute); text-decoration: none; }
+.foot__back a:hover { color: var(--accent-bright); text-decoration: underline; }
 
 /* ---- print ------------------------------------------------------------- */
 /* A reckoning is often handed to someone. On paper, the form, the reference
