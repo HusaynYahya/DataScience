@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="description" content="Khums calculator — work out what is owed on your khums day, and how the fifth divides, according to the rulings of Sayyid Ali al-Sistani." />
+<meta name="theme-color" content="#0e1116" />
+<title>Khums Calculator · Rulings of Sayyid al-Sistani</title>
+<link rel="stylesheet" href="khums.css" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cg fill='none' stroke='%23cfa14b' stroke-width='7'%3E%3Ccircle cx='50' cy='50' r='36'/%3E%3Cline x1='68' y1='28' x2='32' y2='72'/%3E%3C/g%3E%3C/svg%3E" />
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+
+<header class="masthead">
+  <div class="wrap">
+    <p class="eyebrow">Ahkam of wealth</p>
+    <h1>Khums Calculator</h1>
+    <p class="lede">
+      Khums is not a tax on what you earn. It is a fifth of what is <em>left</em> on the day
+      your khums year closes. Enter what you still hold on that day, take out what is not
+      liable, and the fifth — and the two halves it divides into — is worked out below,
+      according to the rulings of
+      <strong>Sayyid Ali al-Husayni al-Sistani</strong> (may Allah prolong his life).
+    </p>
+  </div>
+</header>
+
+<main id="main" class="wrap">
+
+  <form id="khumsForm" class="card" novalidate>
+
+    <!-- ============================ 1. THE YEAR ============================ -->
+    <section class="block">
+      <h2 class="block__title"><span class="num">1</span> Your khums year</h2>
+
+      <div class="field field--split">
+        <div>
+          <label for="khumsDate">The day your year last closed</label>
+          <input id="khumsDate" type="date" />
+          <p class="hint">
+            Your khums day. For someone on a salary it is the anniversary of the first pay
+            ever received; for a trader, of the first profit. If you have never fixed one,
+            fix it now and keep it.
+          </p>
+        </div>
+        <div>
+          <label for="currency">Currency</label>
+          <select id="currency">
+            <option value="£" selected>£  Pound</option>
+            <option value="$">$  Dollar</option>
+            <option value="€">€  Euro</option>
+            <option value="₹">₹  Rupee</option>
+            <option value="﷼">﷼  Riyal</option>
+            <option value="د.إ">د.إ  Dirham</option>
+            <option value="ع.د">ع.د  Iraqi dinar</option>
+            <option value="other">Something else…</option>
+          </select>
+          <input id="currencyOther" type="text" maxlength="6" placeholder="Symbol or code" aria-label="Your own currency symbol or code" hidden />
+          <p class="hint">Only for how amounts are printed. Every figure below should be in the one currency.</p>
+        </div>
+      </div>
+
+      <div class="field field--split">
+        <div>
+          <span class="label-ish" id="calLabel">Counted by</span>
+          <div class="seg" role="radiogroup" aria-labelledby="calLabel">
+            <label><input type="radio" name="calendar" value="lunar" checked /><span>Lunar year</span></label>
+            <label><input type="radio" name="calendar" value="solar" /><span>Solar year</span></label>
+          </div>
+          <p class="hint" id="yearNote"></p>
+        </div>
+        <div>
+          <span class="label-ish">First reckoning</span>
+          <label class="q q--bare">
+            <input type="checkbox" id="firstYear" />
+            <span>
+              <b>I have never paid khums before.</b>
+              <em>What is owed from earlier years is settled with the marjaʻ, not guessed at.</em>
+            </span>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========================= 2. WHAT YOU HOLD ========================== -->
+    <section class="block">
+      <h2 class="block__title"><span class="num">2</span> What you hold on that day</h2>
+      <p class="block__lede">
+        Everything you still have which has not already been khumsed. What you spent during
+        the year on a living befitting your standing is spent — it does not appear here at
+        all, and neither does the house you live in, the car you drive, the furniture, the
+        clothes, the tools of your trade in daily use, or anything else already put to use.
+      </p>
+
+      <div class="field">
+        <label for="a_cash">Cash in hand and current accounts</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_cash" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+      </div>
+
+      <div class="field">
+        <label for="a_savings">Savings, deposits, and money set aside</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_savings" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">Including money put by for hajj, a house, a wedding or an emergency. Setting money aside for a purpose does not spend it.</p>
+      </div>
+
+      <div class="field">
+        <label for="a_owed">Money owed to you that you can recover</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_owed" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">Loans you have made, deposits held by others, wages earned and due. A debt you cannot presently get back may be left out and counted in the year it returns to you.</p>
+      </div>
+
+      <div class="field">
+        <label for="a_investments">Shares, funds, and gold or silver held as savings</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_investments" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">At today's value. Jewellery a woman wears for adornment is not counted; what she has stopped using for adornment is not counted either.</p>
+      </div>
+
+      <div class="field">
+        <label for="a_capital">Business capital, stock, and tools bought for trade</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_capital" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">The money in the business, goods held for sale, equipment. Capital is not treated like household goods: it is liable in full.</p>
+      </div>
+
+      <div class="field">
+        <label for="a_property">Land or property held as an investment</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_property" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">Not the home you live in. A second house bought to let or to resell is capital like any other.</p>
+      </div>
+
+      <div class="field">
+        <label for="a_goods">Goods bought this year and not yet used <span class="opt">(at today's value)</span></label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_goods" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">Provisions left over — rice, oil, tea — and anything bought and still unused. Not clothes and the like put away for another season, which are kept by their nature; and not anything you have already used, even once.</p>
+      </div>
+
+      <div class="field">
+        <label for="a_other">Anything else you hold from this year's income</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="a_other" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+      </div>
+    </section>
+
+    <!-- ========================= 3. WHAT COMES OFF ========================= -->
+    <section class="block">
+      <h2 class="block__title"><span class="num">3</span> What comes off again</h2>
+      <p class="block__lede">
+        Not everything you hold is liable. Take out what has already borne khums, what khums
+        was never due on, and what is not really yours to keep.
+      </p>
+
+      <div class="field">
+        <label for="d_khumsed">Wealth khums has already been paid on</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="d_khumsed" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">Khumsed wealth is never liable a second time, however long it sits. Keep the record — only what you can still identify can be taken out.</p>
+      </div>
+
+      <div class="field">
+        <label for="d_exempt">Mahr, inheritance, blood money, khums or zakat received</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="d_exempt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">
+          These carry no khums. A <b>gift</b> does: wealth that comes to you without earning
+          is liable on whatever of it is left over at the year's end, and so is what any of
+          this wealth <em>earns</em> — the rent of an inherited house is income like any
+          other. Two inheritances are liable: one the deceased had not paid khums on, and one
+          from a relation you had no expectation of inheriting from.
+        </p>
+      </div>
+
+      <div class="field">
+        <label for="d_borrowed">Money you have borrowed and still hold</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="d_borrowed" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">A loan sitting in your account is not profit. It is owed.</p>
+      </div>
+
+      <div class="field">
+        <label for="d_debts">Debts you owe which were incurred for living costs</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="d_debts" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        <p class="hint">
+          Borrowing spent on the necessities of your household comes off the year's profit.
+          A loan taken to enlarge your wealth, or to buy something you did not need, does not
+          — repay that from something other than this year's profit.
+        </p>
+      </div>
+
+      <div class="field field--split">
+        <div>
+          <label for="h_loan">Outstanding loan on the home you live in</label>
+          <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="h_loan" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+          <p class="hint">The balance still owed on a loan taken to buy your home. This year's surplus may be set against it.</p>
+        </div>
+        <div>
+          <label for="h_offset">Surplus already set against it in past years</label>
+          <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="h_offset" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+          <p class="hint">The relief runs until the surplus set aside over the years comes to the size of the loan. After that the capital repayments are no longer deducted, though the interest still counts as an expense.</p>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="d_other">Anything else that should come off</label>
+        <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="d_other" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+      </div>
+    </section>
+
+    <!-- ========================== 4. THE OTHER SIX ========================= -->
+    <section class="block">
+      <h2 class="block__title"><span class="num">4</span> The other kinds of khums <span class="tag">if any</span></h2>
+      <p class="block__lede">
+        Surplus income is one of seven. These others do not wait for a khums year — they fall
+        due when the thing comes into your hand. Most people will leave this alone.
+      </p>
+
+      <div class="field">
+        <label for="sKind">Have you come by any of these?</label>
+        <select id="sKind">
+          <option value="none" selected>No — none of these</option>
+          <option value="mineral">Something extracted from a mine</option>
+          <option value="treasure">A treasure-trove</option>
+          <option value="diving">Gems brought up by diving</option>
+          <option value="mixed">Lawful wealth mixed with unlawful</option>
+        </select>
+      </div>
+
+      <div id="specialFields" hidden>
+        <div class="field">
+          <label for="sValue" id="sValueLabel">Value of what you have</label>
+          <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="sValue" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+        </div>
+
+        <div class="field field--split" id="specialCosts">
+          <div>
+            <label for="sExtract">What it cost to get it out</label>
+            <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="sExtract" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+            <p class="hint">Extraction, excavation, the dive itself. It is what remains after this that must reach the threshold.</p>
+          </div>
+          <div>
+            <label for="sLater">What it cost afterwards</label>
+            <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="sLater" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+            <p class="hint">Refining, cutting, carriage. These come off before the fifth is taken.</p>
+          </div>
+        </div>
+
+        <div class="field field--split" id="specialPrices">
+          <div>
+            <label for="goldPrice">Price of gold, per gram</label>
+            <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="goldPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+          </div>
+          <div>
+            <label for="silverPrice">Price of silver, per gram</label>
+            <div class="money"><span class="money__sym" aria-hidden="true">£</span><input id="silverPrice" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0.00" /></div>
+          </div>
+        </div>
+        <p class="hint">
+          The thresholds are set in weights of coined metal, so a price is needed to compare
+          them with money: <b>15 mithqāl of gold</b> (69.12 g) for a mine,
+          <b>105 mithqāl of silver</b> (483.84 g) <b>or 15 of gold</b> for a treasure — whichever
+          is reached first — and <b>18 nukhud of gold</b> (3.456 g) for diving.
+        </p>
+      </div>
+    </section>
+
+    <div class="actions">
+      <button type="submit" class="btn btn--solid" id="calcBtn">Work it out</button>
+      <button type="button" class="btn" id="resetBtn">Clear the form</button>
+      <button type="button" class="btn" id="printBtn">Print</button>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+    </div>
+    <p class="hint hint--privacy">
+      What you type is kept in this browser alone so you can come back to it. Nothing is sent
+      anywhere — there is no server behind this page.
+      <button type="button" class="linkish" id="forgetBtn">Forget everything</button>
+    </p>
+  </form>
+
+  <!-- ============================ THE RESULT ============================ -->
+  <section id="result" class="result" hidden aria-live="polite">
+    <div class="verdict" id="verdict">
+      <p class="verdict__label" id="verdictLabel">—</p>
+      <p class="verdict__sub" id="verdictSub"></p>
+    </div>
+
+    <div class="halves" id="halves" hidden></div>
+
+    <div class="card">
+      <h2 class="block__title">The reckoning</h2>
+      <dl class="ledger" id="ledger"></dl>
+    </div>
+
+    <div class="card">
+      <h2 class="block__title">Why</h2>
+      <ol class="reasons" id="reasons"></ol>
+      <div id="warnings"></div>
+    </div>
+
+    <div class="card" id="specialResult" hidden>
+      <h2 class="block__title">The other khums</h2>
+      <div class="verdict verdict--inline" id="specialVerdict">
+        <p class="verdict__label" id="specialLabel">—</p>
+        <p class="verdict__sub" id="specialSub"></p>
+      </div>
+      <ol class="reasons" id="specialReasons"></ol>
+      <div id="specialWarnings"></div>
+    </div>
+  </section>
+
+  <!-- ============================ THE RULES ============================ -->
+  <section class="card notes">
+    <h2 class="block__title">The rulings in brief</h2>
+
+    <h3>What khums falls on</h3>
+    <p>Seven things: the surplus of income from earnings and gains; what is extracted from a mine; a treasure-trove; lawful wealth that has become mixed with unlawful; gems brought up by diving; spoils of war; and land a <i>dhimmi</i> buys from a Muslim. For almost everyone it is the first that matters, and this calculator is built around it.</p>
+
+    <h3>The khums year</h3>
+    <p>Everyone who earns has a khums year, and it begins of itself — not by choosing a date, but by the first income. For a salaried person, the day the first pay was received; for a trader, the first profit; for a farmer, the first harvest. That day, a year on, is your khums day, and it stays yours for life. You may pay a fifth of each income as it arrives instead, and many do; then the year's end is only a reckoning of what was missed.</p>
+
+    <h3>What counts as an expense of the year</h3>
+    <p>Whatever was actually spent on yourself and those you support, in keeping with your standing and not in extravagance: food, rent, clothing, furnishing, travel, medicine, the hajj and ziyarah, a wedding, a dowry given, gifts, hospitality, taxes, charity, books, the repayment of debts. Two cautions follow from the word <em>actually</em>:</p>
+    <ul>
+      <li>A budget is not an expense. Money set aside for a cost that never came is surplus, and bears khums.</li>
+      <li>Economy is not a loss. Living below what your standing allows leaves more over — and the more that is left, the more khums there is. That is not a penalty; it is only what the word <em>surplus</em> means.</li>
+    </ul>
+
+    <h3>What is left over — the part people miss</h3>
+    <ul>
+      <li><b>Goods bought and not used.</b> Provisions still in the cupboard on the khums day — rice, oil, tea — bear khums at what they are worth now, not what you paid. So do unopened purchases of any kind.</li>
+      <li><b>Goods used, even once.</b> These are expenses of the year and bear no khums, and they never become liable later — not even if you stop needing them, and not the jewellery a woman has stopped wearing.</li>
+      <li><b>Things kept for a season.</b> Winter clothes in summer are kept by their nature for another year, and are not counted as unused surplus.</li>
+      <li><b>Capital.</b> The money in a business, its stock and its equipment are liable in full at the year's end, however necessary they are to the trade. Where paying at once would leave a person unable to earn a living befitting his standing, the case is put to the marjaʻ's office and terms are arranged; it is not for the payer to decide his own relief.</li>
+      <li><b>Money lent out.</b> Liable when it can be recovered. What cannot presently be got back waits for the year it returns.</li>
+    </ul>
+
+    <h3>What carries no khums at all</h3>
+    <p>Mahr received by a wife; what a husband receives in a <i>khulʻ</i> divorce; blood money; an inheritance received by the recognised laws of inheritance; and khums or zakat given to you. Note what is <em>not</em> on that list: <b>a gift</b>. Wealth that comes to you without earning it — a gift, a prize, a bequest — is liable on whatever of it remains beyond the year's expenses. And whatever any exempt wealth <em>earns</em> is income like any other.</p>
+    <p>Two inheritances are liable all the same: one the deceased had not paid khums on — the heir pays it — and one that comes from a relation you had no expectation of inheriting from, which is a gain and not an inheritance in the ordinary sense.</p>
+
+    <h3>Debts</h3>
+    <ul>
+      <li>A debt incurred for the necessities of the household comes off the year's profit, whether or not it has yet been repaid.</li>
+      <li>A debt taken to enlarge your wealth, or to buy what you did not need, does not — unless the thing bought with it, or the money itself, is lost.</li>
+      <li>A loan taken to buy the home you live in is met by setting each year's surplus against the outstanding balance, until the amount so set aside over the years comes to the size of the loan. After that the repayments of capital are no longer deducted, though the interest is still an expense of the year.</li>
+    </ul>
+
+    <h3>The two halves</h3>
+    <p>The fifth is divided in two.</p>
+    <ul>
+      <li><b>The share of the Imam</b> (peace be upon him) is given today to the fully qualified jurist — by obligatory precaution the most learned, and one aware of public affairs — or to whoever he authorises, or spent on what he permits. It may not be spent at one's own discretion.</li>
+      <li><b>The share of the sayyids</b> goes to a sayyid — by descent through the father — who is poor, or an orphan, or stranded on a journey. A stranded sayyid may receive it even if he is not poor at home. It may not be given to someone whose maintenance is already your obligation, nor where it will be spent in sin. Routing it through the marjaʻ's office or his representative is the safe course, and is what the offices ask.</li>
+    </ul>
+    <p>By obligatory precaution, nothing but money may be handed over in place of khums except with the authorisation of a fully qualified jurist or his agent.</p>
+
+    <h3>If you have never paid</h3>
+    <p>Past years cannot be estimated into existence. Fix your khums day, reckon this year properly, and put the past to the marjaʻ or his representative, who will settle it (<i>musalaha</i>) on terms you can meet. Wealth on which khums is owed is not fully yours to dispose of until it is settled — which is the reason for doing it, and not a reason to delay.</p>
+
+    <p class="disclaim">
+      The rulings summarised here follow the <em>Islamic Laws</em> of Sayyid Ali al-Husayni al-Sistani
+      and his office's published answers. This is a tool for arithmetic and for the ordinary cases;
+      it is not a substitute for a qualified scholar, and it does not know your circumstances.
+      A year close to the line, a business whose capital cannot be touched, an uncertain
+      inheritance, a first reckoning after many years — take these to
+      <a href="https://www.sistani.org/english/" rel="noopener">sistani.org</a> or to your local
+      representative.
+    </p>
+  </section>
+
+</main>
+
+<footer class="foot">
+  <div class="wrap">
+    <p>Rulings per the <a href="https://www.sistani.org/english/book/48/" rel="noopener">Islamic Laws</a> of Sayyid Ali al-Husayni al-Sistani. No tracking, no network, nothing leaves this page.</p>
+  </div>
+</footer>
+
+<script src="khums.js" defer></script>
+</body>
+</html>
