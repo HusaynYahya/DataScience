@@ -33,7 +33,6 @@ window.FALAK = {
     { label: "Order",      href: "order.html" },
     { label: "Gallery",    href: "gallery.html" },
     { label: "Contact",    href: "contact.html" },
-    { label: "Khums",      href: "https://husaynyahya.github.io/KhumsCalc/" },
   ],
 
   /* ---- Footer ---------------------------------------------------------- */
