@@ -19,6 +19,7 @@ and vanilla JS. Open it or drop it on any static host.
 | `order.html`    | Order       | £295, numbered first series, reservation form with intent dropdown |
 | `gallery.html`  | Gallery     | Image grid + demonstration-video slot |
 | `contact.html`  | Contact     | Contact form + details |
+| `groundwork/`   | Groundwork  | Separate app: food & gut-health journal (see below) |
 
 Shared header, footer and navigation are built once (in `assets/js/render.js`)
 and appear identically on every page.
@@ -145,3 +146,23 @@ nothing to build.
 - Images carry alt text (from `content.js`); gallery images lazy-load.
 - No external fonts or scripts — fully offline, no tracking, fast.
 - Respects `prefers-reduced-motion` throughout.
+
+---
+
+## Groundwork (food & gut journal)
+
+`groundwork/index.html` is a separate single-file app that sits alongside the
+Falak site. It goes live at `https://falak1259.com/groundwork/`. It's plain HTML/CSS/JS with no build step.
+
+- Food diary with calorie, food-group and histamine estimates from a built-in
+  table of about 90 foods, plus gentler swaps for higher-histamine foods
+- Bowel-movement log on the Bristol stool scale
+- Daily summary, history and a searchable swap guide
+
+It was first built as a claude.ai Artifact. On GitHub Pages it uses its built-in
+fallback: **everything is stored in the visitor's own browser (`localStorage`)**.
+There's no account, no sync between devices, and nothing is sent to a server.
+Clearing site data wipes the journal. Photos are kept as compressed data URLs,
+so a lot of photos can fill the browser's storage. The "Ask Claude to estimate"
+button only shows up inside claude.ai. For foods not in the table, you fill in
+the fields yourself.
