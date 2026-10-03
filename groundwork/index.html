@@ -1,0 +1,1608 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Groundwork — food &amp; gut journal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,420;0,9..144,560;0,9..144,650;1,9..144,500&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#1E2A1C; --ink-soft:#56634F; --ink-faint:#8A9480;
+    --paper:#E9EADD; --surface:#FBFBF5; --surface-2:#F1F1E5;
+    --line:#CBCDB9; --line-soft:#DBDCCB;
+    --accent:#45694A; --accent-ink:#F4F6EE;
+    --low:#3F7A4C; --low-bg:#E3EEDF;
+    --med:#AD7E22; --med-bg:#F4EAD3;
+    --high:#A24A2E; --high-bg:#F2E0D6;
+    --shadow: 0 1px 2px rgba(30,42,28,.06), 0 6px 18px rgba(30,42,28,.07);
+    --radius: 10px;
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --ink:#E9ECE2; --ink-soft:#AEB8A4; --ink-faint:#71806A;
+      --paper:#161C14; --surface:#1E251B; --surface-2:#232B1F;
+      --line:#38412F; --line-soft:#2B3326;
+      --accent:#7FAE80; --accent-ink:#12170F;
+      --low:#7FAE80; --low-bg:#20301F;
+      --med:#D7AE5C; --med-bg:#332A15;
+      --high:#D98A6B; --high-bg:#3A231A;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"]{
+    --ink:#E9ECE2; --ink-soft:#AEB8A4; --ink-faint:#71806A;
+    --paper:#161C14; --surface:#1E251B; --surface-2:#232B1F;
+    --line:#38412F; --line-soft:#2B3326;
+    --accent:#7FAE80; --accent-ink:#12170F;
+    --low:#7FAE80; --low-bg:#20301F;
+    --med:#D7AE5C; --med-bg:#332A15;
+    --high:#D98A6B; --high-bg:#3A231A;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 8px 22px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+
+  *{ box-sizing:border-box; }
+  html{ scroll-padding-top: env(safe-area-inset-top, 0px); }
+  html,body{ height:100%; }
+  body{
+    margin:0; background:var(--paper); color:var(--ink);
+    font-family:'Inter', system-ui, sans-serif; font-size:15px; line-height:1.5;
+    padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+    -webkit-font-smoothing:antialiased;
+  }
+  h1,h2,h3{ font-family:'Fraunces', serif; font-weight:650; margin:0; letter-spacing:-.01em; }
+  button, input, select, textarea{ font-family:inherit; font-size:inherit; color:inherit; }
+  button{ cursor:pointer; }
+  a{ color:inherit; }
+  ::selection{ background:var(--low-bg); }
+
+  .app{ display:flex; min-height:100%; max-width:1180px; margin:0 auto; }
+
+  /* ---------- Sidebar nav ---------- */
+  .nav{
+    width:208px; flex-shrink:0; padding:28px 14px; border-right:1px solid var(--line);
+    display:flex; flex-direction:column; gap:28px; position:sticky; top:0; align-self:flex-start;
+    height:100vh;
+  }
+  .brand{ display:flex; align-items:center; gap:9px; padding:0 8px; }
+  .brand svg{ width:22px; height:22px; flex-shrink:0; }
+  .brand-text h1{ font-size:19px; line-height:1.1; }
+  .brand-text span{ font-size:11.5px; color:var(--ink-faint); }
+  .nav-list{ list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:2px; }
+  .nav-item{
+    display:flex; align-items:center; gap:10px; padding:9px 10px; border-radius:8px;
+    color:var(--ink-soft); font-size:14.5px; font-weight:500; border:none; background:none; width:100%; text-align:left;
+  }
+  .nav-item svg{ width:17px; height:17px; flex-shrink:0; opacity:.85; }
+  .nav-item:hover{ background:var(--surface-2); color:var(--ink); }
+  .nav-item.active{ background:var(--surface); color:var(--ink); box-shadow:var(--shadow); }
+  .nav-foot{ margin-top:auto; padding:0 8px; font-size:12px; color:var(--ink-faint); line-height:1.5; }
+  .nav-foot button{ background:none; border:none; padding:0; color:var(--ink-soft); text-decoration:underline; text-underline-offset:2px; font-size:12px; }
+
+  /* mobile bottom nav */
+  .tabbar{ display:none; }
+
+  main{ flex:1; min-width:0; padding:28px 32px 60px; }
+  .topline{ display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:20px; flex-wrap:wrap; }
+  .topline h2{ font-size:26px; }
+  .topline .sub{ color:var(--ink-soft); font-size:13.5px; }
+
+  .dateswitch{ display:flex; align-items:center; gap:4px; }
+  .dateswitch button{
+    width:30px; height:30px; border-radius:50%; border:1px solid var(--line); background:var(--surface); color:var(--ink-soft);
+    display:flex; align-items:center; justify-content:center;
+  }
+  .dateswitch button:hover{ background:var(--surface-2); }
+  .dateswitch .label{ font-size:14px; font-weight:600; min-width:150px; text-align:center; }
+  .dateswitch .today-pill{
+    font-size:11.5px; border:1px solid var(--line); border-radius:999px; padding:3px 10px; color:var(--ink-soft); background:var(--surface); margin-left:4px;
+  }
+
+  /* ---------- Summary card ---------- */
+  .summary{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:20px 22px; margin-bottom:22px; position:relative; overflow:hidden;
+  }
+  .summary-leaf{ position:absolute; right:-10px; top:-10px; width:120px; height:120px; opacity:.07; pointer-events:none; }
+  .summary-grid{ display:grid; grid-template-columns: auto 1fr; gap:26px; align-items:center; }
+  .kcal-block{ min-width:118px; }
+  .kcal-num{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:34px; line-height:1; }
+  .kcal-label{ font-size:12px; color:var(--ink-soft); margin-top:5px; }
+  .meters{ display:flex; flex-direction:column; gap:14px; }
+  .meter-row .meter-top{ display:flex; justify-content:space-between; font-size:12px; color:var(--ink-soft); margin-bottom:5px; }
+  .groupbar{ height:9px; border-radius:5px; background:var(--surface-2); overflow:hidden; display:flex; border:1px solid var(--line-soft); }
+  .groupbar span{ height:100%; }
+  .groupbar.empty{ background:repeating-linear-gradient(45deg, var(--surface-2), var(--surface-2) 6px, var(--line-soft) 6px, var(--line-soft) 7px); }
+  .histbar{ height:9px; border-radius:5px; background:var(--surface-2); border:1px solid var(--line-soft); position:relative; overflow:hidden; }
+  .histbar .fill{ height:100%; border-radius:5px; }
+  .hist-label{ font-size:12px; font-weight:600; }
+  .legend{ display:flex; flex-wrap:wrap; gap:10px; margin-top:10px; }
+  .legend-item{ display:flex; align-items:center; gap:5px; font-size:11.5px; color:var(--ink-soft); }
+  .legend-dot{ width:8px; height:8px; border-radius:2px; display:inline-block; }
+
+  /* ---------- Log form ---------- */
+  .logbtn{
+    display:inline-flex; align-items:center; gap:7px; background:var(--accent); color:var(--accent-ink);
+    border:none; padding:10px 16px; border-radius:8px; font-weight:600; font-size:14px; margin-bottom:18px;
+  }
+  .logbtn:hover{ filter:brightness(1.06); }
+  .logbtn svg{ width:15px; height:15px; }
+  .log-actions{ display:flex; gap:10px; flex-wrap:wrap; }
+  .logbtn.secondary{ background:var(--surface); color:var(--accent); border:1px solid var(--line); }
+  .ai-card{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow); padding:20px; margin-bottom:18px; max-width:640px; }
+  .ai-card h3{ font-size:16px; margin-bottom:8px; }
+  .ai-card p{ margin:0 0 12px; color:var(--ink-soft); font-size:13.5px; }
+  .ai-card .field{ margin-bottom:12px; }
+  .ai-card details{ margin:6px 0 14px; font-size:13.5px; color:var(--ink-soft); }
+  .ai-card summary{ cursor:pointer; font-weight:600; color:var(--ink); }
+  .ai-status{ font-size:13px; margin-top:12px; min-height:18px; color:var(--ink-soft); }
+  .ai-status.ok{ color:var(--low); }
+  .ai-status.err{ color:var(--high); }
+  .ai-pill{ display:inline-block; font-size:11.5px; font-weight:600; padding:2px 8px; border-radius:99px; background:var(--surface-2); color:var(--ink-soft); border:1px solid var(--line-soft); }
+  .ai-pill.on{ background:var(--low-bg); color:var(--low); }
+
+  .form-card{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); box-shadow:var(--shadow);
+    padding:20px 22px; margin-bottom:22px;
+  }
+  .form-card h3{ font-size:16px; margin-bottom:14px; }
+  .field-row{ display:flex; gap:12px; flex-wrap:wrap; margin-bottom:12px; }
+  .field{ display:flex; flex-direction:column; gap:5px; flex:1; min-width:140px; }
+  .field.small{ flex:0 0 90px; min-width:90px; }
+  .field label{ font-size:11.5px; color:var(--ink-soft); font-weight:600; }
+  .field input, .field select, .field textarea{
+    border:1px solid var(--line); background:var(--paper); border-radius:7px; padding:8px 10px; color:var(--ink);
+  }
+  .field input:focus, .field select:focus, .field textarea:focus{ outline:2px solid var(--accent); outline-offset:1px; }
+  .match-hint{ font-size:12px; color:var(--ink-soft); margin-top:-4px; margin-bottom:10px; min-height:16px; }
+  .match-hint b{ color:var(--ink); }
+  .ask-claude-btn{ background:none; border:none; padding:0; color:var(--accent); font-weight:600; font-size:12px; text-decoration:underline; text-underline-offset:2px; display:inline-flex; align-items:center; gap:4px; }
+  .ask-claude-btn svg{ width:11px; height:11px; }
+  .photo-row{ display:flex; align-items:center; gap:12px; margin-bottom:14px; }
+  .photo-preview{ width:56px; height:56px; border-radius:7px; object-fit:cover; border:1px solid var(--line); background:var(--surface-2); }
+  .photo-btn{ border:1px dashed var(--line); background:var(--surface-2); border-radius:7px; padding:8px 12px; font-size:13px; color:var(--ink-soft); }
+  .photo-btn:hover{ color:var(--ink); border-color:var(--ink-faint); }
+  .swap-note{
+    display:flex; gap:9px; background:var(--med-bg); color:var(--ink); border:1px solid var(--line-soft);
+    border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:14px; align-items:flex-start;
+  }
+  .swap-note.high{ background:var(--high-bg); }
+  .swap-note svg{ width:15px; height:15px; margin-top:1px; flex-shrink:0; }
+  .food-row{ display:flex; gap:8px; align-items:flex-end; flex-wrap:wrap; margin-bottom:3px; }
+  .food-row .field{ min-width:0; }
+  .row-remove{ background:none; border:1px solid var(--line); border-radius:7px; width:34px; height:34px; flex-shrink:0; display:flex; align-items:center; justify-content:center; color:var(--ink-faint); }
+  .row-remove:hover{ color:var(--high); border-color:var(--high); }
+  .addrow-btn{ display:inline-flex; align-items:center; gap:6px; background:none; border:1px dashed var(--line); border-radius:7px; padding:7px 12px; font-size:12.5px; color:var(--ink-soft); margin:2px 0 16px; }
+  .addrow-btn:hover{ color:var(--ink); border-color:var(--ink-faint); }
+  .addrow-btn svg{ width:13px; height:13px; }
+  .combined-preview{
+    background:var(--surface-2); border:1px solid var(--line-soft); border-radius:8px; padding:10px 13px;
+    font-size:13px; margin-bottom:14px; display:flex; gap:14px; align-items:center; flex-wrap:wrap;
+  }
+  .combined-preview .ck{ font-family:'IBM Plex Mono', monospace; font-weight:600; }
+  .entry-items{ display:flex; flex-wrap:wrap; gap:7px; margin-top:9px; }
+  .entry-items .tag{
+    background:var(--surface-2); border:1px solid var(--line-soft); padding:3px 9px; border-radius:999px; gap:6px;
+  }
+  .form-actions{ display:flex; gap:10px; justify-content:flex-end; }
+  .btn-ghost{ background:none; border:1px solid var(--line); border-radius:7px; padding:9px 14px; font-size:13.5px; color:var(--ink-soft); }
+  .btn-ghost:hover{ color:var(--ink); }
+  .btn-primary{ background:var(--accent); color:var(--accent-ink); border:none; border-radius:7px; padding:9px 16px; font-size:13.5px; font-weight:600; }
+  .btn-primary:hover{ filter:brightness(1.06); }
+  .btn-primary:disabled{ opacity:.55; cursor:default; }
+
+  /* ---------- Entry list ---------- */
+  .entry-list{ display:flex; flex-direction:column; gap:10px; }
+  .entry{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+    padding:13px 14px; display:flex; gap:12px; align-items:flex-start;
+  }
+  .entry-thumb{ width:52px; height:52px; border-radius:8px; object-fit:cover; flex-shrink:0; background:var(--surface-2); border:1px solid var(--line-soft); }
+  .entry-thumb.placeholder{ display:flex; align-items:center; justify-content:center; color:var(--ink-faint); }
+  .entry-thumb.placeholder svg{ width:20px; height:20px; }
+  .entry-body{ flex:1; min-width:0; }
+  .entry-top{ display:flex; justify-content:space-between; gap:10px; }
+  .entry-name{ font-weight:600; font-size:14.5px; }
+  .entry-time{ font-size:12px; color:var(--ink-faint); white-space:nowrap; font-family:'IBM Plex Mono', monospace; }
+  .entry-meta{ display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; align-items:center; }
+  .tag{ display:inline-flex; align-items:center; gap:5px; font-size:12px; color:var(--ink-soft); }
+  .tag svg{ width:13px; height:13px; opacity:.8; }
+  .kcal-chip{ font-family:'IBM Plex Mono', monospace; font-size:12.5px; font-weight:600; color:var(--ink); }
+  .hist-chip{ display:inline-flex; align-items:center; gap:5px; font-size:12px; font-weight:600; padding:2px 8px; border-radius:999px; }
+  .hist-chip.low{ background:var(--low-bg); color:var(--low); }
+  .hist-chip.medium{ background:var(--med-bg); color:var(--med); }
+  .hist-chip.high{ background:var(--high-bg); color:var(--high); }
+  .entry-swap{ font-size:12.5px; color:var(--ink-soft); margin-top:7px; display:flex; gap:6px; }
+  .entry-swap svg{ width:13px; height:13px; margin-top:1px; flex-shrink:0; opacity:.8; }
+  .entry-note{ font-size:12.5px; color:var(--ink-soft); margin-top:6px; font-style:italic; }
+  .entry-del{ background:none; border:none; color:var(--ink-faint); padding:4px; border-radius:6px; flex-shrink:0; }
+  .entry-del:hover{ color:var(--high); background:var(--high-bg); }
+  .entry-del svg{ width:15px; height:15px; display:block; }
+
+  .empty{
+    border:1px dashed var(--line); border-radius:var(--radius); padding:30px 20px; text-align:center;
+    color:var(--ink-soft); font-size:13.5px;
+  }
+  .empty h4{ font-family:'Fraunces', serif; font-size:16px; color:var(--ink); margin-bottom:5px; font-weight:560;}
+
+  /* ---------- History ---------- */
+  .history-day{
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:14px 16px;
+    display:flex; justify-content:space-between; align-items:center; margin-bottom:9px; width:100%; text-align:left;
+  }
+  .history-day:hover{ border-color:var(--ink-faint); }
+  .history-date{ font-weight:600; font-size:14.5px; }
+  .history-sub{ font-size:12px; color:var(--ink-soft); margin-top:3px; }
+  .history-right{ display:flex; align-items:center; gap:14px; }
+  .history-kcal{ font-family:'IBM Plex Mono', monospace; font-weight:600; font-size:14px; }
+
+  /* ---------- Guide ---------- */
+  .guide-intro{
+    background:var(--surface-2); border:1px solid var(--line-soft); border-radius:var(--radius);
+    padding:14px 16px; font-size:13px; color:var(--ink-soft); margin-bottom:20px; line-height:1.55;
+  }
+  .guide-search{ margin-bottom:18px; }
+  .guide-search input{ width:100%; max-width:360px; border:1px solid var(--line); background:var(--surface); border-radius:8px; padding:9px 12px; }
+  .guide-section{ margin-bottom:26px; }
+  .guide-section h3{ font-size:15px; display:flex; align-items:center; gap:8px; margin-bottom:10px; }
+  .guide-dot{ width:9px; height:9px; border-radius:2px; display:inline-block; }
+  .guide-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:10px; }
+  .guide-card{ background:var(--surface); border:1px solid var(--line); border-radius:9px; padding:11px 13px; }
+  .guide-card .gname{ font-weight:600; font-size:13.5px; }
+  .guide-card .gmeta{ font-size:11.5px; color:var(--ink-faint); margin-top:2px; }
+  .guide-card .gswap{ font-size:12px; color:var(--ink-soft); margin-top:7px; display:flex; gap:5px; }
+  .guide-card .gswap svg{ width:12px; height:12px; margin-top:1px; flex-shrink:0; opacity:.75; }
+
+  .section-divider{ margin:36px 0 16px; display:flex; align-items:center; gap:10px; color:var(--ink-soft); font-size:13px; }
+  .section-divider::after{ content:""; flex:1; height:1px; background:var(--line-soft); }
+  .section-divider svg{ width:15px; height:15px; opacity:.8; }
+
+  .bristol-grid{ display:grid; grid-template-columns:repeat(auto-fill,minmax(82px,1fr)); gap:8px; margin-bottom:6px; }
+  .bristol-btn{ border:1px solid var(--line); background:var(--surface); border-radius:9px; padding:10px 6px 8px; display:flex; flex-direction:column; align-items:center; gap:4px; font-size:10.5px; color:var(--ink-soft); text-align:center; line-height:1.25; }
+  .bristol-btn .bn{ font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:17px; color:var(--ink); }
+  .bristol-btn:hover{ border-color:var(--ink-faint); }
+  .bristol-btn.selected{ border-color:var(--accent); background:var(--low-bg); }
+  .bristol-btn.selected .bn{ color:var(--accent); }
+  .bristol-desc{ font-size:12.5px; color:var(--ink-soft); margin:4px 0 14px; min-height:16px; }
+
+  .stool-list{ display:flex; flex-direction:column; gap:10px; }
+  .stool-entry{ background:var(--surface); border:1px solid var(--line); border-radius:var(--radius); padding:12px 14px; display:flex; gap:12px; align-items:center; }
+  .stool-badge{ width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; font-family:'IBM Plex Mono', monospace; font-weight:700; font-size:15px; flex-shrink:0; }
+  .stool-badge.constipation{ background:var(--med-bg); color:var(--med); }
+  .stool-badge.normal{ background:var(--low-bg); color:var(--low); }
+  .stool-badge.loose{ background:var(--high-bg); color:var(--high); }
+  .stool-body{ flex:1; min-width:0; }
+  .stool-top{ display:flex; justify-content:space-between; gap:10px; }
+  .stool-label{ font-weight:600; font-size:14px; }
+  .stool-sub{ font-size:12px; color:var(--ink-soft); margin-top:2px; }
+  .stool-note{ font-size:12.5px; color:var(--ink-soft); margin-top:5px; font-style:italic; }
+
+  footer.disclaimer{
+    margin-top:30px; font-size:11.5px; color:var(--ink-faint); line-height:1.6; border-top:1px solid var(--line-soft); padding-top:16px;
+  }
+
+  @media (max-width: 860px){
+    .app{ flex-direction:column; }
+    .nav{ display:none; }
+    .tabbar{
+      display:flex; position:fixed; bottom:0; left:0; right:0; background:var(--surface); border-top:1px solid var(--line);
+      padding:8px 10px calc(8px + env(safe-area-inset-bottom,0px)); justify-content:space-around; z-index:20;
+    }
+    .tabbar button{ background:none; border:none; display:flex; flex-direction:column; align-items:center; gap:3px; color:var(--ink-faint); font-size:10.5px; font-weight:600; padding:4px 10px; }
+    .tabbar button svg{ width:19px; height:19px; }
+    .tabbar button.active{ color:var(--accent); }
+    main{ padding:20px 16px 90px; }
+    .summary-grid{ grid-template-columns:1fr; gap:16px; }
+    .brand{ padding:16px 4px 0; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <nav class="nav" id="sidenav">
+    <div class="brand">
+      <svg viewBox="0 0 24 24" fill="none"><path d="M12 21c-4-3-7-7-7-11a7 7 0 0 1 14 0c0 4-3 8-7 11Z" stroke="var(--accent)" stroke-width="1.6"/><path d="M12 10v8M12 10c0-3 2-5 5-5M12 10c0-2.5-1.7-4.3-4-4.6" stroke="var(--accent)" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <div class="brand-text"><h1>Groundwork</h1><span>food &amp; gut journal</span></div>
+    </div>
+    <ul class="nav-list" id="navList"></ul>
+    <div class="nav-foot">
+      Private to you. Saved to <span id="whoAmI">—</span>.
+    </div>
+  </nav>
+
+  <main id="main"></main>
+</div>
+
+<div class="tabbar" id="tabbar"></div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* ============ Icons ============ */
+  const ICONS = {
+    today: '<svg viewBox="0 0 24 24" fill="none"><rect x="4" y="5" width="16" height="15" rx="2" stroke="currentColor" stroke-width="1.6"/><path d="M4 9h16M8 3v4M16 3v4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    history: '<svg viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 1 0 3-6.7" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M3 4v5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/><path d="M12 8v4l3 2" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>',
+    guide: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 4h10a2 2 0 0 1 2 2v14l-7-3-7 3V6a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>',
+    plus: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>',
+    camera: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/><circle cx="12" cy="13.5" r="3.3" stroke="currentColor" stroke-width="1.5"/></svg>',
+    trash: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 7h14M9 7V5a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-9 0 1 13a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1l1-13" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    swap: '<svg viewBox="0 0 24 24" fill="none"><path d="M4 9h13l-3-3m3 3-3 3M20 15H7l3 3m-3-3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    leaf: '<svg viewBox="0 0 24 24" fill="none"><path d="M5 19c8 0 14-6 14-14C10 5 5 11 5 19Z" stroke="currentColor" stroke-width="1.5"/><path d="M5 19c2-5 5-8 10-10" stroke="currentColor" stroke-width="1.3"/></svg>',
+    wheat: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3v18" stroke="currentColor" stroke-width="1.4"/><path d="M12 6c-2 0-3-1-3-2m3 2c2 0 3-1 3-2M12 10c-2 0-3-1-3-2m3 2c2 0 3-1 3-2M12 14c-2 0-3-1-3-2m3 2c2 0 3-1 3-2M12 18c-2 0-3-1-3-2m3 2c2 0 3-1 3-2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>',
+    drop: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 3s6 7 6 11a6 6 0 0 1-12 0c0-4 6-11 6-11Z" stroke="currentColor" stroke-width="1.5"/></svg>',
+    meat: '<svg viewBox="0 0 24 24" fill="none"><path d="M8 15c-3-3-3-8 1-10 3-2 7 0 9 3 2 4 1 9-3 11-2 1-4 0-5-1l-4 4-2-2 4-5Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/></svg>',
+    apple: '<svg viewBox="0 0 24 24" fill="none"><path d="M12 9c-4-3-9 0-9 5.5S7 21 10 19c1-.7 1-1 2-1s1 .3 2 1c3 2 7-.5 7-6S16 6 12 9Z" stroke="currentColor" stroke-width="1.4"/><path d="M12 9c0-2 1-4 3-5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>',
+    candy: '<svg viewBox="0 0 24 24" fill="none"><rect x="7" y="7" width="10" height="10" rx="3" stroke="currentColor" stroke-width="1.4"/><path d="M7 9 3 7v10l4-2M17 9l4-2v10l-4-2" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/></svg>',
+    cup: '<svg viewBox="0 0 24 24" fill="none"><path d="M6 8h10l-1 10a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L6 8Z" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/><path d="M16 9h2a2 2 0 0 1 0 4h-1.3" stroke="currentColor" stroke-width="1.3"/></svg>',
+    key: '<svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="15" r="4" stroke="currentColor" stroke-width="1.5"/><path d="m11 12 8-8m-3 3 2 2m-4 0 2 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>',
+    mixed: '<svg viewBox="0 0 24 24" fill="none"><circle cx="8" cy="8" r="4" stroke="currentColor" stroke-width="1.4"/><circle cx="15" cy="15" r="4" stroke="currentColor" stroke-width="1.4"/></svg>'
+  };
+  const GROUP_ICON = { protein:ICONS.meat, vegetable:ICONS.leaf, fruit:ICONS.apple, grain:ICONS.wheat, dairy:ICONS.drop, fat:ICONS.drop, sweet:ICONS.candy, beverage:ICONS.cup, mixed:ICONS.mixed, other:ICONS.mixed };
+  const GROUP_LABEL = { protein:"Protein", vegetable:"Vegetable", fruit:"Fruit", grain:"Grain", dairy:"Dairy", fat:"Fat / oil", sweet:"Sweet / processed", beverage:"Beverage", mixed:"Mixed dish", other:"Other" };
+  const HIST_LABEL = { low:"Low histamine", medium:"Medium histamine", high:"High histamine" };
+  const HIST_SCORE = { low:1, medium:2, high:3 };
+  const GROUP_SWAP_DEFAULT = {
+    protein:"a freshly cooked, unprocessed cut of meat, poultry, or fish eaten the same day",
+    vegetable:"a fresh, mild vegetable such as zucchini, carrot, or lettuce",
+    fruit:"a lower-histamine fruit such as pear, apple, mango, or blueberries",
+    grain:"a freshly made, unfermented grain such as rice, quinoa, or plain pasta",
+    dairy:"a fresh, unaged option such as mozzarella, ricotta, or fresh milk",
+    fat:"a plain cooking oil such as olive or coconut oil",
+    sweet:"a treat made with carob instead of cocoa, or fresh fruit for sweetness",
+    beverage:"water, a mild herbal tea, or a diluted juice",
+    mixed:"a simpler version made with fresher, less-aged ingredients",
+    other:"a fresher, less processed version of this food"
+  };
+
+  /* ============ Reference food database (approximate values, per 100g/100ml) ============ */
+  // h: 0 low, 1 medium, 2 high
+  const FOODS = [
+    ["Chicken breast, cooked",165,"protein",0],
+    ["Turkey breast, cooked",135,"protein",0],
+    ["Beef, cooked (fresh)",250,"protein",0],
+    ["Pork chop, cooked",231,"protein",0],
+    ["Salmon, freshly cooked",208,"protein",0],
+    ["White fish, freshly cooked",105,"protein",0],
+    ["Eggs, boiled",155,"protein",0],
+    ["Tofu",76,"protein",0],
+    ["Lentils, cooked",116,"protein",0],
+    ["Chickpeas, cooked",164,"protein",0],
+    ["Black beans, cooked",132,"protein",1],
+    ["Canned tuna",132,"protein",2,"a freshly cooked white fish eaten the same day"],
+    ["Smoked salmon",117,"protein",2,"a freshly baked salmon fillet"],
+    ["Shrimp / shellfish",99,"protein",2,"fresh cod or haddock, cooked the same day"],
+    ["Bacon, cured",541,"protein",2,"freshly cooked, unsmoked pork loin"],
+    ["Salami / cured sausage",336,"protein",2,"a freshly grilled chicken sausage without cure or nitrates"],
+    ["Deli ham, processed",145,"protein",2,"freshly roasted turkey breast, sliced the same day"],
+    ["Tempeh (fermented soy)",192,"protein",2,"plain tofu"],
+    ["Leftovers, meat (2+ days old)",200,"protein",2,"a freshly cooked portion, or freeze leftovers right after cooking"],
+
+    ["Spinach",23,"vegetable",2,"baby kale or romaine lettuce"],
+    ["Tomato",18,"vegetable",2,"red bell pepper or roasted pumpkin"],
+    ["Eggplant",25,"vegetable",2,"zucchini or yellow squash"],
+    ["Avocado",160,"vegetable",2,"a small drizzle of olive oil instead"],
+    ["Mushrooms",22,"vegetable",1,"zucchini or green beans"],
+    ["Onion, fresh",40,"vegetable",1,"chives or the green tops of scallions"],
+    ["Garlic",149,"vegetable",1,"a pinch of asafoetida or garlic-infused oil"],
+    ["Sauerkraut",19,"vegetable",2,"steamed cabbage with a squeeze of lemon"],
+    ["Kimchi",15,"vegetable",2,"fresh steamed cabbage or bok choy"],
+    ["Olives",115,"vegetable",2,"fresh cucumber slices for a briny crunch"],
+    ["Zucchini",17,"vegetable",0],
+    ["Broccoli",34,"vegetable",0],
+    ["Carrot",41,"vegetable",0],
+    ["Bell pepper, red",31,"vegetable",0],
+    ["Cucumber",15,"vegetable",0],
+    ["Lettuce, romaine",17,"vegetable",0],
+    ["Sweet potato",86,"vegetable",0],
+    ["Potato",77,"vegetable",0],
+    ["Pumpkin / squash",26,"vegetable",0],
+    ["Green beans",31,"vegetable",0],
+    ["Cabbage, fresh",25,"vegetable",0],
+    ["Cauliflower",25,"vegetable",0],
+
+    ["Apple",52,"fruit",0],
+    ["Pear",57,"fruit",0],
+    ["Blueberries",57,"fruit",0],
+    ["Grapes",69,"fruit",0],
+    ["Watermelon",30,"fruit",0],
+    ["Mango",60,"fruit",0],
+    ["Banana",89,"fruit",1,"apple or blueberries"],
+    ["Strawberries",32,"fruit",2,"blueberries or pear"],
+    ["Orange / citrus",47,"fruit",2,"pear or melon"],
+    ["Lemon / lime",29,"fruit",2,"a splash of apple cider vinegar-free brightness, like fresh herbs"],
+    ["Pineapple",50,"fruit",2,"melon or pear"],
+    ["Dried apricots",241,"fruit",2,"fresh apricots or apple slices"],
+    ["Raisins / dried fruit",299,"fruit",2,"fresh grapes"],
+
+    ["White rice, cooked",130,"grain",0],
+    ["Brown rice, cooked",123,"grain",0],
+    ["Quinoa, cooked",120,"grain",0],
+    ["Oats, cooked",71,"grain",0],
+    ["Pasta, cooked",131,"grain",0],
+    ["Corn tortilla",218,"grain",0],
+    ["Couscous, cooked",112,"grain",0],
+    ["White bread, fresh",265,"grain",1,"a soda bread or rice cake made without yeast"],
+    ["Sourdough bread",289,"grain",2,"a fresh, unfermented flatbread or rice cake"],
+    ["Instant noodles",436,"grain",1,"fresh rice noodles in a simple broth"],
+
+    ["Milk, fresh",61,"dairy",0],
+    ["Mozzarella, fresh",280,"dairy",0],
+    ["Ricotta",174,"dairy",0],
+    ["Butter",717,"fat",0],
+    ["Cheddar, aged",403,"dairy",2,"fresh mozzarella or ricotta"],
+    ["Parmesan, aged",431,"dairy",2,"a sprinkle of nutritional yeast"],
+    ["Blue cheese",353,"dairy",2,"a small amount of fresh goat cheese"],
+    ["Yogurt, fermented",59,"dairy",2,"fresh milk or a lactose-free alternative"],
+    ["Kefir",41,"dairy",2,"fresh milk or a lactose-free alternative"],
+
+    ["Olive oil",884,"fat",0],
+    ["Coconut oil",862,"fat",0],
+    ["Almonds",579,"fat",0],
+    ["Cashews",553,"fat",1,"macadamia nuts"],
+    ["Peanuts",567,"fat",1,"sunflower seed butter"],
+    ["Walnuts",654,"fat",2,"macadamia nuts or pumpkin seeds"],
+    ["Vinegar / balsamic",88,"fat",2,"a squeeze of fresh lemon juice"],
+    ["Soy sauce, fermented",53,"fat",2,"coconut aminos"],
+    ["Mustard",66,"fat",1,"fresh herbs like dill or tarragon"],
+    ["Ketchup",101,"fat",2,"a pureed roasted red pepper sauce"],
+    ["Vinaigrette dressing",150,"fat",2,"olive oil with fresh lemon juice"],
+
+    ["Dark chocolate",546,"sweet",2,"carob chips"],
+    ["Milk chocolate",535,"sweet",1,"a few fresh low-histamine berries for sweetness"],
+    ["Potato chips",536,"sweet",0],
+    ["Plain crackers",440,"sweet",0],
+
+    ["Water",0,"beverage",0],
+    ["Herbal tea",1,"beverage",0],
+    ["Black tea",1,"beverage",1,"chamomile or peppermint tea"],
+    ["Coffee",2,"beverage",1,"roasted dandelion-root tea"],
+    ["Energy drink",45,"beverage",1,"sparkling water with citrus"],
+    ["Red wine",85,"beverage",2,"sparkling water with fresh fruit"],
+    ["Beer",43,"beverage",2,"sparkling water, or kombucha only if well tolerated"],
+    ["Kombucha",30,"beverage",2,"sparkling water with a splash of apple juice"],
+
+    ["Pizza, cheese",266,"mixed",1,"a flatbread with pesto, mozzarella, and roasted vegetables instead of tomato sauce"]
+  ];
+  const BRISTOL = [
+    {n:1, label:"Separate hard lumps", desc:"Hard to pass — often a sign of constipation", cls:"constipation"},
+    {n:2, label:"Lumpy, sausage-shaped", desc:"Hard and lumpy — mild constipation", cls:"constipation"},
+    {n:3, label:"Sausage with cracks", desc:"Normal", cls:"normal"},
+    {n:4, label:"Smooth, soft sausage", desc:"Normal — the easiest type to pass", cls:"normal"},
+    {n:5, label:"Soft blobs, clear edges", desc:"On the loose side, often low fiber", cls:"loose"},
+    {n:6, label:"Mushy, ragged edges", desc:"Mild diarrhea", cls:"loose"},
+    {n:7, label:"Liquid, no solid pieces", desc:"Diarrhea", cls:"loose"}
+  ];
+  const CLASS_LABEL = { constipation:"Constipation", normal:"Normal", loose:"Loose / diarrhea" };
+
+  const FOOD_INDEX = {};
+  FOODS.forEach(f=>{ FOOD_INDEX[f[0].toLowerCase()] = f; });
+  const HIST_NAME = ["low","medium","high"];
+
+  /* ============ State ============ */
+  let uid = null, db = null, user = null, assets = null, sample = null;
+  let entries = [];           // all loaded entries
+  let view = "today";         // today | history | guide
+  let selectedDate = todayStr();
+  let photoBlob = null, photoPreviewUrl = null, photoFile = null;
+  let formOpen = false;
+  let offlineMode = false;
+  function freshFormItem(){ return {name:"", servings:1, kcal:"", group:"protein", histamine:"low"}; }
+  let formItems = [freshFormItem()];
+  let formMealName = "", formNote = "";
+
+  let stools = [];
+  let stoolFormOpen = false, stoolFormType = null, stoolFormNote = "";
+
+  function todayStr(d){ const dt = d || new Date(); return dt.getFullYear()+"-"+String(dt.getMonth()+1).padStart(2,"0")+"-"+String(dt.getDate()).padStart(2,"0"); }
+  function timeStr(d){ return d.toLocaleTimeString(undefined,{hour:"numeric",minute:"2-digit"}); }
+  function prettyDate(ds){
+    const [y,m,d] = ds.split("-").map(Number);
+    const dt = new Date(y,m-1,d);
+    const isToday = ds === todayStr();
+    if(isToday) return "Today";
+    const yest = new Date(); yest.setDate(yest.getDate()-1);
+    if(ds === todayStr(yest)) return "Yesterday";
+    return dt.toLocaleDateString(undefined,{weekday:"short", month:"short", day:"numeric"});
+  }
+  function escapeHtml(s){ return (s||"").replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+
+  /* ============ Local fallback storage ============ */
+  const LS_KEY = "groundwork_entries_v1";
+  function lsLoad(){ try{ return JSON.parse(localStorage.getItem(LS_KEY) || "[]"); }catch(e){ return []; } }
+  function lsSave(list){ try{ localStorage.setItem(LS_KEY, JSON.stringify(list)); }catch(e){} }
+
+  const LS_STOOL_KEY = "groundwork_stools_v1";
+  function lsLoadStools(){ try{ return JSON.parse(localStorage.getItem(LS_STOOL_KEY) || "[]"); }catch(e){ return []; } }
+  function lsSaveStools(list){ try{ localStorage.setItem(LS_STOOL_KEY, JSON.stringify(list)); }catch(e){} }
+
+  /* ============ Claude (Anthropic API) ============ */
+  // Outside claude.ai there is no `sample` capability, so the page calls the Anthropic
+  // API itself, either with the visitor's own key (kept only in this browser's
+  // localStorage) or through a proxy that holds the key server-side (see worker/).
+  const AI_LS_KEY = "groundwork_ai_v1";
+  const AI_MODEL = "claude-opus-5-5";
+  const GROUP_ENUM = ["protein","vegetable","fruit","grain","dairy","fat","sweet","beverage","mixed","other"];
+  const HIST_ENUM = ["low","medium","high"];
+  let aiConfig = aiLoad();
+  let aiClient = null;
+  function aiLoad(){ try{ return JSON.parse(localStorage.getItem(AI_LS_KEY) || "{}"); }catch(e){ return {}; } }
+  function aiStore(cfg){
+    aiConfig = cfg; aiClient = null;
+    try{ localStorage.setItem(AI_LS_KEY, JSON.stringify(cfg)); }catch(e){}
+  }
+  function apiConfigured(){ return !!(aiConfig.apiKey || aiConfig.proxyUrl); }
+  function aiReady(){ return !!sample || apiConfigured(); }
+
+  async function getAiClient(){
+    if(aiClient) return aiClient;
+    const mod = await import(new URL("vendor/anthropic-sdk.min.js", document.baseURI).href);
+    const Anthropic = mod.default;
+    const opts = { dangerouslyAllowBrowser: true };
+    if(aiConfig.proxyUrl){
+      opts.baseURL = aiConfig.proxyUrl.trim().replace(/\/+$/, "");
+      opts.apiKey = "held-by-proxy";
+      if(aiConfig.accessCode) opts.defaultHeaders = { "x-groundwork-code": aiConfig.accessCode };
+    } else {
+      opts.apiKey = aiConfig.apiKey;
+    }
+    aiClient = new Anthropic(opts);
+    return aiClient;
+  }
+
+  function aiErrorMessage(e){
+    const status = e && e.status;
+    if(status === 401) return "Claude rejected the API key (or proxy access code). Check it in the Claude tab.";
+    if(status === 403) return "The request was refused (403). If you use a proxy, check its allowed origins.";
+    if(status === 429) return "Too many requests right now. Wait a moment and try again.";
+    if(status >= 500) return "Claude is temporarily unavailable. Try again shortly.";
+    return (e && e.message) ? e.message : "Something went wrong.";
+  }
+
+  async function askClaudeJSON(content, schema, effort){
+    const client = await getAiClient();
+    const response = await client.beta.messages.create({
+      model: AI_MODEL,
+      max_tokens: 16000,
+      betas: ["server-side-fallback-2026-07-01"],
+      fallbacks: "default",
+      output_config: { effort, format: { type: "json_schema", schema } },
+      messages: [{ role: "user", content }]
+    });
+    if(response.stop_reason === "refusal") throw new Error("Claude declined to answer this one. Set the fields yourself.");
+    if(response.stop_reason === "max_tokens") throw new Error("Claude's answer was cut off. Try again.");
+    const text = response.content.filter(b => b.type === "text").map(b => b.text).join("");
+    return JSON.parse(text);
+  }
+
+  const FOOD_SCHEMA = {
+    type: "object",
+    properties: {
+      kcal: { type: "number", description: "Calories per 100 g (or per 100 ml for drinks)" },
+      group: { type: "string", enum: GROUP_ENUM },
+      histamine: { type: "string", enum: HIST_ENUM },
+      swap: { type: "string", description: "Lower-histamine alternative under 12 words if histamine is medium or high, else empty" }
+    },
+    required: ["kcal","group","histamine","swap"],
+    additionalProperties: false
+  };
+
+  const PHOTO_SCHEMA = {
+    type: "object",
+    properties: {
+      isFood: { type: "boolean" },
+      mealName: { type: "string", description: "Short name for the meal, e.g. 'Chicken salad bowl'" },
+      items: {
+        type: "array",
+        items: {
+          type: "object",
+          properties: {
+            name: { type: "string" },
+            grams: { type: "number", description: "Estimated portion weight in grams (ml for drinks)" },
+            kcalPer100: { type: "number", description: "Calories per 100 g (or 100 ml)" },
+            group: { type: "string", enum: GROUP_ENUM },
+            histamine: { type: "string", enum: HIST_ENUM },
+            swap: { type: "string" }
+          },
+          required: ["name","grams","kcalPer100","group","histamine","swap"],
+          additionalProperties: false
+        }
+      }
+    },
+    required: ["isFood","mealName","items"],
+    additionalProperties: false
+  };
+
+  function cleanEstimate(r){
+    const kcal = Number(r && r.kcal);
+    return {
+      kcal: isNaN(kcal) ? 0 : Math.max(0, Math.round(kcal)),
+      group: (r && GROUP_LABEL[r.group]) ? r.group : "other",
+      histamine: (r && HIST_ENUM.includes(r.histamine)) ? r.histamine : "low",
+      swap: (r && typeof r.swap === "string") ? r.swap : ""
+    };
+  }
+
+  // kcal / food group / histamine for one named food.
+  async function estimateFood(name){
+    if(apiConfigured()){
+      const prompt = `You are helping fill in a home food diary. Estimate for the food "${name}": calories per 100 g (per 100 ml if it's a drink), its food group, and its histamine level based on commonly cited low-histamine-diet references. If histamine is medium or high, suggest a lower-histamine alternative in under 12 words; otherwise leave swap empty. If the food is unclear, make the most reasonable guess rather than refusing.`;
+      return cleanEstimate(await askClaudeJSON(prompt, FOOD_SCHEMA, "low"));
+    }
+    return cleanEstimate(await sample.json(buildEstimatePrompt(name), { modelTier: "quick" }));
+  }
+
+  // Every food visible in a meal photo, with portion and calories.
+  async function analyzeMealPhoto(blob){
+    const data = await new Promise((res, rej)=>{
+      const r = new FileReader();
+      r.onload = ()=>res(String(r.result).split(",")[1]);
+      r.onerror = rej;
+      r.readAsDataURL(blob);
+    });
+    const prompt = `This photo is for a home food & gut-health diary. Identify every distinct food and drink visible. For each one, estimate the portion actually on the plate in grams (ml for drinks), judging size from the plate, cutlery, hands or packaging. Also give its calories per 100 g (or 100 ml), its food group, and its histamine level based on commonly cited low-histamine-diet references. For medium or high histamine foods, suggest a lower-histamine alternative in under 12 words; otherwise leave swap empty. List sauces, dressings, oils and drinks as separate items when you can see them. Give the meal a short name. If the photo doesn't show food, set isFood to false and return no items.`;
+    const result = await askClaudeJSON([
+      { type: "image", source: { type: "base64", media_type: "image/jpeg", data } },
+      { type: "text", text: prompt }
+    ], PHOTO_SCHEMA, "medium");
+    const items = (result.items || []).map(it=>{
+      const base = cleanEstimate({ kcal: it.kcalPer100, group: it.group, histamine: it.histamine, swap: it.swap });
+      const grams = Math.max(0, Math.round(Number(it.grams) || 0));
+      return Object.assign(base, { name: String(it.name || "").trim(), grams });
+    }).filter(it=>it.name);
+    return { isFood: !!result.isFood, mealName: String(result.mealName || "").trim(), items };
+  }
+
+  /* ============ Init ============ */
+  async function init(){
+    try{
+      if(window.claude && window.claude.use){
+        db = await window.claude.use("db");
+        user = await window.claude.use("user");
+        assets = await window.claude.use("assets");
+        sample = await window.claude.use("sample");
+      }
+    }catch(e){ /* fall through to offline */ }
+
+    if(db && user){
+      try{ uid = await user.id(); }catch(e){ uid = null; }
+    }
+
+    if(db && uid){
+      document.getElementById("whoAmI").textContent = "your account";
+      subscribeEntries();
+      subscribeStools();
+    } else {
+      offlineMode = true;
+      document.getElementById("whoAmI").textContent = "this browser only — nothing leaves your device";
+      entries = lsLoad();
+      stools = lsLoadStools();
+      render();
+    }
+
+    renderNav();
+  }
+
+  function profileDoc(){ return db.doc("data/users/"+uid+"/profile"); }
+  function entriesCollection(){ return profileDoc().collection("entries"); }
+  function stoolsCollection(){ return profileDoc().collection("stools"); }
+
+  function subscribeEntries(){
+    try{
+      entriesCollection().orderBy("timestamp","desc").limit(500).onSnapshot(
+        snap=>{
+          entries = snap.docs.map(d=>Object.assign({id:d.id}, d.data()));
+          render();
+        },
+        err=>{
+          offlineMode = true;
+          entries = lsLoad();
+          render();
+        }
+      );
+    }catch(e){
+      offlineMode = true;
+      entries = lsLoad();
+      render();
+    }
+  }
+
+  async function saveEntry(entry){
+    if(!offlineMode && db && uid){
+      await entriesCollection().add(entry);
+    } else {
+      entry.id = "e"+Date.now()+Math.random().toString(36).slice(2,7);
+      entries.unshift(entry);
+      lsSave(entries);
+      render();
+    }
+  }
+
+  async function deleteEntry(id){
+    if(!offlineMode && db && uid){
+      await entriesCollection().doc(id).delete();
+    } else {
+      entries = entries.filter(e=>e.id!==id);
+      lsSave(entries);
+      render();
+    }
+  }
+
+  function subscribeStools(){
+    try{
+      stoolsCollection().orderBy("timestamp","desc").limit(500).onSnapshot(
+        snap=>{ stools = snap.docs.map(d=>Object.assign({id:d.id}, d.data())); render(); },
+        err=>{ offlineMode = true; stools = lsLoadStools(); render(); }
+      );
+    }catch(e){ offlineMode = true; stools = lsLoadStools(); render(); }
+  }
+
+  async function saveStool(entry){
+    if(!offlineMode && db && uid){
+      await stoolsCollection().add(entry);
+    } else {
+      entry.id = "s"+Date.now()+Math.random().toString(36).slice(2,7);
+      stools.unshift(entry);
+      lsSaveStools(stools);
+      render();
+    }
+  }
+
+  async function deleteStool(id){
+    if(!offlineMode && db && uid){
+      await stoolsCollection().doc(id).delete();
+    } else {
+      stools = stools.filter(s=>s.id!==id);
+      lsSaveStools(stools);
+      render();
+    }
+  }
+
+  /* ============ Image handling ============ */
+  function compressImage(file, maxDim = 640, quality = 0.72){
+    return new Promise((resolve, reject)=>{
+      const img = new Image();
+      const reader = new FileReader();
+      reader.onload = ()=>{ img.onload = ()=>{
+          let {width, height} = img;
+          if(width > height && width > maxDim){ height = height*(maxDim/width); width = maxDim; }
+          else if(height > maxDim){ width = width*(maxDim/height); height = maxDim; }
+          const canvas = document.createElement("canvas");
+          canvas.width = width; canvas.height = height;
+          canvas.getContext("2d").drawImage(img, 0, 0, width, height);
+          canvas.toBlob(blob=>resolve(blob), "image/jpeg", quality);
+        };
+        img.onerror = reject;
+        img.src = reader.result;
+      };
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+  }
+
+  /* ============ Matching ============ */
+  function matchFood(name){
+    const key = (name||"").trim().toLowerCase();
+    if(!key) return null;
+    if(FOOD_INDEX[key]) return FOOD_INDEX[key];
+    const hit = FOODS.find(f=>f[0].toLowerCase().startsWith(key) && key.length>2);
+    return hit || null;
+  }
+
+  function buildEstimatePrompt(name){
+    return `You are helping fill in a home food diary. For the food "${name}", respond with ONLY a raw JSON object (no markdown, no code fences, no extra text) in exactly this shape:
+{"kcal": <number, your best general estimate of calories per 100g (or per 100ml if it's a drink)>, "group": <one of "protein","vegetable","fruit","grain","dairy","fat","sweet","beverage","mixed","other">, "histamine": <one of "low","medium","high", your best estimate of histamine content based on commonly cited low-histamine-diet references>, "swap": <if histamine is "medium" or "high", a short suggestion (under 12 words) for a lower-histamine alternative; otherwise an empty string "">}
+If the food is unclear, make the most reasonable guess rather than refusing. Respond with raw JSON only, nothing else.`;
+  }
+
+  /* ============ Daily computation ============ */
+  function entriesForDate(ds){ return entries.filter(e=>e.date===ds); }
+  function entryItems(e){
+    return e.items && e.items.length ? e.items : [{name:e.name, servings:e.servings, kcal:e.kcal, group:e.group, histamine:e.histamine, swap:e.swap}];
+  }
+  function entryTotals(e){
+    const items = entryItems(e);
+    const order = {low:1, medium:2, high:3};
+    let kcal = 0, worst = "low";
+    items.forEach(it=>{
+      kcal += (it.kcal||0) * (it.servings||1);
+      if(order[it.histamine] > order[worst]) worst = it.histamine;
+    });
+    const mealName = e.mealName || items.map(it=>it.name).join(", ");
+    return { items, kcal, histamine: worst, mealName };
+  }
+  function daySummary(ds){
+    const list = entriesForDate(ds);
+    let kcal = 0, histPoints = 0, count = 0;
+    const groupKcal = {};
+    list.forEach(e=>{
+      entryItems(e).forEach(it=>{
+        const k = (it.kcal||0) * (it.servings||1);
+        kcal += k;
+        groupKcal[it.group] = (groupKcal[it.group]||0) + k;
+        histPoints += HIST_SCORE[it.histamine]||0;
+        count++;
+      });
+    });
+    return { kcal, groupKcal, histPoints, count };
+  }
+  function histLabelForPoints(p, n){
+    if(n===0) return {label:"No entries yet", color:"var(--ink-faint)"};
+    const avg = p / Math.max(n,1);
+    if(avg <= 1.3) return {label:"Light", color:"var(--low)"};
+    if(avg <= 2.1) return {label:"Moderate", color:"var(--med)"};
+    return {label:"Heavier", color:"var(--high)"};
+  }
+
+  const GROUP_COLORS = { protein:"#8A6A4A", vegetable:"#4F7A52", fruit:"#B5542E", grain:"#C2A24E", dairy:"#6C8CA8", fat:"#B08A3E", sweet:"#9A5C8F", beverage:"#4E8C8A", mixed:"#777", other:"#999" };
+
+  function stoolsForDate(ds){ return stools.filter(s=>s.date===ds); }
+  function stoolDaySummary(ds){
+    const list = stoolsForDate(ds);
+    const byClass = {constipation:0, normal:0, loose:0};
+    list.forEach(s=>{ const b = BRISTOL[s.type-1]; if(b) byClass[b.cls]++; });
+    return { count:list.length, byClass };
+  }
+
+  /* ============ Rendering ============ */
+  function renderNav(){
+    const items = [
+      {id:"today", icon:ICONS.today, label:"Today"},
+      {id:"history", icon:ICONS.history, label:"History"},
+      {id:"guide", icon:ICONS.guide, label:"Swap guide"},
+      {id:"claude", icon:ICONS.key, label:"Claude"}
+    ];
+    document.getElementById("navList").innerHTML = items.map(it=>
+      `<li><button class="nav-item ${view===it.id?'active':''}" data-nav="${it.id}">${it.icon}<span>${it.label}</span></button></li>`
+    ).join("");
+    document.getElementById("tabbar").innerHTML = items.map(it=>
+      `<button class="${view===it.id?'active':''}" data-nav="${it.id}">${it.icon}<span>${it.label}</span></button>`
+    ).join("");
+    document.querySelectorAll("[data-nav]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{ view = btn.getAttribute("data-nav"); formOpen=false; render(); renderNav(); });
+    });
+  }
+
+  function render(){
+    const main = document.getElementById("main");
+    if(view==="today") main.innerHTML = renderToday();
+    else if(view==="history") main.innerHTML = renderHistory();
+    else if(view==="claude") main.innerHTML = renderClaude();
+    else main.innerHTML = renderGuide();
+    attachHandlers();
+  }
+
+  function renderSummary(ds){
+    const s = daySummary(ds);
+    const hist = histLabelForPoints(s.histPoints, s.count);
+    const groups = Object.keys(s.groupKcal);
+    const barSegments = groups.map(g=>{
+      const pct = s.kcal>0 ? (s.groupKcal[g]/s.kcal*100) : 0;
+      return `<span style="width:${pct}%;background:${GROUP_COLORS[g]||'#999'}" title="${GROUP_LABEL[g]}"></span>`;
+    }).join("");
+    const legend = groups.map(g=>`<span class="legend-item"><span class="legend-dot" style="background:${GROUP_COLORS[g]||'#999'}"></span>${GROUP_LABEL[g]}</span>`).join("");
+    const histPct = Math.min(100, (s.histPoints / 15) * 100);
+
+    return `
+      <div class="summary">
+        <svg class="summary-leaf" viewBox="0 0 24 24" fill="none"><path d="M5 19c8 0 14-6 14-14C10 5 5 11 5 19Z" stroke="var(--ink)" stroke-width="1"/></svg>
+        <div class="summary-grid">
+          <div class="kcal-block">
+            <div class="kcal-num">${Math.round(s.kcal)}</div>
+            <div class="kcal-label">calories logged</div>
+          </div>
+          <div class="meters">
+            <div class="meter-row">
+              <div class="meter-top"><span>Food groups</span><span>${s.count} item${s.count===1?'':'s'}</span></div>
+              <div class="groupbar ${groups.length?'':'empty'}">${barSegments}</div>
+              ${groups.length? `<div class="legend">${legend}</div>` : ''}
+            </div>
+            <div class="meter-row">
+              <div class="meter-top"><span>Histamine load</span><span class="hist-label" style="color:${hist.color}">${hist.label}</span></div>
+              <div class="histbar"><div class="fill" style="width:${histPct}%;background:${hist.color}"></div></div>
+            </div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderDateSwitcher(){
+    return `
+      <div class="dateswitch">
+        <button data-dateshift="-1" aria-label="Previous day"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        <span class="label">${prettyDate(selectedDate)}</span>
+        <button data-dateshift="1" aria-label="Next day"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        ${selectedDate!==todayStr() ? `<button class="today-pill" data-goal="today" style="cursor:pointer">Jump to today</button>`:''}
+      </div>`;
+  }
+
+  function renderEntryCard(e){
+    const { items, kcal, histamine, mealName } = entryTotals(e);
+    const dt = new Date(e.timestamp || Date.now());
+    const dominant = items[0] || {};
+    const thumb = e.photoId ? `<img class="entry-thumb" src="/_blob/${e.photoId}" alt="">`
+                : (e.photoData ? `<img class="entry-thumb" src="${e.photoData}" alt="">`
+                : `<div class="entry-thumb placeholder">${GROUP_ICON[dominant.group]||ICONS.mixed}</div>`);
+
+    const swapLines = items.filter(it=>it.histamine!=="low").map(it=>{
+      const match = matchFood(it.name);
+      const swap = it.swap || (match && match[4]) || GROUP_SWAP_DEFAULT[it.group];
+      return swap ? `<div class="entry-swap">${ICONS.swap}<span>${items.length>1?`<b>${escapeHtml(it.name)}:</b> `:''}${escapeHtml(swap)}</span></div>` : "";
+    }).join("");
+
+    const metaRow = items.length === 1
+      ? `<div class="entry-meta">
+          <span class="kcal-chip">${Math.round(kcal)} kcal</span>
+          <span class="tag">${GROUP_ICON[dominant.group]||ICONS.mixed}${GROUP_LABEL[dominant.group]||"Other"}</span>
+          <span class="hist-chip ${histamine}">${HIST_LABEL[histamine]}</span>
+        </div>`
+      : `<div class="entry-meta">
+          <span class="kcal-chip">${Math.round(kcal)} kcal total</span>
+          <span class="tag">${ICONS.mixed}${items.length} foods</span>
+          <span class="hist-chip ${histamine}">${HIST_LABEL[histamine]} overall</span>
+        </div>
+        <div class="entry-items">${items.map(it=>`<span class="tag">${GROUP_ICON[it.group]||ICONS.mixed}${escapeHtml(it.name)}<span class="hist-chip ${it.histamine}" style="padding:1px 6px">${HIST_LABEL[it.histamine].replace(" histamine","")}</span></span>`).join("")}</div>`;
+
+    return `
+      <div class="entry" data-entry="${e.id}">
+        ${thumb}
+        <div class="entry-body">
+          <div class="entry-top">
+            <div class="entry-name">${escapeHtml(mealName)}</div>
+            <div class="entry-time">${e.timeLabel || timeStr(dt)}</div>
+          </div>
+          ${metaRow}
+          ${swapLines}
+          ${e.note ? `<div class="entry-note">${escapeHtml(e.note)}</div>` : ''}
+        </div>
+        <button class="entry-del" data-del="${e.id}" aria-label="Delete entry">${ICONS.trash}</button>
+      </div>`;
+  }
+
+  const GROUP_OPTIONS = Object.keys(GROUP_LABEL).map(g=>`<option value="${g}">${GROUP_LABEL[g]}</option>`).join("");
+  const HIST_OPTIONS = `<option value="low">Low</option><option value="medium">Medium</option><option value="high">High</option>`;
+
+  function renderFoodRow(i, item){
+    return `
+      <div class="food-row" data-row="${i}">
+        <div class="field" style="flex:2;min-width:160px">
+          <label>${i===0 ? "Food" : "&nbsp;"}</label>
+          <input id="f-name-${i}" list="food-options" placeholder="e.g. spinach" autocomplete="off" value="${escapeHtml(item.name||'')}">
+        </div>
+        <div class="field small">
+          <label>${i===0 ? "× 100g" : "&nbsp;"}</label>
+          <input id="f-servings-${i}" type="number" min="0.25" step="0.25" value="${item.servings||1}">
+        </div>
+        <div class="field small">
+          <label>${i===0 ? "Kcal /100g" : "&nbsp;"}</label>
+          <input id="f-kcal-${i}" type="number" min="0" step="1" value="${item.kcal===""?"":item.kcal}">
+        </div>
+        <div class="field small">
+          <label>${i===0 ? "Group" : "&nbsp;"}</label>
+          <select id="f-group-${i}">${GROUP_OPTIONS}</select>
+        </div>
+        <div class="field small">
+          <label>${i===0 ? "Histamine" : "&nbsp;"}</label>
+          <select id="f-hist-${i}">${HIST_OPTIONS}</select>
+        </div>
+        ${formItems.length>1 ? `<button type="button" class="row-remove" data-removerow="${i}" aria-label="Remove this food">${ICONS.trash}</button>` : ''}
+      </div>
+      <div class="match-hint" id="f-hint-${i}"></div>`;
+  }
+
+  function renderForm(){
+    return `
+      <div class="form-card">
+        <h3>Log food</h3>
+        <div class="field" style="margin-bottom:14px">
+          <label for="f-mealname">Meal name (optional — handy for a mixed plate)</label>
+          <input id="f-mealname" placeholder="e.g. Lunch plate" value="${escapeHtml(formMealName)}">
+        </div>
+        <datalist id="food-options">${FOODS.map(f=>`<option value="${escapeHtml(f[0])}">`).join("")}</datalist>
+        ${formItems.map((item,i)=>renderFoodRow(i,item)).join("")}
+        <button type="button" class="addrow-btn" id="f-addrow">${ICONS.plus} Add another food</button>
+        <div class="combined-preview" id="f-combined"></div>
+        <div class="field-row">
+          <div class="field">
+            <label for="f-note">Note (optional)</label>
+            <input id="f-note" placeholder="How it sat with you, etc." value="${escapeHtml(formNote)}">
+          </div>
+        </div>
+        <div class="photo-row">
+          <img id="f-photo-preview" class="photo-preview" style="display:none" alt="">
+          <label class="photo-btn">${ICONS.camera} ${apiConfigured() ? "Add a photo — Claude will fill in the foods" : "Add a photo"}<input id="f-photo" type="file" accept="image/*" style="display:none"></label>
+          <span id="f-photo-status" style="font-size:12px;color:var(--ink-faint)"></span>
+        </div>
+        <div class="form-actions">
+          <button class="btn-ghost" id="f-cancel">Cancel</button>
+          <button class="btn-primary" id="f-save">Save entry</button>
+        </div>
+      </div>`;
+  }
+
+  function renderStoolEntryCard(s){
+    const b = BRISTOL[s.type-1];
+    const dt = new Date(s.timestamp || Date.now());
+    return `
+      <div class="stool-entry" data-stool="${s.id}">
+        <div class="stool-badge ${b.cls}">${b.n}</div>
+        <div class="stool-body">
+          <div class="stool-top">
+            <div class="stool-label">${escapeHtml(b.label)}</div>
+            <div class="entry-time">${s.timeLabel || timeStr(dt)}</div>
+          </div>
+          <div class="stool-sub">Type ${b.n} · ${CLASS_LABEL[b.cls]}</div>
+          ${s.note ? `<div class="stool-note">${escapeHtml(s.note)}</div>` : ''}
+        </div>
+        <button class="entry-del" data-delstool="${s.id}" aria-label="Delete entry">${ICONS.trash}</button>
+      </div>`;
+  }
+
+  function renderStoolForm(){
+    return `
+      <div class="form-card">
+        <h3>Log a bowel movement</h3>
+        <div class="bristol-grid">
+          ${BRISTOL.map(b=>`
+            <button type="button" class="bristol-btn ${stoolFormType===b.n?'selected':''}" data-bristol="${b.n}">
+              <span class="bn">${b.n}</span><span>${escapeHtml(b.label)}</span>
+            </button>`).join("")}
+        </div>
+        <div class="bristol-desc" id="stool-desc">${stoolFormType ? escapeHtml(BRISTOL[stoolFormType-1].desc) : "Pick the shape that's the closest match."}</div>
+        <div class="field-row">
+          <div class="field">
+            <label for="s-note">Note (optional)</label>
+            <input id="s-note" placeholder="Urgency, discomfort, timing after a meal…" value="${escapeHtml(stoolFormNote)}">
+          </div>
+        </div>
+        <div class="form-actions">
+          <button class="btn-ghost" id="s-cancel">Cancel</button>
+          <button class="btn-primary" id="s-save" ${stoolFormType?'':'disabled'}>Save entry</button>
+        </div>
+      </div>`;
+  }
+
+  function renderStoolSection(ds){
+    const list = stoolsForDate(ds).slice().sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    return `
+      <div class="section-divider">${ICONS.drop}<span>Bowel movements${list.length?` · ${list.length} today`:''}</span></div>
+      ${stoolFormOpen ? renderStoolForm() : `<button class="logbtn" id="open-stool-form">${ICONS.plus} Log a bowel movement</button>`}
+      <div class="stool-list">
+        ${list.length ? list.map(renderStoolEntryCard).join("") : `
+          <div class="empty">
+            <h4>Nothing logged ${ds===todayStr()?'today':'on this day'} yet</h4>
+            <p>Logging against the Bristol scale helps line up what you eat with how your gut responds.</p>
+          </div>`}
+      </div>`;
+  }
+
+  function renderToday(){
+    const list = entriesForDate(selectedDate).slice().sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    return `
+      <div class="topline">
+        <div><h2>Food &amp; gut journal</h2><div class="sub">Log meals, track calories, and see your histamine load at a glance.</div></div>
+        ${renderDateSwitcher()}
+      </div>
+      ${renderSummary(selectedDate)}
+      ${formOpen ? renderForm() : `<div class="log-actions"><button class="logbtn" id="open-form">${ICONS.plus} Log food</button><button class="logbtn secondary" id="open-form-photo">${ICONS.camera} Log from photo</button></div>`}
+      <div class="entry-list">
+        ${list.length ? list.map(renderEntryCard).join("") : `
+          <div class="empty">
+            <h4>Nothing logged ${selectedDate===todayStr()?'today':'on this day'} yet</h4>
+            <p>Add a meal or snack above, or snap a photo — Groundwork will estimate calories, food group, and histamine level for you.</p>
+          </div>`}
+      </div>
+      ${renderStoolSection(selectedDate)}
+      ${renderDisclaimer()}`;
+  }
+
+  function renderHistory(){
+    const dates = [...new Set([...entries.map(e=>e.date), ...stools.map(s=>s.date)])].sort((a,b)=>b.localeCompare(a));
+    return `
+      <div class="topline"><div><h2>History</h2><div class="sub">Every day you've logged, most recent first.</div></div></div>
+      ${dates.length ? dates.map(ds=>{
+        const s = daySummary(ds);
+        const st = stoolDaySummary(ds);
+        const hist = histLabelForPoints(s.histPoints, s.count);
+        return `<button class="history-day" data-jump="${ds}">
+          <div><div class="history-date">${prettyDate(ds)}</div><div class="history-sub">${s.count} food item${s.count===1?'':'s'}${st.count?` · ${st.count} bowel movement${st.count===1?'':'s'}`:''}</div></div>
+          <div class="history-right">
+            ${s.count ? `<span class="hist-label" style="color:${hist.color}">${hist.label}</span>` : ''}
+            ${s.kcal ? `<span class="history-kcal">${Math.round(s.kcal)} kcal</span>` : ''}
+          </div>
+        </button>`;
+      }).join("") : `<div class="empty"><h4>No history yet</h4><p>Days you log will show up here so you can spot patterns over time.</p></div>`}
+      ${renderDisclaimer()}`;
+  }
+
+  function renderGuide(){
+    const q = (window.__guideQuery || "").toLowerCase();
+    const filtered = FOODS.filter(f=>f[0].toLowerCase().includes(q));
+    const sections = [
+      {key:2, title:"High histamine", color:"var(--high)"},
+      {key:1, title:"Medium histamine", color:"var(--med)"},
+      {key:0, title:"Low histamine", color:"var(--low)"}
+    ];
+    return `
+      <div class="topline"><div><h2>Swap guide</h2><div class="sub">A quick reference for common foods and gentler alternatives.</div></div></div>
+      <div class="guide-intro">This is general reference information to help you spot patterns in your own log — it's not medical advice. Histamine sensitivity varies a lot between people; if you suspect an intolerance, a doctor or registered dietitian can help you confirm it and build a plan that actually fits you.</div>
+      <div class="guide-search"><input id="guide-q" placeholder="Search foods…" value="${escapeHtml(window.__guideQuery||'')}"></div>
+      ${sections.map(sec=>{
+        const items = filtered.filter(f=>f[3]===sec.key);
+        if(!items.length) return "";
+        return `<div class="guide-section">
+          <h3><span class="guide-dot" style="background:${sec.color}"></span>${sec.title}</h3>
+          <div class="guide-grid">
+            ${items.map(f=>`<div class="guide-card">
+              <div class="gname">${escapeHtml(f[0])}</div>
+              <div class="gmeta">${GROUP_LABEL[f[2]]} · ${f[1]} kcal /100${f[2]==='beverage'?'ml':'g'}</div>
+              ${f[4] ? `<div class="gswap">${ICONS.swap}<span>Try: ${escapeHtml(f[4])}</span></div>` : ''}
+            </div>`).join("")}
+          </div>
+        </div>`;
+      }).join("")}
+      ${renderDisclaimer()}`;
+  }
+
+  function renderClaude(){
+    const mode = aiConfig.proxyUrl ? "proxy" : (aiConfig.apiKey ? "key" : "none");
+    const pill = mode==="none" ? `<span class="ai-pill">Not connected</span>`
+      : `<span class="ai-pill on">Connected · ${mode==="proxy" ? "via proxy" : "your API key"}</span>`;
+    return `
+      <div class="topline"><div><h2>Claude</h2><div class="sub">Estimates for any food, and whole meals from a photo.</div></div></div>
+      <div class="ai-card">
+        <h3>Connection ${pill}</h3>
+        <p>Groundwork asks Claude to estimate calories, food group and histamine level for foods that aren't in the built-in list, and to read meal photos. This site has no server, so it needs either your own Anthropic API key or a proxy that holds one.</p>
+        <div class="field">
+          <label for="c-key">Anthropic API key</label>
+          <input id="c-key" type="password" autocomplete="off" spellcheck="false" placeholder="sk-ant-…" value="${escapeHtml(aiConfig.apiKey||"")}">
+        </div>
+        <p style="font-size:12.5px">Stored only in this browser and sent only to api.anthropic.com. Anyone who can use this browser could read it, so use a key with a monthly spend limit and don't set it on a shared computer. Get one at console.anthropic.com.</p>
+        <details ${aiConfig.proxyUrl ? "open" : ""}>
+          <summary>Use a proxy instead (keeps the key off devices)</summary>
+          <p style="margin-top:10px">Deploy <code>groundwork/worker/worker.js</code> as a Cloudflare Worker with your key as a secret, then paste its URL here. Setup steps are in the repository README.</p>
+          <div class="field">
+            <label for="c-proxy">Proxy URL</label>
+            <input id="c-proxy" type="url" autocomplete="off" spellcheck="false" placeholder="https://groundwork-claude.yourname.workers.dev" value="${escapeHtml(aiConfig.proxyUrl||"")}">
+          </div>
+          <div class="field">
+            <label for="c-code">Access code (if the proxy has one)</label>
+            <input id="c-code" type="password" autocomplete="off" value="${escapeHtml(aiConfig.accessCode||"")}">
+          </div>
+        </details>
+        <div class="form-actions" style="justify-content:flex-start">
+          <button class="btn-primary" id="c-save">Save &amp; test</button>
+          ${mode!=="none" ? `<button class="btn-ghost" id="c-clear">Disconnect</button>` : ""}
+        </div>
+        <div class="ai-status" id="c-status"></div>
+      </div>
+      ${renderDisclaimer()}`;
+  }
+
+  function renderDisclaimer(){
+    return `<footer class="disclaimer">Groundwork gives general food, calorie, and histamine reference information to help you notice patterns. It isn't medical or nutrition advice and doesn't replace guidance from a doctor or registered dietitian — especially if you suspect histamine intolerance or another condition.</footer>`;
+  }
+
+  /* ============ Form logic & handlers ============ */
+  function rowEls(i){
+    return {
+      name: document.getElementById("f-name-"+i),
+      servings: document.getElementById("f-servings-"+i),
+      kcal: document.getElementById("f-kcal-"+i),
+      group: document.getElementById("f-group-"+i),
+      hist: document.getElementById("f-hist-"+i),
+      hint: document.getElementById("f-hint-"+i)
+    };
+  }
+
+  function hintHTML(i, match, nameVal, aiEstimated){
+    if(match){
+      return `Matched <b>${escapeHtml(match[0])}</b> — ${match[1]} kcal /100${match[2]==='beverage'?'ml':'g'}, ${GROUP_LABEL[match[2]]}, ${HIST_LABEL[HIST_NAME[match[3]]].toLowerCase()}.`;
+    }
+    if(aiEstimated){
+      const els = rowEls(i);
+      const unit = els.group.value==='beverage'?'ml':'g';
+      const grams = formItems[i] && formItems[i].grams;
+      const portion = grams ? `about ${grams} ${unit} on the plate (${Math.round((parseFloat(els.kcal.value)||0)*grams/100)} kcal) · ` : "";
+      return `Claude's estimate — ${portion}${els.kcal.value} kcal /100${unit}, ${GROUP_LABEL[els.group.value]}, ${HIST_LABEL[els.hist.value].toLowerCase()}. Feel free to adjust.`;
+    }
+    if(!nameVal.trim() || nameVal.trim().length<2) return "";
+    if(aiReady()){
+      return `No exact match — <button type="button" class="ask-claude-btn" data-askrow="${i}">${ICONS.leaf} Ask Claude to estimate</button>, or set the fields yourself.`;
+    }
+    return `No exact match — set calories, group, and histamine level yourself, or <button type="button" class="ask-claude-btn" data-goclaude>connect Claude</button> to estimate it.`;
+  }
+
+  function bindHintAskButton(i){
+    const els = rowEls(i);
+    if(!els.hint) return;
+    const btn = els.hint.querySelector("[data-askrow]");
+    if(btn) btn.addEventListener("click", ()=>askClaudeForRow(i));
+    const go = els.hint.querySelector("[data-goclaude]");
+    if(go) go.addEventListener("click", ()=>{ formOpen=false; view="claude"; render(); renderNav(); });
+  }
+
+  // Called while the user types a food name: autofills kcal/group/histamine from a local match.
+  function onRowNameInput(i){
+    const els = rowEls(i);
+    if(!els.name) return;
+    const match = matchFood(els.name.value);
+    if(match){
+      els.kcal.value = match[1];
+      els.group.value = match[2];
+      els.hist.value = HIST_NAME[match[3]];
+    }
+    els.hint.innerHTML = hintHTML(i, match, els.name.value, false);
+    bindHintAskButton(i);
+    updateCombinedPreview();
+  }
+
+  // Used after re-rendering rows (add/remove) to show hint text without overwriting user edits.
+  function displayRowHint(i){
+    const els = rowEls(i);
+    if(!els.name) return;
+    if(!els.name.value.trim()){ els.hint.innerHTML=""; return; }
+    const match = matchFood(els.name.value);
+    const wasAi = !match && formItems[i] && formItems[i].swap !== undefined && formItems[i].kcal;
+    els.hint.innerHTML = hintHTML(i, match, els.name.value, wasAi);
+    bindHintAskButton(i);
+  }
+
+  // Asks Claude to estimate kcal / food group / histamine level for a food not in the local reference list.
+  async function askClaudeForRow(i){
+    const els = rowEls(i);
+    if(!els.name || !aiReady()) return;
+    const name = els.name.value.trim();
+    if(!name) return;
+    if(formItems[i]) formItems[i].aiName = name;
+    els.hint.innerHTML = `Asking Claude about <b>${escapeHtml(name)}</b>…`;
+    try{
+      const r = await estimateFood(name);
+      if(els.name.value.trim() !== name) return; // the user kept typing; a newer lookup will follow
+      els.kcal.value = r.kcal;
+      els.group.value = r.group;
+      els.hist.value = r.histamine;
+      if(formItems[i]){ formItems[i].swap = r.swap; formItems[i].grams = undefined; } // carried through captureFormState / save
+      els.hint.innerHTML = hintHTML(i, null, name, true);
+      updateCombinedPreview();
+    }catch(e){
+      if(formItems[i]) formItems[i].aiName = undefined;
+      els.hint.innerHTML = `Couldn't get an estimate (${escapeHtml(aiErrorMessage(e))}) — set the fields yourself, or <button type="button" class="ask-claude-btn" data-askrow="${i}">try again</button>.`;
+      bindHintAskButton(i);
+    }
+  }
+
+  function readRowFromDOM(i){
+    const els = rowEls(i);
+    if(!els.name) return null;
+    return {
+      name: els.name.value,
+      servings: parseFloat(els.servings.value) || 1,
+      kcal: parseFloat(els.kcal.value) || 0,
+      group: els.group.value,
+      histamine: els.hist.value
+    };
+  }
+
+  function captureFormState(){
+    const read = [];
+    for(let i=0;i<formItems.length;i++){
+      const r = readRowFromDOM(i);
+      if(r){
+        const prev = formItems[i];
+        if(prev && prev.swap !== undefined && (prev.name === r.name || prev.aiName === r.name)) r.swap = prev.swap;
+        if(prev && prev.aiName === r.name){ r.aiName = prev.aiName; r.grams = prev.grams; }
+        read.push(r);
+      } else {
+        read.push(formItems[i]);
+      }
+    }
+    formItems = read;
+    const mealEl = document.getElementById("f-mealname");
+    const noteEl = document.getElementById("f-note");
+    if(mealEl) formMealName = mealEl.value;
+    if(noteEl) formNote = noteEl.value;
+  }
+
+  function updateCombinedPreview(){
+    const box = document.getElementById("f-combined");
+    if(!box) return;
+    const order = {low:1, medium:2, high:3};
+    let kcal = 0, worst = "low", named = 0;
+    for(let i=0;i<formItems.length;i++){
+      const r = readRowFromDOM(i);
+      if(!r) continue;
+      if(r.name.trim()) named++;
+      kcal += (r.kcal||0) * (r.servings||1);
+      if(order[r.histamine] > order[worst]) worst = r.histamine;
+    }
+    if(named===0){ box.innerHTML = `<span style="color:var(--ink-faint)">Add at least one food to see the combined total.</span>`; return; }
+    const color = worst==="high" ? "var(--high)" : worst==="medium" ? "var(--med)" : "var(--low)";
+    const swapNote = worst!=="low" ? `<span style="color:var(--ink-soft)">· consider a swap for the ${worst}-histamine item${named>1?'s':''} above</span>` : "";
+    box.innerHTML = `<span><span class="ck">${Math.round(kcal)}</span> kcal combined</span><span style="color:${color};font-weight:600">${HIST_LABEL[worst]} overall</span>${swapNote}`;
+  }
+
+  function initPhotoPreview(){
+    const prev = document.getElementById("f-photo-preview");
+    const status = document.getElementById("f-photo-status");
+    if(!prev) return;
+    if(photoPreviewUrl){ prev.src = photoPreviewUrl; prev.style.display = "block"; if(status) status.textContent = "Photo added"; }
+  }
+
+  function initForm(){
+    formItems.forEach((item,i)=>{
+      const els = rowEls(i);
+      if(!els.group) return;
+      els.group.value = item.group;
+      els.hist.value = item.histamine;
+      els.name.addEventListener("input", ()=>onRowNameInput(i));
+      // Once the user leaves the field, ask Claude about anything the built-in table doesn't know.
+      els.name.addEventListener("change", ()=>{
+        const name = els.name.value.trim();
+        if(name.length<2 || matchFood(name) || !aiReady()) return;
+        if(formItems[i] && formItems[i].aiName === name) return;
+        askClaudeForRow(i);
+      });
+      els.servings.addEventListener("input", updateCombinedPreview);
+      els.kcal.addEventListener("input", updateCombinedPreview);
+      els.group.addEventListener("change", updateCombinedPreview);
+      els.hist.addEventListener("change", updateCombinedPreview);
+      displayRowHint(i);
+    });
+    updateCombinedPreview();
+    initPhotoPreview();
+
+    document.querySelectorAll("[data-removerow]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        captureFormState();
+        const idx = parseInt(btn.getAttribute("data-removerow"),10);
+        formItems.splice(idx,1);
+        render();
+      });
+    });
+    const addBtn = document.getElementById("f-addrow");
+    if(addBtn) addBtn.addEventListener("click", ()=>{
+      captureFormState();
+      formItems.push(freshFormItem());
+      render();
+    });
+  }
+
+  // Sends the current photo to Claude and turns every food it sees into a form row.
+  async function estimateFromPhoto(){
+    const status = ()=>document.getElementById("f-photo-status");
+    if(!photoFile || !status()) return;
+    status().textContent = "Claude is looking at your plate…";
+    const saveBtn = document.getElementById("f-save");
+    if(saveBtn) saveBtn.disabled = true;
+    try{
+      const big = await compressImage(photoFile, 1280, 0.82);
+      const result = await analyzeMealPhoto(big);
+      if(!formOpen || !document.getElementById("f-photo-status")) return;
+      if(!result.isFood || !result.items.length){
+        status().textContent = "Claude couldn't spot any food in that photo — add the foods yourself.";
+        return;
+      }
+      captureFormState();
+      const kept = formItems.filter(r=>(r.name||"").trim());
+      const fromPhoto = result.items.map(it=>({
+        name: it.name,
+        servings: Math.max(0.05, Math.round(it.grams/100*20)/20) || 1,
+        kcal: it.kcal, group: it.group, histamine: it.histamine, swap: it.swap,
+        aiName: it.name, grams: it.grams
+      }));
+      formItems = kept.concat(fromPhoto);
+      if(!formMealName.trim() && result.mealName) formMealName = result.mealName;
+      render();
+      const n = fromPhoto.length;
+      const total = fromPhoto.reduce((t,r)=>t + r.kcal*r.servings, 0);
+      const st = document.getElementById("f-photo-status");
+      if(st) st.textContent = `Claude found ${n} item${n===1?"":"s"}, about ${Math.round(total)} kcal. Check the portions, then save.`;
+    }catch(e){
+      const st = status();
+      if(st){
+        st.innerHTML = `Couldn't read the photo (${escapeHtml(aiErrorMessage(e))}). <button type="button" class="ask-claude-btn" id="f-photo-retry">Try again</button>`;
+        const retry = document.getElementById("f-photo-retry");
+        if(retry) retry.addEventListener("click", estimateFromPhoto);
+      }
+    }finally{
+      const b = document.getElementById("f-save");
+      if(b) b.disabled = false;
+    }
+  }
+
+  function attachHandlers(){
+    const openBtn = document.getElementById("open-form");
+    if(openBtn) openBtn.addEventListener("click", ()=>{
+      formOpen = true; formItems = [freshFormItem()]; formMealName=""; formNote="";
+      photoBlob=null; photoPreviewUrl=null;
+      render();
+      document.getElementById("f-name-0").focus();
+    });
+
+    const openPhotoBtn = document.getElementById("open-form-photo");
+    if(openPhotoBtn) openPhotoBtn.addEventListener("click", ()=>{
+      formOpen = true; formItems = [freshFormItem()]; formMealName=""; formNote="";
+      photoBlob=null; photoPreviewUrl=null; photoFile=null;
+      render();
+      document.getElementById("f-photo").click();
+    });
+
+    const cancelBtn = document.getElementById("f-cancel");
+    if(cancelBtn) cancelBtn.addEventListener("click", ()=>{
+      formOpen = false; formItems=[freshFormItem()]; formMealName=""; formNote="";
+      photoBlob=null; photoPreviewUrl=null; photoFile=null; render();
+    });
+
+    if(formOpen) initForm();
+
+    const photoInput = document.getElementById("f-photo");
+    if(photoInput){
+      photoInput.addEventListener("change", async ()=>{
+        const file = photoInput.files[0];
+        if(!file) return;
+        document.getElementById("f-photo-status").textContent = "Processing…";
+        try{
+          const blob = await compressImage(file);
+          photoBlob = blob;
+          photoFile = file;
+          photoPreviewUrl = URL.createObjectURL(blob);
+          const prev = document.getElementById("f-photo-preview");
+          prev.src = photoPreviewUrl; prev.style.display = "block";
+          document.getElementById("f-photo-status").textContent = "Photo added";
+        }catch(e){
+          document.getElementById("f-photo-status").textContent = "Couldn't read that photo";
+          return;
+        }
+        if(apiConfigured()) estimateFromPhoto();
+        else document.getElementById("f-photo-status").innerHTML = `Photo added. <button type="button" class="ask-claude-btn" id="f-photo-goclaude">Connect Claude</button> to estimate the food from it.`;
+        const go = document.getElementById("f-photo-goclaude");
+        if(go) go.addEventListener("click", ()=>{ formOpen=false; view="claude"; render(); renderNav(); });
+      });
+    }
+
+    const saveBtn = document.getElementById("f-save");
+    if(saveBtn){
+      saveBtn.addEventListener("click", async ()=>{
+        captureFormState();
+        const items = formItems
+          .map(r=>({ name:(r.name||"").trim(), servings:r.servings||1, kcal:r.kcal||0, group:r.group, histamine:r.histamine, swap:r.swap||undefined }))
+          .filter(r=>r.name);
+        if(!items.length){ document.getElementById("f-name-0").focus(); return; }
+        saveBtn.disabled = true; saveBtn.textContent = "Saving…";
+        const now = new Date();
+        const entry = {
+          mealName: formMealName.trim(),
+          items,
+          note: formNote.trim(),
+          date: selectedDate,
+          timestamp: now.getTime(),
+          timeLabel: timeStr(now)
+        };
+        try{
+          if(photoBlob){
+            if(!offlineMode && assets){
+              const res = await assets.upload(photoBlob, {type:"image/jpeg"});
+              entry.photoId = res.id;
+            } else {
+              entry.photoData = await new Promise(res=>{
+                const r = new FileReader(); r.onload=()=>res(r.result); r.readAsDataURL(photoBlob);
+              });
+            }
+          }
+          await saveEntry(entry);
+        }catch(e){
+          // fall back to local save if a remote write failed
+          entries.unshift(Object.assign({id:"e"+Date.now()}, entry));
+          lsSave(entries);
+        }
+        photoBlob = null; photoPreviewUrl = null; formOpen = false;
+        formItems = [freshFormItem()]; formMealName=""; formNote="";
+        render();
+      });
+    }
+
+    const cSave = document.getElementById("c-save");
+    if(cSave) cSave.addEventListener("click", async ()=>{
+      const st = document.getElementById("c-status");
+      const apiKey = document.getElementById("c-key").value.trim();
+      const proxyUrl = document.getElementById("c-proxy").value.trim();
+      const accessCode = document.getElementById("c-code").value.trim();
+      if(!apiKey && !proxyUrl){ st.className="ai-status err"; st.textContent="Paste an API key or a proxy URL first."; return; }
+      if(proxyUrl && !/^https:\/\//.test(proxyUrl)){ st.className="ai-status err"; st.textContent="The proxy URL needs to start with https://"; return; }
+      aiStore({ apiKey: proxyUrl ? "" : apiKey, proxyUrl, accessCode: proxyUrl ? accessCode : "" });
+      cSave.disabled = true; st.className="ai-status"; st.textContent = "Testing — asking Claude about an apple…";
+      try{
+        const r = await estimateFood("apple");
+        render(); renderNav();
+        const st2 = document.getElementById("c-status");
+        st2.className = "ai-status ok";
+        st2.textContent = `Working. Claude says an apple is about ${r.kcal} kcal per 100 g, ${HIST_LABEL[r.histamine].toLowerCase()}.`;
+      }catch(e){
+        st.className = "ai-status err"; st.textContent = aiErrorMessage(e);
+        cSave.disabled = false;
+      }
+    });
+    const cClear = document.getElementById("c-clear");
+    if(cClear) cClear.addEventListener("click", ()=>{ aiStore({}); render(); renderNav(); });
+
+    document.querySelectorAll("[data-del]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{ deleteEntry(btn.getAttribute("data-del")); });
+    });
+
+    const openStoolBtn = document.getElementById("open-stool-form");
+    if(openStoolBtn) openStoolBtn.addEventListener("click", ()=>{
+      stoolFormOpen = true; stoolFormType = null; stoolFormNote = ""; render();
+    });
+
+    const stoolCancelBtn = document.getElementById("s-cancel");
+    if(stoolCancelBtn) stoolCancelBtn.addEventListener("click", ()=>{
+      stoolFormOpen = false; stoolFormType = null; stoolFormNote = ""; render();
+    });
+
+    document.querySelectorAll("[data-bristol]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const noteEl = document.getElementById("s-note");
+        if(noteEl) stoolFormNote = noteEl.value;
+        stoolFormType = parseInt(btn.getAttribute("data-bristol"),10);
+        render();
+      });
+    });
+
+    const stoolSaveBtn = document.getElementById("s-save");
+    if(stoolSaveBtn){
+      stoolSaveBtn.addEventListener("click", async ()=>{
+        if(!stoolFormType) return;
+        stoolSaveBtn.disabled = true; stoolSaveBtn.textContent = "Saving…";
+        const now = new Date();
+        const noteEl = document.getElementById("s-note");
+        const entry = {
+          type: stoolFormType,
+          note: noteEl ? noteEl.value.trim() : "",
+          date: selectedDate,
+          timestamp: now.getTime(),
+          timeLabel: timeStr(now)
+        };
+        try{ await saveStool(entry); }
+        catch(e){ stools.unshift(Object.assign({id:"s"+Date.now()}, entry)); lsSaveStools(stools); }
+        stoolFormOpen = false; stoolFormType = null; stoolFormNote = "";
+        render();
+      });
+    }
+
+    document.querySelectorAll("[data-delstool]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{ deleteStool(btn.getAttribute("data-delstool")); });
+    });
+
+    document.querySelectorAll("[data-dateshift]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const [y,m,d] = selectedDate.split("-").map(Number);
+        const dt = new Date(y,m-1,d);
+        dt.setDate(dt.getDate() + parseInt(btn.getAttribute("data-dateshift"),10));
+        selectedDate = todayStr(dt);
+        render();
+      });
+    });
+    const goalBtn = document.querySelector("[data-goal='today']");
+    if(goalBtn) goalBtn.addEventListener("click", ()=>{ selectedDate = todayStr(); render(); });
+
+    document.querySelectorAll("[data-jump]").forEach(btn=>{
+      btn.addEventListener("click", ()=>{ selectedDate = btn.getAttribute("data-jump"); view="today"; render(); renderNav(); });
+    });
+
+    const guideQ = document.getElementById("guide-q");
+    if(guideQ){
+      guideQ.addEventListener("input", ()=>{ window.__guideQuery = guideQ.value; render(); guideQ.focus(); guideQ.setSelectionRange(guideQ.value.length, guideQ.value.length); });
+    }
+  }
+
+  init();
+})();
+</script>
+</body>
+</html>

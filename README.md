@@ -19,6 +19,7 @@ and vanilla JS. Open it or drop it on any static host.
 | `order.html`    | Order       | £295, numbered first series, reservation form with intent dropdown |
 | `gallery.html`  | Gallery     | Image grid + demonstration-video slot |
 | `contact.html`  | Contact     | Contact form + details |
+| `groundwork/`   | Groundwork  | Separate app: food & gut-health journal (see below) |
 
 Shared header, footer and navigation are built once (in `assets/js/render.js`)
 and appear identically on every page.
@@ -145,3 +146,43 @@ nothing to build.
 - Images carry alt text (from `content.js`); gallery images lazy-load.
 - No external fonts or scripts — fully offline, no tracking, fast.
 - Respects `prefers-reduced-motion` throughout.
+
+---
+
+## Groundwork (food & gut journal)
+
+`groundwork/index.html` is a separate single-file app that sits alongside the
+Falak site. It goes live at `https://falak1259.com/groundwork/`. It's plain HTML/CSS/JS with no build step.
+
+- Food diary with calorie, food-group and histamine estimates from a built-in
+  table of about 90 foods, plus gentler swaps for higher-histamine foods
+- Bowel-movement log on the Bristol stool scale
+- Daily summary, history and a searchable swap guide
+
+It was first built as a claude.ai Artifact. On GitHub Pages:
+
+- **Journal data stays in the visitor's own browser (`localStorage`).** There's
+  no account and no sync between devices, and clearing site data wipes it.
+  Photos are kept as compressed data URLs, so a lot of photos can fill the
+  browser's storage.
+- **Claude estimates are done by calling the Anthropic API directly** (model
+  `claude-opus-5-5`, through the official SDK bundled in `groundwork/vendor/`).
+  Claude fills in calories, food group and histamine level for any food the
+  built-in table doesn't know. **Log from photo** finds every food on the plate
+  and estimates each portion in grams and its calories.
+- The site has no server, so open the **Claude** tab and either:
+  1. **Paste your own Anthropic API key.** It's stored only in that browser and
+     sent only to `api.anthropic.com`. Use a key with a monthly spend limit, and
+     don't do this on a shared computer. Each call is billed to that key.
+  2. **Use a proxy** so the key never touches a device. Deploy
+     `groundwork/worker/worker.js` as a Cloudflare Worker (Workers → Create →
+     paste the file). Add the secret `ANTHROPIC_API_KEY`. Optionally add
+     `ACCESS_CODE` (visitors type it in the Claude tab) and `ALLOWED_ORIGINS`
+     (default `https://falak1259.com`). Then paste the worker URL into the
+     Claude tab. The worker only forwards Groundwork's request shape and pins
+     the model.
+
+To update the bundled SDK, run `npm i @anthropic-ai/sdk esbuild`, then bundle
+`export { default } from "@anthropic-ai/sdk"` with
+`esbuild --bundle --format=esm --platform=browser --minify` into
+`groundwork/vendor/anthropic-sdk.min.js`.
