@@ -159,10 +159,30 @@ Falak site. It goes live at `https://falak1259.com/groundwork/`. It's plain HTML
 - Bowel-movement log on the Bristol stool scale
 - Daily summary, history and a searchable swap guide
 
-It was first built as a claude.ai Artifact. On GitHub Pages it uses its built-in
-fallback: **everything is stored in the visitor's own browser (`localStorage`)**.
-There's no account, no sync between devices, and nothing is sent to a server.
-Clearing site data wipes the journal. Photos are kept as compressed data URLs,
-so a lot of photos can fill the browser's storage. The "Ask Claude to estimate"
-button only shows up inside claude.ai. For foods not in the table, you fill in
-the fields yourself.
+It was first built as a claude.ai Artifact. On GitHub Pages:
+
+- **Journal data stays in the visitor's own browser (`localStorage`).** There's
+  no account and no sync between devices, and clearing site data wipes it.
+  Photos are kept as compressed data URLs, so a lot of photos can fill the
+  browser's storage.
+- **Claude estimates are done by calling the Anthropic API directly** (model
+  `claude-opus-5-5`, through the official SDK bundled in `groundwork/vendor/`).
+  Claude fills in calories, food group and histamine level for any food the
+  built-in table doesn't know. **Log from photo** finds every food on the plate
+  and estimates each portion in grams and its calories.
+- The site has no server, so open the **Claude** tab and either:
+  1. **Paste your own Anthropic API key.** It's stored only in that browser and
+     sent only to `api.anthropic.com`. Use a key with a monthly spend limit, and
+     don't do this on a shared computer. Each call is billed to that key.
+  2. **Use a proxy** so the key never touches a device. Deploy
+     `groundwork/worker/worker.js` as a Cloudflare Worker (Workers → Create →
+     paste the file). Add the secret `ANTHROPIC_API_KEY`. Optionally add
+     `ACCESS_CODE` (visitors type it in the Claude tab) and `ALLOWED_ORIGINS`
+     (default `https://falak1259.com`). Then paste the worker URL into the
+     Claude tab. The worker only forwards Groundwork's request shape and pins
+     the model.
+
+To update the bundled SDK, run `npm i @anthropic-ai/sdk esbuild`, then bundle
+`export { default } from "@anthropic-ai/sdk"` with
+`esbuild --bundle --format=esm --platform=browser --minify` into
+`groundwork/vendor/anthropic-sdk.min.js`.
