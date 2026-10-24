@@ -20,10 +20,6 @@ and vanilla JS. Open it or drop it on any static host.
 | `gallery.html`  | Gallery     | Image grid + demonstration-video slot |
 | `contact.html`  | Contact     | Contact form + details |
 
-Also in this repository: **[`zulfiqar/`](zulfiqar/)** is the separate member portal
-for Project Zulfiqar (sign-up, payments, session recaps, feedback and homework). It
-has its own [README](zulfiqar/README.md) and shares nothing with the Falak pages.
-
 Shared header, footer and navigation are built once (in `assets/js/render.js`)
 and appear identically on every page.
 
