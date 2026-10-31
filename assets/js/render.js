@@ -40,7 +40,7 @@
           '<circle cx="69" cy="50" r="19"/>' +
           '<line x1="12" y1="50" x2="88" y2="50"/>' +
         '</g>' +
-        '<circle cx="88" cy="50" r="2.4" fill="#f2ead6" stroke="none"/>' +
+        '<circle cx="88" cy="50" r="2.4" fill="#221b12" stroke="none"/>' +
       '</svg>'
     );
   }
